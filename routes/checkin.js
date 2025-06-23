@@ -1,35 +1,39 @@
 // backend/routes/checkin.js
 const express = require('express');
 const router = express.Router();
-const Checkin = require('./../models/Checkin');
-
+const Checkin = require('../models/Checkin'); // Ruta corregida y segura
 
 router.post('/', async (req, res) => {
   try {
     const { email, latitude, longitude, distance, status } = req.body;
 
-    if (!email || !latitude || !longitude) {
-      return res.status(400).json({ error: 'Faltan datos requeridos.' });
+    // Validación básica
+    if (
+      !email ||
+      typeof latitude !== 'number' ||
+      typeof longitude !== 'number'
+    ) {
+      return res.status(400).json({ error: 'Faltan o son inválidos los datos requeridos.' });
     }
 
     const checkin = new Checkin({
       email,
       latitude,
       longitude,
-      distance,
-      status
+      distance: distance || null,
+      status: status || 'no especificado'
     });
 
     await checkin.save();
 
-    res.status(201).json({
-      message: 'Check-in registrado con éxito',
+    return res.status(201).json({
+      message: '✔️ Check-in registrado con éxito',
       checkin
     });
 
   } catch (error) {
     console.error('❌ Error en /api/checkin:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
