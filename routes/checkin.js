@@ -1,7 +1,8 @@
 // backend/routes/checkin.js
 const express = require('express');
 const router = express.Router();
-const Checkin = require('../models/Checkin'); // Ruta corregida y segura
+const Checkin = require('../models/checkin'); // ✅ Esta es la correcta
+
 
 router.post('/', async (req, res) => {
   try {
