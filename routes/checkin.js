@@ -1,7 +1,7 @@
 // backend/routes/checkin.js
 const express = require('express');
 const router = express.Router();
-const Checkin = require('../models/checkin'); // ✅ Esta es la correcta
+const checkin = require('../models/checkin'); // ✅ Esta es la correcta
 
 
 router.post('/', async (req, res) => {
@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Faltan o son inválidos los datos requeridos.' });
     }
 
-    const checkin = new Checkin({
+    const checkin = new checkin({
       email,
       latitude,
       longitude,
