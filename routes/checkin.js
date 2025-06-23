@@ -1,7 +1,8 @@
 // backend/routes/checkin.js
 const express = require('express');
 const router = express.Router();
-const Checkin = require('../models/Checkin');
+const Checkin = require('./../models/Checkin');
+
 
 router.post('/', async (req, res) => {
   try {
