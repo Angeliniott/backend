@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth');
 
 // Importar función para conectar a MongoDB
 const connectDB = require('./db'); // Asegúrate de tener este archivo
@@ -31,3 +32,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto: ${PORT}`);
 });
+
+app.use('/api/auth', authRoutes);
