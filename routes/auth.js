@@ -51,4 +51,43 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Ruta para registrar nuevos usuarios
+router.post('/register', async (req, res) => {
+  try {
+    console.log("👉 [POST /register] Body recibido:", req.body);
+
+    const { name, email, password } = req.body;
+
+    // Validaciones básicas
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+
+    // Verificar si ya existe
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ error: 'El correo ya está registrado' });
+    }
+
+    // Encriptar contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear nuevo usuario
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    await newUser.save();
+
+    console.log("✅ Usuario registrado:", email);
+
+    res.status(201).json({ message: 'Usuario creado con éxito' });
+  } catch (error) {
+    console.error("❌ Error en /register:", error);
+    res.status(500).json({ error: 'Error al registrar usuario' });
+  }
+});
+
 module.exports = router;
