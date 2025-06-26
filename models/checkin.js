@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 
 const checkinSchema = new mongoose.Schema({
   email: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now },
   latitude: Number,
   longitude: Number,
   distance: Number,
-  status: String, // "en rango" o "fuera de rango"
-});
+  status: String
+}, { timestamps: true }); // 👈 Esto incluye createdAt y updatedAt
 
 module.exports = mongoose.model('Checkin', checkinSchema);
