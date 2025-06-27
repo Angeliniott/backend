@@ -1,11 +1,13 @@
-// backend/routes/checkin.js
 const express = require('express');
 const router = express.Router();
-const Checkin = require('../models/checkin'); // ✅ nombre corregido
-const User = require('../models/user'); // Asegúrate de tener este modelo
+const Checkin = require('../models/checkin');
+const User = require('../models/user');
 
-// GET /api/checkin/report?month=6&year=2025
-router.get('/report', async (req, res) => {
+// ✅ Importamos middlewares
+const { authMiddleware, verifyAdmin } = require('../middleware/auth');
+
+// ==================== GET REPORTE ADMIN ====================
+router.get('/report', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const month = parseInt(req.query.month);
     const year = parseInt(req.query.year);
@@ -43,13 +45,11 @@ router.get('/report', async (req, res) => {
   }
 });
 
-// POST /api/checkin
-// Registra un nuevo check-in
+// ==================== POST CHECK-IN ====================
 router.post('/', async (req, res) => {
   try {
     const { email, latitude, longitude, distance, status } = req.body;
 
-    // Validación básica
     if (
       !email ||
       typeof latitude !== 'number' ||

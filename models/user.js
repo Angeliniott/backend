@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, unique: true, required: true },
-  password: { type: String, required: true }, // Encriptada
-  role: { type: String, default: 'empleado' } // empleado o admin
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  role: { type: String, enum: ['admin', 'empleado'], default: 'empleado' }
 });
 
 module.exports = mongoose.model('User', userSchema);
