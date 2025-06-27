@@ -7,7 +7,8 @@ const User = require('../models/user'); // Asegúrate de tener este modelo
 // GET /api/checkin/report?month=6&year=2025
 router.get('/report', async (req, res) => {
   try {
-    const { month, year } = req.query;
+    const month = parseInt(req.query.month);
+    const year = parseInt(req.query.year);
 
     if (!month || !year) {
       return res.status(400).json({ error: "Mes y año son requeridos." });
@@ -16,26 +17,23 @@ router.get('/report', async (req, res) => {
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 1);
 
-    const checkins = await checkin.find({
+    const checkins = await Checkin.find({
       createdAt: {
         $gte: start,
         $lt: end
       }
     }).sort({ createdAt: -1 });
 
-    // Obtener usuarios para asociar nombres
     const users = await User.find({}, 'email name');
 
-    // Crear un mapa rápido de email -> nombre
     const userMap = {};
     users.forEach(user => {
       userMap[user.email] = user.name;
     });
 
-    // Adjuntar nombre al resultado
     const result = checkins.map(entry => ({
       ...entry._doc,
-      name: userMap[entry.email] || null
+      name: userMap[entry.email] || "-"
     }));
 
     res.json(result);
@@ -44,6 +42,7 @@ router.get('/report', async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 // POST /api/checkin
 // Registra un nuevo check-in
 router.post('/', async (req, res) => {
