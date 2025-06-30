@@ -3,17 +3,16 @@ const router = express.Router();
 const Checkin = require('../models/checkin');
 const User = require('../models/user');
 
-// ✅ Importamos middlewares
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 
 // ==================== GET REPORTE ADMIN ====================
 router.get('/report', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const month = parseInt(req.query.month);
-    const year = parseInt(req.query.year);
+    const month = parseInt(req.query.month, 10);
+    const year = parseInt(req.query.year, 10);
 
-    if (!month || !year) {
-      return res.status(400).json({ error: "Mes y año son requeridos." });
+    if (isNaN(month) || isNaN(year)) {
+      return res.status(400).json({ error: "Mes y año inválidos." });
     }
 
     const start = new Date(year, month - 1, 1);

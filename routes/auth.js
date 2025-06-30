@@ -26,9 +26,13 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // 🔒 Incluir `rol` en el token
+    // ✅ Generar token con rol y email
     const token = jwt.sign(
-      { id: user._id, role: user.role || 'empleado' },
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role || 'empleado'
+      },
       process.env.JWT_SECRET || 'clavepordefecto',
       { expiresIn: '1d' }
     );
@@ -70,7 +74,7 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role || 'empleado' // 👈 Valor por defecto: 'empleado'
+      role: role || 'empleado'
     });
 
     await newUser.save();
