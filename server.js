@@ -2,41 +2,35 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+
+// Rutas
 const authRoutes = require('./routes/auth');
-const express = require('express');
+const checkinRoutes = require('./routes/checkin');
 const checkoutRoutes = require('./routes/checkout');
 
+// Función para conectar a MongoDB
+const connectDB = require('./db');
 
-app.use('/api/checkout', checkoutRoutes);
-
-
-// Importar función para conectar a MongoDB
-const connectDB = require('./db'); // Asegúrate de tener este archivo
-
-// Cargar variables de entorno desde .env
+// Cargar variables de entorno
 dotenv.config();
 
-// Conectar a MongoDB
-connectDB();
-
+// Iniciar la app
 const app = express();
 
-// Configurar CORS
-app.use(cors({
-  origin: '*', // Puedes restringir esto más adelante a solo tu frontend
-}));
+// Conectar a la base de datos
+connectDB();
 
-// Middleware para parsear JSON
+// Middlewares
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 // Rutas
-app.use('/api/checkin', require('./routes/checkin'));
+app.use('/api/auth', authRoutes);
+app.use('/api/checkin', checkinRoutes);
+app.use('/api/checkout', checkoutRoutes);
 
 // Puerto de Render o local
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto: ${PORT}`);
 });
-
-app.use('/api/auth', authRoutes);
