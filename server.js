@@ -3,6 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
+const express = require('express');
+const checkoutRoutes = require('./routes/checkout');
+
+
+app.use('/api/checkout', checkoutRoutes);
+
 
 // Importar función para conectar a MongoDB
 const connectDB = require('./db'); // Asegúrate de tener este archivo

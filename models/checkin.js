@@ -6,7 +6,12 @@ const checkinSchema = new mongoose.Schema({
   latitude: Number,
   longitude: Number,
   distance: Number,
-  status: String
+  status: String,
+  type: {
+  type: String,
+  enum: ['checkin', 'checkout'],
+  default: 'checkin'
+}
 }, { timestamps: true }); // 👈 Esto incluye createdAt y updatedAt
 
 module.exports = mongoose.model('Checkin', checkinSchema);
