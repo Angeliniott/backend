@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const SpecialCheck = require('../models/specialcheck'); // Debes crear este modelo
-const User = require('../models/User');
+const User = require('../models/user');
 
 // Middleware para verificar token
 function authenticateToken(req, res, next) {
