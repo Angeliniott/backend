@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const checkinRoutes = require('./routes/checkin');
 const checkoutRoutes = require('./routes/checkout');
+const specialCheckRoutes = require('./routes/specialcheck');
 
 // Función para conectar a MongoDB
 const connectDB = require('./db');
@@ -28,6 +29,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/special', specialCheckRoutes);
 
 // Puerto de Render o local
 const PORT = process.env.PORT || 5000;
