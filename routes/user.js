@@ -32,4 +32,4 @@ router.post('/', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-module.exports
+module.exports = router;    
