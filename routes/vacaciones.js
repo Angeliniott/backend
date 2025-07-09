@@ -57,7 +57,7 @@ router.get('/resumen', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Usuario no válido o sin fecha de ingreso' });
     }
 
-    const totalGenerados = calcularDiasGenerados(user.fechaIngreso);
+    const totalGenerados = calcularDiasGenerados(user.fechaIngreso) + (user.diasPendientesPrevios || 0);
 
     const solicitudes = await SolicitudVacaciones.find({ email: userEmail });
     const solicitudesValidas = eliminarAntiguasNoUsadas(solicitudes, user.fechaIngreso);

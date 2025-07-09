@@ -33,4 +33,13 @@ router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
   }
 });
 
+router.post('/actualizar-dias-pendientes', authMiddleware, verifyAdmin, async (req, res) => {
+  const { email, diasPendientesPrevios } = req.body;
+  if (typeof diasPendientesPrevios !== 'number') {
+    return res.status(400).json({ error: 'Valor inválido' });
+  }
+  await User.updateOne({ email }, { $set: { diasPendientesPrevios } });
+  res.json({ message: 'Días pendientes actualizados' });
+});
+
 module.exports = router;    
