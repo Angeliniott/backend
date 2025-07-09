@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const checkinRoutes = require('./routes/checkin');
 const checkoutRoutes = require('./routes/checkout');
 const specialCheckRoutes = require('./routes/specialcheck');
+const vacacionesRoutes = require('./routes/vacaciones');
 
 // Función para conectar a MongoDB
 const connectDB = require('./db');
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/special', specialCheckRoutes);
+app.use('/api/vacaciones', vacacionesRoutes);
 
 // Puerto de Render o local
 const PORT = process.env.PORT || 5000;
