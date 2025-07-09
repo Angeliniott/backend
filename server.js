@@ -9,6 +9,7 @@ const checkinRoutes = require('./routes/checkin');
 const checkoutRoutes = require('./routes/checkout');
 const specialCheckRoutes = require('./routes/specialcheck');
 const vacacionesRoutes = require('./routes/vacaciones');
+const userRoutes = require('./routes/user');
 
 // Función para conectar a MongoDB
 const connectDB = require('./db');
