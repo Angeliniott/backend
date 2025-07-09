@@ -83,10 +83,15 @@ router.get('/resumen', authMiddleware, async (req, res) => {
 router.post('/solicitar', authMiddleware, async (req, res) => {
   try {
     const email = req.user.email;
-    const { fechaInicio, fechaFin, motivo } = req.body;
+    // Agrega supervisor aquí
+    const { fechaInicio, fechaFin, motivo, supervisor } = req.body;
 
     if (!fechaInicio || !fechaFin) {
       return res.status(400).json({ error: 'Fechas requeridas' });
+    }
+    // Validar supervisor
+    if (!supervisor || !['elizabeth', 'francisco', 'servicio'].includes(supervisor)) {
+      return res.status(400).json({ error: 'Supervisor requerido o inválido' });
     }
 
     const user = await User.findOne({ email });
@@ -109,7 +114,8 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       fechaInicio: inicio,
       fechaFin: fin,
       diasSolicitados,
-      motivo
+      motivo,
+      supervisor // <-- Guardar el supervisor
     });
 
     await nuevaSolicitud.save();
