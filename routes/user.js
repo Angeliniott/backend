@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user'); // Ajusta el path si tu modelo está en otra carpeta
-const { verifyToken, isAdmin } = require('../middleware/auth'); // Si tienes middlewares de autenticación
+const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 
 // Crear nuevo usuario/empleado (solo admin)
-router.post('/', verifyToken, isAdmin, async (req, res) => {
+router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     if (!name || !email || !password) {
