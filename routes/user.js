@@ -28,6 +28,7 @@ router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
     await nuevoUsuario.save();
     res.status(201).json({ message: 'Empleado creado correctamente', user: { name, email, role: nuevoUsuario.role } });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Error al crear el empleado' });
   }
 });
