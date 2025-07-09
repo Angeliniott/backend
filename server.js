@@ -32,6 +32,7 @@ app.use('/api/checkin', checkinRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/special', specialCheckRoutes);
 app.use('/api/vacaciones', vacacionesRoutes);
+app.use('/api/user', userRoutes);
 
 // Puerto de Render o local
 const PORT = process.env.PORT || 5000;
