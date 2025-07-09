@@ -9,4 +9,4 @@ const userSchema = new mongoose.Schema({
   fechaIngreso: { type: Date, required: true } // NUEVO
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('user', userSchema);
