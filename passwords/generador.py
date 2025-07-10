@@ -1,6 +1,7 @@
 import pandas as pd
 import random
 import os
+import hashlib
 
 def agregar_contrasenas_excel():
     # Usar el archivo Book1.xlsx en la misma carpeta
@@ -10,12 +11,9 @@ def agregar_contrasenas_excel():
     # Leer el archivo Excel
     df = pd.read_excel(ruta_entrada)
 
-    # Verificar que hay al menos una columna
-    if df.shape[1] < 1:
-        raise ValueError("El archivo debe tener al menos una columna de correos.")
-
-    # Generar contraseñas de 4 dígitos para cada correo
-    df['Contraseña'] = [str(random.randint(1000, 9999)) for _ in range(len(df))]
+    # Si ya existen las otras columnas, no las modifica, solo agrega la columna hash
+    # Generar la columna de contraseña hasheada (usando SHA-256)
+    df['Contraseña_Hash'] = df['Contraseña'].apply(lambda x: hashlib.sha256(x.encode()).hexdigest())
 
     # Guardar el nuevo archivo Excel
     df.to_excel(ruta_salida, index=False)
