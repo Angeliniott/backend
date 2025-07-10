@@ -4,50 +4,56 @@ const User = require('../models/user');
 const SolicitudVacaciones = require('../models/solicitudvacaciones');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 
-// ======================= FUNCIONES DE CÁLCULO =======================
+// ======================= FUNCIONES =======================
 
-function calcularDiasGenerados(fechaIngreso) {
+function calcularDiasPorAniversario(fechaIngreso) {
   const hoy = new Date();
-  const ingreso = new Date(fechaIngreso);
+  const periodos = [];
 
-  let antiguedad = hoy.getFullYear() - ingreso.getFullYear();
-  if (
-    hoy.getMonth() < ingreso.getMonth() ||
-    (hoy.getMonth() === ingreso.getMonth() && hoy.getDate() < ingreso.getDate())
-  ) {
-    antiguedad--;
+  for (let año = 0; año < 50; año++) {
+    const inicio = new Date(fechaIngreso);
+    inicio.setFullYear(inicio.getFullYear() + año);
+    const fin = new Date(inicio);
+    fin.setMonth(fin.getMonth() + 18); // vence 18 meses después
+
+    if (fin < hoy) continue; // expirado
+    if (inicio > hoy) break; // futuro
+
+    let dias = 12;
+    if (año >= 1 && año <= 4) {
+      dias += año * 2;
+    } else if (año >= 5) {
+      dias += 8 + Math.floor((año - 5) / 5) * 2;
+    }
+
+    periodos.push({ inicio, fin, dias });
   }
 
-  let dias = 12;
-  if (antiguedad >= 1 && antiguedad <= 4) {
-    dias += (antiguedad * 2);
-  } else if (antiguedad >= 5) {
-    dias += 8;
-    dias += Math.floor((antiguedad - 5) / 5) * 2;
-  }
-
-  return dias;
+  return periodos;
 }
 
-function eliminarAntiguasNoUsadas(solicitudes, fechaIngreso) {
-  const expiradas = new Date();
-  expiradas.setMonth(expiradas.getMonth() - 18);
+function calcularDiasUsadosPorPeriodo(solicitudes) {
+  const usados = {};
 
-  return solicitudes.filter(sol => {
-    const fin = new Date(sol.fechaFin);
-    return fin >= expiradas;
-  });
-}
+  solicitudes
+    .filter(s => s.estado === 'aprobado')
+    .forEach(s => {
+      const fin = new Date(s.fechaFin);
+      for (const key in usados) {
+        const periodo = usados[key];
+        if (fin >= periodo.inicio && fin <= periodo.fin) {
+          periodo.usados += s.diasSolicitados;
+          return;
+        }
+      }
+    });
 
-function contarDiasValidos(solicitudes) {
-  return solicitudes
-    .filter(sol => sol.estado === 'aprobado')
-    .reduce((sum, sol) => sum + sol.diasSolicitados, 0);
+  return usados;
 }
 
 // ======================= RUTAS =======================
 
-// Obtener resumen
+// GET: resumen de vacaciones
 router.get('/resumen', authMiddleware, async (req, res) => {
   try {
     const userEmail = req.user.email;
@@ -57,39 +63,56 @@ router.get('/resumen', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Usuario no válido o sin fecha de ingreso' });
     }
 
-    const totalGenerados = calcularDiasGenerados(user.fechaIngreso) + (user.diasPendientesPrevios || 0);
-
+    const periodos = calcularDiasPorAniversario(user.fechaIngreso);
     const solicitudes = await SolicitudVacaciones.find({ email: userEmail });
-    const solicitudesValidas = eliminarAntiguasNoUsadas(solicitudes, user.fechaIngreso);
-    const usados = contarDiasValidos(solicitudesValidas);
-    const disponibles = totalGenerados - usados;
+
+    const resumen = [];
+    let totalGenerados = 0;
+    let totalUsados = 0;
+
+    for (const p of periodos) {
+      const usadosPeriodo = solicitudes
+        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
+        .reduce((sum, s) => sum + s.diasSolicitados, 0);
+
+      resumen.push({
+        periodo: `${p.inicio.toISOString().slice(0, 10)} → ${p.fin.toISOString().slice(0, 10)}`,
+        generados: p.dias,
+        usados: usadosPeriodo,
+        disponibles: p.dias - usadosPeriodo
+      });
+
+      totalGenerados += p.dias;
+      totalUsados += usadosPeriodo;
+    }
 
     res.json({
       nombre: user.name,
       email: user.email,
       fechaIngreso: user.fechaIngreso,
       generados: totalGenerados,
-      usados,
-      disponibles,
-      solicitudes: solicitudesValidas
+      usados: totalUsados,
+      disponibles: totalGenerados - totalUsados,
+      resumenPeriodos: resumen,
+      solicitudes
     });
+
   } catch (err) {
     console.error('❌ Error en GET /vacaciones/resumen:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// Enviar solicitud
+// POST: solicitar vacaciones
 router.post('/solicitar', authMiddleware, async (req, res) => {
   try {
     const email = req.user.email;
-    // Agrega supervisor aquí
     const { fechaInicio, fechaFin, motivo, supervisor } = req.body;
 
     if (!fechaInicio || !fechaFin) {
       return res.status(400).json({ error: 'Fechas requeridas' });
     }
-    // Validar supervisor
+
     if (!supervisor || !['elizabeth', 'francisco', 'servicio'].includes(supervisor)) {
       return res.status(400).json({ error: 'Supervisor requerido o inválido' });
     }
@@ -101,12 +124,28 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
 
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
-
     if (fin < inicio) {
       return res.status(400).json({ error: 'Fechas inválidas' });
     }
 
     const diasSolicitados = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1;
+
+    // Verificar disponibilidad
+    const periodos = calcularDiasPorAniversario(user.fechaIngreso);
+    const solicitudes = await SolicitudVacaciones.find({ email });
+    let disponibles = 0;
+
+    for (const p of periodos) {
+      const usados = solicitudes
+        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
+        .reduce((sum, s) => sum + s.diasSolicitados, 0);
+
+      disponibles += (p.dias - usados);
+    }
+
+    if (diasSolicitados > disponibles) {
+      return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.` });
+    }
 
     const nuevaSolicitud = new SolicitudVacaciones({
       email,
@@ -115,18 +154,19 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       fechaFin: fin,
       diasSolicitados,
       motivo,
-      supervisor // <-- Guardar el supervisor
+      supervisor
     });
 
     await nuevaSolicitud.save();
     res.status(201).json({ message: 'Solicitud enviada', solicitud: nuevaSolicitud });
+
   } catch (err) {
     console.error('❌ Error en POST /vacaciones/solicitar:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// Obtener solicitudes (admin)
+// Rutas admin para revisión
 router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const solicitudes = await SolicitudVacaciones.find().sort({ createdAt: -1 });
@@ -137,7 +177,6 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
   }
 });
 
-// Aprobar o rechazar (admin)
 router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const { id, estado, comentariosAdmin } = req.body;
