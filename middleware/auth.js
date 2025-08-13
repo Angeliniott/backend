@@ -19,7 +19,7 @@ const authMiddleware = (req, res, next) => {
 };
 
 const verifyAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== "admin") {
+  if (!req.user || req.user.role !== "admin" && req.user.role !== "admin2") {
     return res.status(403).json({ error: "Acceso denegado: solo administradores." });
   }
   next();
