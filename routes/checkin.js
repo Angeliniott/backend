@@ -2,8 +2,33 @@ const express = require('express');
 const router = express.Router();
 const Checkin = require('../models/checkin');
 const User = require('../models/user');
+const WorkSession = require('../models/WorkSession');
+const DailyWorkHours = require('../models/DailyWorkHours');
+const WeeklyWorkHours = require('../models/WeeklyWorkHours');
 
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
+
+// Helper functions
+function calculateWorkDuration(checkinTime, checkoutTime) {
+  if (!checkoutTime) return 0;
+  const durationMs = checkoutTime - checkinTime;
+  return Math.floor(durationMs / (1000 * 60)); // Convert to minutes
+}
+
+function getStartOfDay(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(d.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday;
+}
 
 // ==================== GET REPORTE ADMIN (Check-Ins) ====================
 router.get('/report', authMiddleware, verifyAdmin, async (req, res) => {
@@ -19,7 +44,7 @@ router.get('/report', authMiddleware, verifyAdmin, async (req, res) => {
     const end = new Date(year, month, 1);
 
     const checkins = await Checkin.find({
-      type: { $in: [null, "checkin"] }, // check-ins o sin tipo definido (retrocompatibilidad)
+      type: { $in: [null, "checkin"] },
       createdAt: { $gte: start, $lt: end }
     }).sort({ createdAt: -1 });
 
@@ -103,6 +128,17 @@ router.post('/', async (req, res) => {
 
     await newCheckin.save();
 
+    // Create work session
+    const date = getStartOfDay(newCheckin.createdAt);
+    const workSession = new WorkSession({
+      email,
+      checkinId: newCheckin._id,
+      checkinTime: newCheckin.createdAt,
+      date
+    });
+
+    await workSession.save();
+
     return res.status(201).json({
       message: '✔️ Check-in registrado con éxito',
       checkin: newCheckin
@@ -138,6 +174,62 @@ router.post('/checkout', async (req, res) => {
 
     await newCheckout.save();
 
+    // Find the open work session for this email
+    const openSession = await WorkSession.findOne({ email, status: 'open' })
+      .sort({ checkinTime: -1 });
+
+    if (openSession) {
+      // Calculate work duration
+      const workDuration = calculateWorkDuration(openSession.checkinTime, newCheckout.createdAt);
+
+      // Update work session
+      openSession.checkoutId = newCheckout._id;
+      openSession.checkoutTime = newCheckout.createdAt;
+      openSession.workDuration = workDuration;
+      openSession.status = 'completed';
+      await openSession.save();
+
+      // Update daily work hours
+      const date = getStartOfDay(openSession.checkinTime);
+      let dailyHours = await DailyWorkHours.findOne({ email, date });
+      
+      if (!dailyHours) {
+        dailyHours = new DailyWorkHours({ email, date });
+      }
+      
+      dailyHours.totalMinutes += workDuration;
+      dailyHours.sessions.push(openSession._id);
+      dailyHours.isComplete = true;
+      await dailyHours.save();
+
+      // Update weekly work hours
+      const weekStart = getWeekStart(date);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999);
+
+      const year = weekStart.getFullYear();
+      const weekNumber = Math.ceil((weekStart - new Date(year, 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+
+      let weeklyHours = await WeeklyWorkHours.findOne({ email, weekStart });
+      
+      if (!weeklyHours) {
+        weeklyHours = new WeeklyWorkHours({
+          email,
+          weekStart,
+          weekEnd,
+          year,
+          weekNumber
+        });
+      }
+      
+      weeklyHours.totalMinutes += workDuration;
+      if (!weeklyHours.dailyHours.includes(dailyHours._id)) {
+        weeklyHours.dailyHours.push(dailyHours._id);
+      }
+      await weeklyHours.save();
+    }
+
     return res.status(201).json({
       message: '✔️ Check-out registrado con éxito',
       checkout: newCheckout
@@ -150,16 +242,3 @@ router.post('/checkout', async (req, res) => {
 });
 
 module.exports = router;
-// ==================== GET CHECK-INS POR USUARIO ====================
-/* router.get('/user/:email', authMiddleware, async (req, res) => {  
-  try {
-    const { email } = req.params;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Email requerido.' });
-    }
-
-    const checkins = await Checkin.find({
-      email,
-      type: { $in: [null, "checkin"] } // check-ins o sin tipo definido (retrocompatibilidad)
-    }).sort({ createdAt: -1 }); */
