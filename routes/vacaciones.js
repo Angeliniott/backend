@@ -122,6 +122,16 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Usuario inválido' });
     }
 
+    // Validar duración del servicio (mínimo 6 meses)
+    if (!isEligibleForVacation(user.fechaIngreso)) {
+      const remainingTime = formatRemainingTime(user.fechaIngreso);
+      return res.status(400).json({ 
+        error: `No eres elegible para solicitar vacaciones. ${remainingTime}.`,
+        eligible: false,
+        remainingDays: require('../utils/dateUtils').getDaysUntilEligible(user.fechaIngreso)
+      });
+    }
+
     const inicio = new Date(fechaInicio);
     const fin = new Date(fechaFin);
     if (fin < inicio) {
