@@ -49,6 +49,14 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
     });
 
     await nuevaSolicitud.save();
+
+    // Notify all admin2 users
+    const admin2Users = await User.find({ role: 'admin2' }).select('email name');
+    admin2Users.forEach(admin2 => {
+      console.log(`Notificación: Nueva solicitud de tiempo extra para aprobar enviada a ${admin2.email} (${admin2.name})`);
+      // Here you could integrate email or push notification logic
+    });
+
     res.status(201).json({ message: 'Solicitud enviada', solicitud: nuevaSolicitud });
   } catch (err) {
     console.error('❌ Error en POST /tiempoextra/solicitar:', err);
