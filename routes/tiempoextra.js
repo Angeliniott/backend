@@ -61,7 +61,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
         admin2.email,
         admin2.name,
         requester.name,
-        employee.name,
+        employeeInfo.name,
         date,
         hours
       );
