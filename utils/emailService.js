@@ -4,8 +4,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'gmail', // puedes cambiarlo si usas Outlook, Yahoo, etc.
   auth: {
-    user: process.env.EMAIL_USER || 'your-email@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your-app-password'
+    user: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
+    pass: process.env.EMAIL_PASS || 'ailcfhmabxerperx'
   }
 });
 
@@ -19,7 +19,7 @@ const sendTiempoExtraNotification = async (
   hours
 ) => {
   const mailOptions = {
-    from: process.env.EMAIL_USER || 'your-email@gmail.com',
+    from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
     to: admin2Email,
     subject: 'Nueva Solicitud de Tiempo Extra Pendiente de Aprobación',
     html: `
