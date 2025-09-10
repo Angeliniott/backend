@@ -1,8 +1,8 @@
 const nodemailer = require('nodemailer');
 
 // Create transporter
-const transporter = nodemailer.createTransporter({
-  service: 'gmail', // or your email service
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // puedes cambiarlo si usas Outlook, Yahoo, etc.
   auth: {
     user: process.env.EMAIL_USER || 'your-email@gmail.com',
     pass: process.env.EMAIL_PASS || 'your-app-password'
@@ -10,7 +10,14 @@ const transporter = nodemailer.createTransporter({
 });
 
 // Send notification email
-const sendTiempoExtraNotification = async (admin2Email, admin2Name, requesterName, employeeName, date, hours) => {
+const sendTiempoExtraNotification = async (
+  admin2Email,
+  admin2Name,
+  requesterName,
+  employeeName,
+  date,
+  hours
+) => {
   const mailOptions = {
     from: process.env.EMAIL_USER || 'your-email@gmail.com',
     to: admin2Email,
