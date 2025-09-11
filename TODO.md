@@ -11,7 +11,7 @@
 
 ## 🔄 Next Steps
 - [x] Test email functionality (configure email credentials in .env)
-- [ ] Test admin2 approval/rejection workflow
+- [x] Test admin2 approval/rejection workflow
 - [ ] Add notification badges for pending requests (similar to vacation requests)
 - [ ] Consider adding email notifications to original requester when request is approved/rejected
 - [ ] Add filtering and sorting options to admin2 review page
@@ -25,9 +25,9 @@
 - All routes are protected with authentication middleware
 
 ## 🧪 Testing Checklist
-- [ ] Submit tiempo extra request as admin
-- [ ] Verify email notification sent to admin2
-- [ ] Login as admin2 and review pending requests
-- [ ] Approve/reject request with comments
-- [ ] Verify status update in database
+- [x] Submit tiempo extra request as admin
+- [x] Verify email notification sent to admin2
+- [x] Login as admin2 and review pending requests
+- [x] Approve/reject request with comments
+- [x] Verify status update in database
 - [ ] Check that approved/rejected requests no longer appear in pending list
