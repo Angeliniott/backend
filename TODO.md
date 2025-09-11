@@ -10,7 +10,7 @@
 - [x] Register tiempoextra routes in server.js (already done)
 
 ## 🔄 Next Steps
-- [ ] Test email functionality (configure email credentials in .env)
+- [x] Test email functionality (configure email credentials in .env)
 - [ ] Test admin2 approval/rejection workflow
 - [ ] Add notification badges for pending requests (similar to vacation requests)
 - [ ] Consider adding email notifications to original requester when request is approved/rejected
