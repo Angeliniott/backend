@@ -1,33 +1,14 @@
-# Tiempo Extra Implementation - TODO List
+# TODO: Add "Estado de Tiempo Extraordinario" Button in Dashboard
 
-## ✅ Completed Tasks
-- [x] Create email service utility (`utils/emailService.js`)
-- [x] Update solicitudTiempoExtra model (already had status and commentsAdmin fields)
-- [x] Update routes to send email notifications to admin2 users
-- [x] Create admin2 review page (`../frontend/tiempoextra_admin2.html`)
-- [x] Update dashboard to redirect admin2 to review page
-- [x] Add backend routes for admin2 to fetch and update requests
-- [x] Register tiempoextra routes in server.js (already done)
+## Backend Changes
+- [ ] Add `sendEmployeeTiempoExtraNotification` function in `utils/emailService.js`
+- [ ] Modify `routes/tiempoextra.js` POST `/solicitar` to send notification to employee upon request creation
+- [ ] Add new GET `/employee/solicitudes` endpoint in `routes/tiempoextra.js` for employees to fetch their overtime requests
 
-## 🔄 Next Steps
-- [x] Test email functionality (configure email credentials in .env)
-- [x] Test admin2 approval/rejection workflow
-- [ ] Add notification badges for pending requests (similar to vacation requests)
-- [ ] Consider adding email notifications to original requester when request is approved/rejected
-- [ ] Add filtering and sorting options to admin2 review page
-- [ ] Add search functionality for admin2 to find specific requests
+## Frontend Changes
+- [ ] Add "Estado de Tiempo Extraordinario" button in `../frontend/dashboard.html` lower button grid, redirecting to `estado_tiempoextra.html`
+- [ ] Create new `../frontend/estado_tiempoextra.html` page to display employee's overtime requests with approval statuses
 
-## 📝 Notes
-- Email service uses Gmail SMTP - requires EMAIL_USER and EMAIL_PASS environment variables
-- Admin2 users receive email notifications when new requests are submitted
-- Dashboard button redirects admin/admin2 to appropriate pages
-- Admin2 can approve/reject requests with optional comments
-- All routes are protected with authentication middleware
-
-## 🧪 Testing Checklist
-- [x] Submit tiempo extra request as admin
-- [x] Verify email notification sent to admin2
-- [x] Login as admin2 and review pending requests
-- [x] Approve/reject request with comments
-- [x] Verify status update in database
-- [ ] Check that approved/rejected requests no longer appear in pending list
+## Followup Steps
+- [ ] Test new endpoint and notifications
+- [ ] Verify frontend display and authentication

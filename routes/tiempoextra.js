@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const SolicitudTiempoExtra = require('../models/solicitudTiempoExtra');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
-const { sendTiempoExtraNotification } = require('../utils/emailService');
+const { sendTiempoExtraNotification, sendEmployeeTiempoExtraNotification } = require('../utils/emailService');
 
 // GET: empleados por departamento del admin
 router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
@@ -67,6 +67,16 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
       );
     }
 
+    // Notify employee via email
+    await sendEmployeeTiempoExtraNotification(
+      employeeUser.email,
+      employeeInfo.name,
+      requester.name,
+      date,
+      hours,
+      justification
+    );
+
     res.status(201).json({ message: 'Solicitud enviada', solicitud: nuevaSolicitud });
   } catch (err) {
     console.error('❌ Error en POST /tiempoextra/solicitar:', err);
@@ -88,6 +98,18 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
     res.json(solicitudes);
   } catch (err) {
     console.error('❌ Error en GET /admin/solicitudes:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// GET: solicitudes para empleado
+router.get('/employee/solicitudes', authMiddleware, async (req, res) => {
+  try {
+    const employeeEmail = req.user.email;
+    const solicitudes = await SolicitudTiempoExtra.find({ employeeEmail }).sort({ createdAt: -1 });
+    res.json(solicitudes);
+  } catch (err) {
+    console.error('❌ Error en GET /employee/solicitudes:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
