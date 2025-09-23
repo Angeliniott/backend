@@ -42,4 +42,18 @@ router.post('/actualizar-dias-pendientes', authMiddleware, verifyAdmin, async (r
   res.json({ message: 'Días pendientes actualizados' });
 });
 
-module.exports = router;    
+// Obtener perfil del usuario autenticado
+router.get('/profile', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('name email role dpt'); // Selecciona los campos necesarios
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener el perfil' });
+  }
+});
+
+module.exports = router;
