@@ -1,4 +1,2 @@
-- [x] Add vacation reminder email function to utils/emailService.js
-- [x] Create utils/vacationReminder.js with logic to check expiring vacations and send emails
-- [x] Integrate the reminder job in server.js using setInterval for daily execution
-- [x] Test the implementation by running the server and verifying email sending (server starts without errors)
+- [x] Update dashboard.html to fetch user profile and show checkinServicioBtn only if dpt === "servicio"
+- [x] Update routes/specialcheck.js to check user.dpt === "servicio" before allowing special checkin/checkout

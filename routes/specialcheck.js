@@ -28,6 +28,10 @@ router.post('/checkin', authenticateToken, async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
+    if (user.dpt !== "servicio") {
+      return res.status(403).json({ error: 'Acceso denegado: No pertenece al departamento de servicio' });
+    }
+
     const specialCheck = new SpecialCheck({
       user: user._id,
       email,
@@ -54,6 +58,10 @@ router.post('/checkout', authenticateToken, async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    if (user.dpt !== "servicio") {
+      return res.status(403).json({ error: 'Acceso denegado: No pertenece al departamento de servicio' });
+    }
 
     const specialCheck = new SpecialCheck({
       user: user._id,
