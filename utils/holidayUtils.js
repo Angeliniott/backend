@@ -47,8 +47,30 @@ function countHolidaysInRange(startDate, endDate, holidays) {
   return count;
 }
 
+/**
+ * Count weekdays (Monday to Friday) in a date range, excluding holidays
+ * @param {Date} startDate - Start date of range
+ * @param {Date} endDate - End date of range
+ * @param {Date[]} holidays - Array of holiday Date objects
+ * @returns {number} Number of weekdays excluding holidays in the range
+ */
+function countWeekdaysExcludingHolidays(startDate, endDate, holidays) {
+  let count = 0;
+  const current = new Date(startDate);
+  while (current <= endDate) {
+    const dayOfWeek = current.getDay();
+    // Monday to Friday (1-5), and not a holiday
+    if (dayOfWeek >= 1 && dayOfWeek <= 5 && !isHoliday(current, holidays)) {
+      count++;
+    }
+    current.setDate(current.getDate() + 1);
+  }
+  return count;
+}
+
 module.exports = {
   parseHolidays,
   isHoliday,
-  countHolidaysInRange
+  countHolidaysInRange,
+  countWeekdaysExcludingHolidays
 };

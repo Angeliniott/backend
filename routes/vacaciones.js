@@ -4,7 +4,7 @@ const User = require('../models/user');
 const SolicitudVacaciones = require('../models/solicitudvacaciones');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 const { isEligibleForVacation, formatRemainingTime } = require('../utils/dateUtils');
-const { parseHolidays, countHolidaysInRange } = require('../utils/holidayUtils');
+const { parseHolidays, countHolidaysInRange, countWeekdaysExcludingHolidays } = require('../utils/holidayUtils');
 
 // Static list of holidays in DD/MM/YY format
 const HOLIDAYS = [
@@ -191,9 +191,7 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Fechas inválidas' });
     }
 
-    const totalDiasCalendario = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1;
-    const holidaysInRange = countHolidaysInRange(inicio, fin, parsedHolidays);
-    const diasSolicitados = totalDiasCalendario - holidaysInRange;
+    const diasSolicitados = countWeekdaysExcludingHolidays(inicio, fin, parsedHolidays);
 
     // Verificar disponibilidad
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
