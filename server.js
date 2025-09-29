@@ -16,6 +16,9 @@ const tiempoExtraRoutes = require('./routes/tiempoextra');
 // Función para conectar a MongoDB
 const connectDB = require('./db');
 
+// Vacation reminder job
+const { checkAndSendVacationReminders } = require('./utils/vacationReminder');
+
 // Cargar variables de entorno
 dotenv.config();
 
@@ -24,6 +27,9 @@ const app = express();
 
 // Conectar a la base de datos
 connectDB();
+
+// Initialize vacation reminder job (runs daily)
+setInterval(checkAndSendVacationReminders, 24 * 60 * 60 * 1000); // 24 hours
 
 // Middlewares
 app.use(cors({ origin: '*' }));

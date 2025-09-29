@@ -85,7 +85,37 @@ const sendEmployeeTiempoExtraNotification = async (
   }
 };
 
+// Send vacation reminder email to employee
+const sendVacationReminder = async (employeeEmail, employeeName, expirationDate, availableDays) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
+    to: employeeEmail,
+    subject: 'Recordatorio: Tus días de vacaciones están por vencer',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Recordatorio de Vacaciones</h2>
+        <p>Hola ${employeeName},</p>
+        <p>Te recordamos que tienes días de vacaciones pendientes que vencerán pronto. Aprovecha para usarlos antes de que expiren.</p>
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+          <p><strong>Días disponibles:</strong> ${availableDays}</p>
+          <p><strong>Fecha de vencimiento:</strong> ${new Date(expirationDate).toLocaleDateString()}</p>
+        </div>
+        <p>Por favor, solicita tus vacaciones a través del sistema para no perder estos días.</p>
+        <p>Saludos,<br>Sistema de Gestión de Empleados</p>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Recordatorio de vacaciones enviado a ${employeeEmail}`);
+  } catch (error) {
+    console.error(`❌ Error enviando recordatorio a ${employeeEmail}:`, error);
+  }
+};
+
 module.exports = {
   sendTiempoExtraNotification,
-  sendEmployeeTiempoExtraNotification
+  sendEmployeeTiempoExtraNotification,
+  sendVacationReminder
 };
