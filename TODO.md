@@ -1,2 +1,3 @@
 - [x] Update dashboard.html to fetch user profile and show checkinServicioBtn only if dpt === "servicio"
 - [x] Update routes/specialcheck.js to check user.dpt === "servicio" before allowing special checkin/checkout
+- [x] Exclude holidays from vacation day counts in backend

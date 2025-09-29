@@ -3,6 +3,59 @@ const router = express.Router();
 const User = require('../models/user');
 const SolicitudVacaciones = require('../models/solicitudvacaciones');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
+const { isEligibleForVacation, formatRemainingTime } = require('../utils/dateUtils');
+const { parseHolidays, countHolidaysInRange } = require('../utils/holidayUtils');
+
+// Static list of holidays in DD/MM/YY format
+const HOLIDAYS = [
+  '01/01/25', // Año Nuevo
+  '03/02/25', // Día de la Constitución
+  '17/03/25', // Natalicio de Benito Juárez
+  '17/04/25', // Jueves Santo // **
+  '18/04/25', // Viernes Santo // **
+  '01/05/25', // Día del Trabajo
+  '16/09/25', // Día de la Independencia
+  '17/11/25', // Revolución Mexicana
+  '24/12/25', // Noche Buena // **
+  '25/12/25', // Navidad
+  '31/12/25', // Fin de año // **
+  '01/01/26', // Año Nuevo
+  '02/02/26', // Día de la Constitución
+  '16/03/26', // Natalicio de Benito Juárez
+  '02/04/26', // Jueves Santo // **
+  '03/04/26', // Viernes Santo // **
+  '01/05/26', // Día del Trabajo
+  '16/09/26', // Día de la Independencia
+  '16/11/26', // Revolución Mexicana
+  '24/12/26', // Noche Buena // **
+  '25/12/26', // Navidad
+  '31/12/26', // Fin de año // **
+  '01/01/27', // Año Nuevo
+  '01/02/27', // Día de la Constitución
+  '15/03/27', // Natalicio de Benito Juárez
+  '25/03/27', // Jueves Santo // **
+  '26/03/27', // Viernes Santo // **
+  '01/05/27', // Día del Trabajo
+  '16/09/27', // Día de la Independencia
+  '15/11/27', // Revolución Mexicana
+  '24/12/27', // Noche Buena // **
+  '25/12/27', // Navidad
+  '31/12/27', // Fin de año // **
+  '01/01/28', // Año Nuevo
+  '07/02/28', // Día de la Constitución
+  '20/03/28', // Natalicio de Benito Juárez
+  '13/04/28', // Jueves Santo // **
+  '14/04/28', // Viernes Santo // **
+  '01/05/28', // Día del Trabajo
+  '16/09/28', // Día de la Independencia
+  '20/11/28', // Revolución Mexicana
+  '24/12/28', // Noche Buena // **
+  '25/12/28', // Navidad
+  '31/12/28'  // Fin de año // **
+];
+
+// Parse holidays to Date objects
+const parsedHolidays = parseHolidays(HOLIDAYS);
 
 // ======================= FUNCIONES =======================
 
@@ -138,7 +191,9 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Fechas inválidas' });
     }
 
-    const diasSolicitados = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1;
+    const totalDiasCalendario = Math.floor((fin - inicio) / (1000 * 60 * 60 * 24)) + 1;
+    const holidaysInRange = countHolidaysInRange(inicio, fin, parsedHolidays);
+    const diasSolicitados = totalDiasCalendario - holidaysInRange;
 
     // Verificar disponibilidad
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
