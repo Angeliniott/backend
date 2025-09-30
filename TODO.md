@@ -1,10 +1,6 @@
-# TODO: Modify Vacation Days Calculation to Exclude Weekends
+# TODO List for Employee Management Feature
 
-## Steps to Complete:
-- [x] Add a utility function `countWeekdaysExcludingHolidays` in `utils/holidayUtils.js` to count weekdays (Mon-Fri) in a date range, excluding holidays.
-- [x] Update the vacation days calculation in `routes/vacaciones.js` (POST /solicitar route) to use the new utility function instead of subtracting holidays from total calendar days.
-- [x] Test the changes to ensure weekends are excluded and holidays are still deducted.
-
-## Progress:
-- [x] Analyze code and create plan
-- [x] Get user approval for plan
+- [x] Update routes/user.js: Add all required fields to POST / (fechaIngreso, dpt, reporta), add GET /all for admins, add DELETE /:id
+- [x] Create ../frontend/employee_management.html: Page with form to add employee (dropdowns for role, dpt), list of employees with delete option
+- [x] Modify ../frontend/dashboard.html: Add button "Gestión de Empleados" visible only to mnery@mazakcorp.com and agarza@mazakcorp.com
+- [x] Test the functionality (user will test)

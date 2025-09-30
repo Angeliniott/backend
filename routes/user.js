@@ -6,9 +6,9 @@ const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 // Crear nuevo usuario/empleado (solo admin)
 router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    const { name, email, password, role, fechaIngreso, dpt, reporta, diasPendientesPrevios } = req.body;
+    if (!name || !email || !password || !fechaIngreso || !dpt) {
+      return res.status(400).json({ error: 'Faltan datos requeridos: name, email, password, fechaIngreso, dpt' });
     }
 
     // Verifica si el usuario ya existe
@@ -17,16 +17,20 @@ router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
       return res.status(409).json({ error: 'El usuario ya existe' });
     }
 
-    // Crea el usuario (ajusta según tu modelo, por ejemplo, si usas bcrypt para el password)
+    // Crea el usuario
     const nuevoUsuario = new User({
       name,
       email,
-      password, // Asegúrate de hashear el password en el modelo o aquí
-      role: role || 'empleado'
+      password, // Nota: deberías hashear la contraseña
+      role: role || 'empleado',
+      fechaIngreso: new Date(fechaIngreso),
+      dpt,
+      reporta: reporta || '',
+      diasPendientesPrevios: diasPendientesPrevios || 0
     });
 
     await nuevoUsuario.save();
-    res.status(201).json({ message: 'Empleado creado correctamente', user: { name, email, role: nuevoUsuario.role } });
+    res.status(201).json({ message: 'Empleado creado correctamente', user: { name, email, role: nuevoUsuario.role, dpt: nuevoUsuario.dpt } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al crear el empleado' });
@@ -53,6 +57,31 @@ router.get('/profile', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener el perfil' });
+  }
+});
+
+// Obtener todos los usuarios (solo admin)
+router.get('/all', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}).select('name email role dpt fechaIngreso reporta');
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+});
+
+// Eliminar usuario por ID (solo admin)
+router.delete('/:id', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+    res.json({ message: 'Usuario eliminado correctamente' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al eliminar usuario' });
   }
 });
 
