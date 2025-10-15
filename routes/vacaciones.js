@@ -72,11 +72,24 @@ function calcularDiasPorAniversario(fechaIngreso) {
     if (fin < hoy) continue; // expirado
     if (inicio > hoy) break; // futuro
 
-    let dias = 12;
-    if (año >= 1 && año <= 4) {
-      dias += año * 2;
-    } else if (año >= 5) {
-      dias += 8 + Math.floor((año - 5) / 5) * 2;
+    let dias;
+    if (año === 0) {
+      // Para el primer año, calcular meses trabajados y asignar 1 día por mes, hasta 12
+      const mesesTrabajados = (hoy.getFullYear() - fechaIngreso.getFullYear()) * 12 +
+                              (hoy.getMonth() - fechaIngreso.getMonth());
+      // Si el día actual es menor que el día de ingreso, restar 1 mes
+      if (hoy.getDate() < fechaIngreso.getDate()) {
+        mesesTrabajados = Math.max(0, mesesTrabajados - 1);
+      }
+      dias = Math.min(mesesTrabajados, 12);
+    } else {
+      // Para años siguientes, mantener lógica existente
+      dias = 12;
+      if (año >= 1 && año <= 4) {
+        dias += año * 2;
+      } else if (año >= 5) {
+        dias += 8 + Math.floor((año - 5) / 5) * 2;
+      }
     }
 
     periodos.push({ inicio, fin, dias });
