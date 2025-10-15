@@ -27,10 +27,15 @@ router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
 router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const requesterEmail = req.user.email;
-    const { employeeEmail, date, hours, justification } = req.body;
+    const { employeeEmail, date, entreSemana, finSemana, festivo, bonoViaje, justification } = req.body;
 
-    if (!employeeEmail || !date || !hours || !justification) {
+    if (!employeeEmail || !date || !justification) {
       return res.status(400).json({ error: 'Todos los campos son requeridos' });
+    }
+
+    const totalHours = (entreSemana || 0) + (finSemana || 0) + (festivo || 0) + (bonoViaje || 0);
+    if (totalHours === 0) {
+      return res.status(400).json({ error: 'Debe ingresar al menos una hora en alguna categoría' });
     }
 
     // Verificar que el empleado esté en el mismo departamento
@@ -45,7 +50,10 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
       requesterEmail,
       employeeEmail,
       date: new Date(date),
-      hours: parseInt(hours),
+      entreSemana: parseInt(entreSemana) || 0,
+      finSemana: parseInt(finSemana) || 0,
+      festivo: parseInt(festivo) || 0,
+      bonoViaje: parseInt(bonoViaje) || 0,
       justification
     });
 
@@ -63,7 +71,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
         requester.name,
         employeeInfo.name,
         date,
-        hours
+        totalHours
       );
     }
 
@@ -73,7 +81,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
       employeeInfo.name,
       requester.name,
       date,
-      hours,
+      totalHours,
       justification
     );
 
