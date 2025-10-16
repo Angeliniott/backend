@@ -1,28 +1,16 @@
-# TODO: Implement ADMIN Overtime Request Format Changes
+# TODO: Implementar mejoras en ADMIN PANEL
 
-## Backend Changes
-- [x] Update MongoDB schema in `models/solicitudTiempoExtra.js`:
-  - Change `date` to `startDate` and `endDate`
-  - Rename hour fields: `entreSemana` -> `horasEntreSemana`, `finSemana` -> `horasFinSemana`, `festivo` -> `diasFestivos`, `bonoViaje` -> `bonoEstanciaFinSemana` + `bonoViajeFinSemana`
-  - Add `reportePath` for file attachment
-- [x] Add multer dependency to `package.json`
-- [x] Run `npm install` to install multer
-- [x] Modify `routes/tiempoextra.js`:
-  - Add multer middleware for file uploads
-  - Update POST /solicitar to handle date range, new field names, and file saving
-  - Update validation logic for new fields
-  - Ensure GET routes return updated fields correctly
-- [x] Update `utils/emailService.js`:
-  - Modify `sendTiempoExtraNotification` to include date range, detailed hours breakdown, and attachment info
-  - Modify `sendEmployeeTiempoExtraNotification` similarly
+## 1. Ver a la par el checkin y el checkout en hrs
+- [ ] Agregar nueva pestaña en admin.html llamada "Sesiones Completas" que muestre checkin/checkout combinados con horas calculadas.
+- [ ] Usar datos de /api/work-hours/daily-report para poblar la tabla con sesiones completas.
+- [ ] Mostrar columnas: Empleado, Email, Fecha, Hora Checkin, Hora Checkout, Horas Trabajadas, Estado.
 
-## Testing
-- [ ] Test file upload functionality
-- [ ] Test complete flow with new fields
+## 2. Filtrar por empleados bajo el gerente (admin2)
+- [ ] Modificar rutas /api/checkin/report y /api/checkout/report para aceptar parámetro 'supervisor' y filtrar empleados donde user.reporta == supervisor.
+- [ ] En admin.html, agregar lógica para detectar si usuario es admin2 y aplicar filtro automático en todas las cargas de datos.
+- [ ] Asegurar que el filtro se aplique en todas las pestañas (Check-Ins/Outs, Horas Diarias, Horas Semanales).
 
-## Frontend Changes (External)
-- [x] Update frontend form to use date range inputs instead of single date
-- [x] Add file input for report attachment
-- [x] Update admin2 review page to display new fields
-- [x] Update employee status page to show new information
-- [x] Fix confirmation message and form reset after submission
+## 3. Testing y Verificación
+- [ ] Probar filtros en frontend con usuario admin2.
+- [ ] Verificar que las horas se calculen correctamente en la nueva pestaña.
+- [ ] Confirmar que no se rompa funcionalidad existente.

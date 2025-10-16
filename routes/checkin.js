@@ -35,6 +35,7 @@ router.get('/report', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const month = parseInt(req.query.month, 10);
     const year = parseInt(req.query.year, 10);
+    const supervisor = req.query.supervisor; // Nuevo parámetro para filtrar por supervisor
 
     if (isNaN(month) || isNaN(year)) {
       return res.status(400).json({ error: "Mes y año inválidos." });
@@ -43,12 +44,24 @@ router.get('/report', authMiddleware, verifyAdmin, async (req, res) => {
     const start = new Date(year, month - 1, 1);
     const end = new Date(year, month, 1);
 
+    // Obtener usuarios filtrados por supervisor si se especifica
+    let userQuery = {};
+    if (supervisor) {
+      userQuery.reporta = supervisor;
+    }
+    const users = await User.find(userQuery, 'email name');
+
+    if (users.length === 0) {
+      return res.json([]);
+    }
+
+    const userEmails = users.map(user => user.email);
+
     const checkins = await Checkin.find({
       type: { $in: [null, "checkin"] },
+      email: { $in: userEmails },
       createdAt: { $gte: start, $lt: end }
     }).sort({ createdAt: -1 });
-
-    const users = await User.find({}, 'email name');
 
     const userMap = {};
     users.forEach(user => {

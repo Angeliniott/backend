@@ -148,14 +148,25 @@ router.post('/start-session', async (req, res) => {
 // GET - Daily work hours report for admin
 router.get('/daily-report', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const { date, email } = req.query;
-    
+    const { date, email, supervisor } = req.query;
+
     let query = {};
     if (date) {
       query.date = getStartOfDay(new Date(date));
     }
     if (email) {
       query.email = email;
+    }
+
+    // Filtrar por supervisor si se especifica
+    let userEmails = [];
+    if (supervisor) {
+      const users = await User.find({ reporta: supervisor }, 'email');
+      userEmails = users.map(user => user.email);
+      if (userEmails.length === 0) {
+        return res.json([]);
+      }
+      query.email = { $in: userEmails };
     }
 
     const dailyHours = await DailyWorkHours.find(query)
@@ -189,14 +200,25 @@ router.get('/daily-report', authMiddleware, verifyAdmin, async (req, res) => {
 // GET - Weekly work hours report for admin
 router.get('/weekly-report', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const { weekStart, email } = req.query;
-    
+    const { weekStart, email, supervisor } = req.query;
+
     let query = {};
     if (weekStart) {
       query.weekStart = getWeekStart(new Date(weekStart));
     }
     if (email) {
       query.email = email;
+    }
+
+    // Filtrar por supervisor si se especifica
+    let userEmails = [];
+    if (supervisor) {
+      const users = await User.find({ reporta: supervisor }, 'email');
+      userEmails = users.map(user => user.email);
+      if (userEmails.length === 0) {
+        return res.json([]);
+      }
+      query.email = { $in: userEmails };
     }
 
     const weeklyHours = await WeeklyWorkHours.find(query)
