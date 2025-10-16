@@ -1,16 +1,24 @@
+// routes/tiempoextra.js
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const User = require('../models/user');
 const SolicitudTiempoExtra = require('../models/solicitudTiempoExtra');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 const { sendTiempoExtraNotification, sendEmployeeTiempoExtraNotification } = require('../utils/emailService');
 
-// Configure multer for file uploads
+// ✅ Ensure uploads directory exists (fixes ENOENT error)
+const uploadsPath = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+
+// ✅ Configure multer for file uploads with absolute path
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Make sure this directory exists
+    cb(null, uploadsPath); // use absolute path instead of relative
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -60,11 +68,6 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
 
     if (!employeeEmail || !startDate || !endDate || !justification) {
       return res.status(400).json({ error: 'Todos los campos son requeridos' });
-    }
-
-    const totalHours = (parseInt(horasEntreSemana) || 0) + (parseInt(horasFinSemana) || 0) + (parseInt(diasFestivos) || 0) + (parseInt(bonoEstanciaFinSemana) || 0) + (parseInt(bonoViajeFinSemana) || 0);
-    if (totalHours === 0) {
-      return res.status(400).json({ error: 'Debe ingresar al menos una hora en alguna categoría' });
     }
 
     // Verificar que el empleado esté en el mismo departamento
@@ -136,7 +139,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
   }
 });
 
-// GET: solicitudes para admin (para revisión futura)
+// GET: solicitudes para admin
 router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const adminEmail = req.user.email;
