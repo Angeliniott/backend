@@ -112,6 +112,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
         nuevaSolicitud.diasFestivos,
         nuevaSolicitud.bonoEstanciaFinSemana,
         nuevaSolicitud.bonoViajeFinSemana,
+        nuevaSolicitud.justification,
         nuevaSolicitud.reportePath
       );
     }

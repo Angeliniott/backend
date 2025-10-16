@@ -22,8 +22,19 @@ const sendTiempoExtraNotification = async (
   diasFestivos,
   bonoEstanciaFinSemana,
   bonoViajeFinSemana,
+  justification,
   reportePath
 ) => {
+  const attachments = [];
+  if (reportePath) {
+    const fs = require('fs');
+    const path = require('path');
+    attachments.push({
+      filename: path.basename(reportePath),
+      path: reportePath
+    });
+  }
+
   const mailOptions = {
     from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
     to: admin2Email,
@@ -42,12 +53,14 @@ const sendTiempoExtraNotification = async (
           <p><strong>Días festivos:</strong> ${diasFestivos}</p>
           <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
           <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
+          <p><strong>Justificación:</strong> ${justification}</p>
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
         <p>Saludos,<br>Sistema de Gestión de Empleados</p>
       </div>
-    `
+    `,
+    attachments: attachments
   };
 
   try {
@@ -73,6 +86,16 @@ const sendEmployeeTiempoExtraNotification = async (
   justification,
   reportePath
 ) => {
+  const attachments = [];
+  if (reportePath) {
+    const fs = require('fs');
+    const path = require('path');
+    attachments.push({
+      filename: path.basename(reportePath),
+      path: reportePath
+    });
+  }
+
   const mailOptions = {
     from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
     to: employeeEmail,
@@ -96,7 +119,8 @@ const sendEmployeeTiempoExtraNotification = async (
         <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>
         <p>Saludos,<br>Sistema de Gestión de Empleados</p>
       </div>
-    `
+    `,
+    attachments: attachments
   };
 
   try {
