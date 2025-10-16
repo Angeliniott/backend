@@ -1,9 +1,38 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 const User = require('../models/user');
 const SolicitudTiempoExtra = require('../models/solicitudTiempoExtra');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 const { sendTiempoExtraNotification, sendEmployeeTiempoExtraNotification } = require('../utils/emailService');
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Make sure this directory exists
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /pdf|doc|docx|xls|xlsx|jpg|jpeg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Tipo de archivo no permitido'));
+    }
+  }
+});
 
 // GET: empleados por departamento del admin
 router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
@@ -24,16 +53,16 @@ router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
 });
 
 // POST: solicitar tiempo extra
-router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
+router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'), async (req, res) => {
   try {
     const requesterEmail = req.user.email;
-    const { employeeEmail, date, entreSemana, finSemana, festivo, bonoViaje, justification } = req.body;
+    const { employeeEmail, startDate, endDate, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, justification } = req.body;
 
-    if (!employeeEmail || !date || !justification) {
+    if (!employeeEmail || !startDate || !endDate || !justification) {
       return res.status(400).json({ error: 'Todos los campos son requeridos' });
     }
 
-    const totalHours = (entreSemana || 0) + (finSemana || 0) + (festivo || 0) + (bonoViaje || 0);
+    const totalHours = (parseInt(horasEntreSemana) || 0) + (parseInt(horasFinSemana) || 0) + (parseInt(diasFestivos) || 0) + (parseInt(bonoEstanciaFinSemana) || 0) + (parseInt(bonoViajeFinSemana) || 0);
     if (totalHours === 0) {
       return res.status(400).json({ error: 'Debe ingresar al menos una hora en alguna categoría' });
     }
@@ -49,12 +78,15 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
     const nuevaSolicitud = new SolicitudTiempoExtra({
       requesterEmail,
       employeeEmail,
-      date: new Date(date),
-      entreSemana: parseInt(entreSemana) || 0,
-      finSemana: parseInt(finSemana) || 0,
-      festivo: parseInt(festivo) || 0,
-      bonoViaje: parseInt(bonoViaje) || 0,
-      justification
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      horasEntreSemana: parseInt(horasEntreSemana) || 0,
+      horasFinSemana: parseInt(horasFinSemana) || 0,
+      diasFestivos: parseInt(diasFestivos) || 0,
+      bonoEstanciaFinSemana: parseInt(bonoEstanciaFinSemana) || 0,
+      bonoViajeFinSemana: parseInt(bonoViajeFinSemana) || 0,
+      justification,
+      reportePath: req.file ? req.file.path : null
     });
 
     await nuevaSolicitud.save();
@@ -70,8 +102,14 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
         admin2.name,
         requester.name,
         employeeInfo.name,
-        date,
-        totalHours
+        nuevaSolicitud.startDate,
+        nuevaSolicitud.endDate,
+        nuevaSolicitud.horasEntreSemana,
+        nuevaSolicitud.horasFinSemana,
+        nuevaSolicitud.diasFestivos,
+        nuevaSolicitud.bonoEstanciaFinSemana,
+        nuevaSolicitud.bonoViajeFinSemana,
+        nuevaSolicitud.reportePath
       );
     }
 
@@ -80,9 +118,15 @@ router.post('/solicitar', authMiddleware, verifyAdmin, async (req, res) => {
       employeeUser.email,
       employeeInfo.name,
       requester.name,
-      date,
-      totalHours,
-      justification
+      nuevaSolicitud.startDate,
+      nuevaSolicitud.endDate,
+      nuevaSolicitud.horasEntreSemana,
+      nuevaSolicitud.horasFinSemana,
+      nuevaSolicitud.diasFestivos,
+      nuevaSolicitud.bonoEstanciaFinSemana,
+      nuevaSolicitud.bonoViajeFinSemana,
+      justification,
+      nuevaSolicitud.reportePath
     );
 
     res.status(201).json({ message: 'Solicitud enviada', solicitud: nuevaSolicitud });

@@ -15,8 +15,14 @@ const sendTiempoExtraNotification = async (
   admin2Name,
   requesterName,
   employeeName,
-  date,
-  hours
+  startDate,
+  endDate,
+  horasEntreSemana,
+  horasFinSemana,
+  diasFestivos,
+  bonoEstanciaFinSemana,
+  bonoViajeFinSemana,
+  reportePath
 ) => {
   const mailOptions = {
     from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
@@ -30,8 +36,13 @@ const sendTiempoExtraNotification = async (
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           <p><strong>Empleado:</strong> ${employeeName}</p>
-          <p><strong>Fecha:</strong> ${new Date(date).toLocaleDateString()}</p>
-          <p><strong>Horas solicitadas:</strong> ${hours}</p>
+          <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
+          <p><strong>Horas entre semana:</strong> ${horasEntreSemana}</p>
+          <p><strong>Horas fin de semana:</strong> ${horasFinSemana}</p>
+          <p><strong>Días festivos:</strong> ${diasFestivos}</p>
+          <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
+          <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
+          ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
         <p>Saludos,<br>Sistema de Gestión de Empleados</p>
@@ -52,9 +63,15 @@ const sendEmployeeTiempoExtraNotification = async (
   employeeEmail,
   employeeName,
   requesterName,
-  date,
-  hours,
-  justification
+  startDate,
+  endDate,
+  horasEntreSemana,
+  horasFinSemana,
+  diasFestivos,
+  bonoEstanciaFinSemana,
+  bonoViajeFinSemana,
+  justification,
+  reportePath
 ) => {
   const mailOptions = {
     from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
@@ -67,9 +84,14 @@ const sendEmployeeTiempoExtraNotification = async (
         <p>Tu jefe ha generado una solicitud de tiempo extra para ti. Aquí están los detalles:</p>
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
-          <p><strong>Fecha:</strong> ${new Date(date).toLocaleDateString()}</p>
-          <p><strong>Horas solicitadas:</strong> ${hours}</p>
+          <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
+          <p><strong>Horas entre semana:</strong> ${horasEntreSemana}</p>
+          <p><strong>Horas fin de semana:</strong> ${horasFinSemana}</p>
+          <p><strong>Días festivos:</strong> ${diasFestivos}</p>
+          <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
+          <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
           <p><strong>Justificación:</strong> ${justification}</p>
+          ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>
         <p>Saludos,<br>Sistema de Gestión de Empleados</p>
