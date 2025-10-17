@@ -2,12 +2,18 @@ const nodemailer = require('nodemailer');
 
 // Create transporter
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // puedes cambiarlo si usas Outlook, Yahoo, etc.
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
-    pass: process.env.EMAIL_PASS || 'ailcfhmabxerperx'
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+  tls: {
+    ciphers: 'SSLv3'
   }
 });
+
 
 // Send notification email to admin2
 const sendTiempoExtraNotification = async (
