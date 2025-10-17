@@ -7,11 +7,6 @@ const solicitudTiempoExtraSchema = new mongoose.Schema({
   cliente: { type: String, required: true }, // Cliente
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
-  horasEntreSemana: { type: Number, default: 0 },
-  horasFinSemana: { type: Number, default: 0 },
-  diasFestivos: { type: Number, default: 0 },
-  bonoEstanciaFinSemana: { type: Number, default: 0 },
-  bonoViajeFinSemana: { type: Number, default: 0 },
   motivo: {
     trabajoFinSemana: { selected: { type: Boolean, default: false }, cantidad: { type: Number, default: 0 } },
     estadiaFinSemana: { selected: { type: Boolean, default: false }, cantidad: { type: Number, default: 0 } },

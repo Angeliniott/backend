@@ -50,11 +50,6 @@ const sendTiempoExtraNotification = async (
           <p><strong>Empleado:</strong> ${employeeName}</p>
           <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
           <p><strong>Cliente:</strong> ${cliente}</p>
-          <p><strong>Horas entre semana:</strong> ${horasEntreSemana}</p>
-          <p><strong>Horas fin de semana:</strong> ${horasFinSemana}</p>
-          <p><strong>Días festivos:</strong> ${diasFestivos}</p>
-          <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
-          <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
           <p><strong>Motivo:</strong></p>
           <ul>
             ${motivo.trabajoFinSemana.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
@@ -118,11 +113,6 @@ const sendEmployeeTiempoExtraNotification = async (
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
           <p><strong>Cliente:</strong> ${cliente}</p>
-          <p><strong>Horas entre semana:</strong> ${horasEntreSemana}</p>
-          <p><strong>Horas fin de semana:</strong> ${horasFinSemana}</p>
-          <p><strong>Días festivos:</strong> ${diasFestivos}</p>
-          <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
-          <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
           <p><strong>Motivo:</strong></p>
           <ul>
             ${motivo.trabajoFinSemana.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
