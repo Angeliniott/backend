@@ -64,9 +64,9 @@ router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
 router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'), async (req, res) => {
   try {
     const requesterEmail = req.user.email;
-    const { employeeEmail, startDate, endDate, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, justification } = req.body;
+    const { employeeEmail, cliente, startDate, endDate, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, trabajoFinSemana, estadiaFinSemana, viajesFinSemana, diasFestivosLaborados, cantidadTrabajo, cantidadEstadia, cantidadViajes, cantidadFestivos } = req.body;
 
-    if (!employeeEmail || !startDate || !endDate || !justification) {
+    if (!employeeEmail || !cliente || !startDate || !endDate) {
       return res.status(400).json({ error: 'Todos los campos son requeridos' });
     }
 
@@ -81,6 +81,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
     const nuevaSolicitud = new SolicitudTiempoExtra({
       requesterEmail,
       employeeEmail,
+      cliente,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       horasEntreSemana: parseInt(horasEntreSemana) || 0,
@@ -88,7 +89,12 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
       diasFestivos: parseInt(diasFestivos) || 0,
       bonoEstanciaFinSemana: parseInt(bonoEstanciaFinSemana) || 0,
       bonoViajeFinSemana: parseInt(bonoViajeFinSemana) || 0,
-      justification,
+      motivo: {
+        trabajoFinSemana: { selected: trabajoFinSemana === 'true', cantidad: parseInt(cantidadTrabajo) || 0 },
+        estadiaFinSemana: { selected: estadiaFinSemana === 'true', cantidad: parseInt(cantidadEstadia) || 0 },
+        viajesFinSemana: { selected: viajesFinSemana === 'true', cantidad: parseInt(cantidadViajes) || 0 },
+        diasFestivosLaborados: { selected: diasFestivosLaborados === 'true', cantidad: parseInt(cantidadFestivos) || 0 }
+      },
       reportePath: req.file ? req.file.path : null
     });
 
@@ -112,7 +118,8 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
         nuevaSolicitud.diasFestivos,
         nuevaSolicitud.bonoEstanciaFinSemana,
         nuevaSolicitud.bonoViajeFinSemana,
-        nuevaSolicitud.justification,
+        nuevaSolicitud.cliente,
+        nuevaSolicitud.motivo,
         nuevaSolicitud.reportePath
       );
     }
@@ -129,7 +136,8 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
       nuevaSolicitud.diasFestivos,
       nuevaSolicitud.bonoEstanciaFinSemana,
       nuevaSolicitud.bonoViajeFinSemana,
-      justification,
+      nuevaSolicitud.cliente,
+      nuevaSolicitud.motivo,
       nuevaSolicitud.reportePath
     );
 

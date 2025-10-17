@@ -22,7 +22,8 @@ const sendTiempoExtraNotification = async (
   diasFestivos,
   bonoEstanciaFinSemana,
   bonoViajeFinSemana,
-  justification,
+  cliente,
+  motivo,
   reportePath
 ) => {
   const attachments = [];
@@ -48,12 +49,19 @@ const sendTiempoExtraNotification = async (
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           <p><strong>Empleado:</strong> ${employeeName}</p>
           <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
+          <p><strong>Cliente:</strong> ${cliente}</p>
           <p><strong>Horas entre semana:</strong> ${horasEntreSemana}</p>
           <p><strong>Horas fin de semana:</strong> ${horasFinSemana}</p>
           <p><strong>Días festivos:</strong> ${diasFestivos}</p>
           <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
           <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
-          <p><strong>Justificación:</strong> ${justification}</p>
+          <p><strong>Motivo:</strong></p>
+          <ul>
+            ${motivo.trabajoFinSemana.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
+            ${motivo.estadiaFinSemana.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
+            ${motivo.viajesFinSemana.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
+            ${motivo.diasFestivosLaborados.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
+          </ul>
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
@@ -83,7 +91,8 @@ const sendEmployeeTiempoExtraNotification = async (
   diasFestivos,
   bonoEstanciaFinSemana,
   bonoViajeFinSemana,
-  justification,
+  cliente,
+  motivo,
   reportePath
 ) => {
   const attachments = [];
@@ -108,12 +117,19 @@ const sendEmployeeTiempoExtraNotification = async (
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
+          <p><strong>Cliente:</strong> ${cliente}</p>
           <p><strong>Horas entre semana:</strong> ${horasEntreSemana}</p>
           <p><strong>Horas fin de semana:</strong> ${horasFinSemana}</p>
           <p><strong>Días festivos:</strong> ${diasFestivos}</p>
           <p><strong>Bono x Estancia en fin de semana:</strong> ${bonoEstanciaFinSemana}</p>
           <p><strong>Bono x Viaje en fin de semana:</strong> ${bonoViajeFinSemana}</p>
-          <p><strong>Justificación:</strong> ${justification}</p>
+          <p><strong>Motivo:</strong></p>
+          <ul>
+            ${motivo.trabajoFinSemana.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
+            ${motivo.estadiaFinSemana.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
+            ${motivo.viajesFinSemana.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
+            ${motivo.diasFestivosLaborados.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
+          </ul>
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>
