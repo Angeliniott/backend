@@ -23,11 +23,6 @@ const sendTiempoExtraNotification = async (
   employeeName,
   startDate,
   endDate,
-  horasEntreSemana,
-  horasFinSemana,
-  diasFestivos,
-  bonoEstanciaFinSemana,
-  bonoViajeFinSemana,
   cliente,
   motivo,
   reportePath
@@ -87,11 +82,6 @@ const sendEmployeeTiempoExtraNotification = async (
   requesterName,
   startDate,
   endDate,
-  horasEntreSemana,
-  horasFinSemana,
-  diasFestivos,
-  bonoEstanciaFinSemana,
-  bonoViajeFinSemana,
   cliente,
   motivo,
   reportePath

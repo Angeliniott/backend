@@ -278,4 +278,15 @@ router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) =
   }
 });
 
+// GET: contar solicitudes pendientes
+router.get('/admin/pendientes', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const count = await SolicitudVacaciones.countDocuments({ estado: 'pendiente' });
+    res.json({ pendientes: count });
+  } catch (err) {
+    console.error('❌ Error en GET /admin/pendientes:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 module.exports = router;

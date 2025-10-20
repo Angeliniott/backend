@@ -1,3 +1,0 @@
-- [ ] Actualizar función sendTiempoExtraNotification para incluir justificación y adjuntar PDF
-- [ ] Actualizar función sendEmployeeTiempoExtraNotification para adjuntar PDF
-- [ ] Probar envío de correos con adjunto
