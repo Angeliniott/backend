@@ -11,6 +11,7 @@ const specialCheckRoutes = require('./routes/specialcheck');
 const vacacionesRoutes = require('./routes/vacaciones');
 const userRoutes = require('./routes/user');
 const workHoursRoutes = require('./routes/workHours');
+const workSessionsRoutes = require('./routes/workSessions');
 const tiempoExtraRoutes = require('./routes/tiempoextra');
 
 // Función para conectar a MongoDB
@@ -43,6 +44,7 @@ app.use('/api/special', specialCheckRoutes);
 app.use('/api/vacaciones', vacacionesRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/work-hours', workHoursRoutes);
+app.use('/api/work-sessions', workSessionsRoutes);
 app.use('/api/tiempoextra', tiempoExtraRoutes);
 
 // Puerto de Render o local
