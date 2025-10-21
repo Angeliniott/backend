@@ -24,8 +24,8 @@
 ✅ No changes needed - frontend doesn't interact with email service directly
 
 ## Next Steps for Production
-1. ✅ Domain verification bypassed - using onboarding@resend.dev for testing
-2. ✅ 'From' email addresses updated to use onboarding@resend.dev
+1. ✅ Domain verification bypassed - using notificaciones@resend.dev for testing
+2. ✅ 'From' email addresses updated to use 'Mazak Soporte <notificaciones@resend.dev>'
 3. ✅ Email sending tested successfully
 4. Monitor email delivery logs in production
 
@@ -33,3 +33,4 @@
 - All functions migrated to Resend API
 - Email sending tested and working
 - Ready for production use
+- Fixed deployment error by using proper Resend domain

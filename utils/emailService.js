@@ -42,7 +42,7 @@ const sendTiempoExtraNotification = async (
   }
 
   const data = {
-    from: 'onboarding@resend.dev',
+    from: 'Mazak Soporte <notificaciones@resend.dev>',
     to: admin2Email,
     subject: 'Nueva Solicitud de Tiempo Extra Pendiente de Aprobación',
     html: `
@@ -101,7 +101,7 @@ const sendEmployeeTiempoExtraNotification = async (
   }
 
   const data = {
-    from: 'onboarding@resend.dev',
+    from: 'Mazak Soporte <notificaciones@resend.dev>',
     to: employeeEmail,
     subject: 'Nueva Solicitud de Tiempo Extra Generada',
     html: `
@@ -140,7 +140,7 @@ const sendEmployeeTiempoExtraNotification = async (
 // Send vacation reminder email to employee
 const sendVacationReminder = async (employeeEmail, employeeName, expirationDate, availableDays) => {
   const data = {
-    from: 'onboarding@resend.dev',
+    from: 'Mazak Soporte <notificaciones@resend.dev>',
     to: employeeEmail,
     subject: 'Recordatorio: Tus días de vacaciones están por vencer',
     html: `
