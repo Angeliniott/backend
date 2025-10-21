@@ -1,25 +1,33 @@
+// emailService.js
 const { Resend } = require('resend');
 const fs = require('fs');
 const path = require('path');
 
-// Initialize Resend client
+// Inicializa cliente de Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Test Resend connection on startup
-resend.emails.send({
-  from: 'onboarding@resend.dev',
-  to: 'test@example.com',
-  subject: 'Test',
-  html: '<p>Test</p>'
-}).then(() => {
-  console.log('✅ Resend API key is valid and working');
-}).catch((error) => {
-  console.log('⚠️  Resend API key validation failed:', error.message);
-  console.log('📧 Make sure your domain is verified in Resend dashboard');
-});
+// Función auxiliar para evitar rate limit (2 req/segundo)
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Test de conexión inicial (opcional)
+(async () => {
+  try {
+    await resend.emails.send({
+      from: 'Mazak Soporte <onboarding@resend.dev>',
+      to: 'angelgarza001a@gmail.com',
+      subject: '✅ Test de conexión Resend',
+      html: '<p>La API de Resend está funcionando correctamente en Render.</p>'
+    });
+    console.log('✅ Resend API key válida y funcionando');
+  } catch (error) {
+    console.log('⚠️  Falló el test de conexión con Resend:', error.message);
+    console.log('📧 Verifica tu RESEND_API_KEY en las variables de entorno.');
+  }
+})();
 
-// Send notification email to admin2
+// ===============================
+// 📩 Enviar correo de notificación a admin
+// ===============================
 const sendTiempoExtraNotification = async (
   admin2Email,
   admin2Name,
@@ -32,17 +40,17 @@ const sendTiempoExtraNotification = async (
   reportePath
 ) => {
   const attachments = [];
-  if (reportePath) {
+
+  if (reportePath && fs.existsSync(reportePath)) {
     const fileBuffer = fs.readFileSync(reportePath);
-    const base64File = fileBuffer.toString('base64');
     attachments.push({
       filename: path.basename(reportePath),
-      content: base64File
+      content: fileBuffer.toString('base64'),
     });
   }
 
   const data = {
-    from: 'Mazak Soporte <notificaciones@resend.dev>',
+    from: 'Mazak Soporte <onboarding@resend.dev>',
     to: admin2Email,
     subject: 'Nueva Solicitud de Tiempo Extra Pendiente de Aprobación',
     html: `
@@ -57,21 +65,22 @@ const sendTiempoExtraNotification = async (
           <p><strong>Cliente:</strong> ${cliente}</p>
           <p><strong>Motivo:</strong></p>
           <ul>
-            ${motivo.trabajoFinSemana.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
-            ${motivo.estadiaFinSemana.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
-            ${motivo.viajesFinSemana.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
-            ${motivo.diasFestivosLaborados.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
+            ${motivo.trabajoFinSemana?.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
+            ${motivo.estadiaFinSemana?.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
+            ${motivo.viajesFinSemana?.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
+            ${motivo.diasFestivosLaborados?.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
           </ul>
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
-        <p>Saludos,<br>Sistema de Gestión de Empleados</p>
+        <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
       </div>
     `,
-    attachments: attachments
+    attachments,
   };
 
   try {
+    await delay(500);
     const result = await resend.emails.send(data);
     console.log(`✅ Email enviado a ${admin2Email}`, result);
   } catch (error) {
@@ -79,7 +88,9 @@ const sendTiempoExtraNotification = async (
   }
 };
 
-// Send notification email to employee
+// ===============================
+// 📩 Enviar correo al empleado
+// ===============================
 const sendEmployeeTiempoExtraNotification = async (
   employeeEmail,
   employeeName,
@@ -91,17 +102,17 @@ const sendEmployeeTiempoExtraNotification = async (
   reportePath
 ) => {
   const attachments = [];
-  if (reportePath) {
+
+  if (reportePath && fs.existsSync(reportePath)) {
     const fileBuffer = fs.readFileSync(reportePath);
-    const base64File = fileBuffer.toString('base64');
     attachments.push({
       filename: path.basename(reportePath),
-      content: base64File
+      content: fileBuffer.toString('base64'),
     });
   }
 
   const data = {
-    from: 'Mazak Soporte <notificaciones@resend.dev>',
+    from: 'Mazak Soporte <onboarding@resend.dev>',
     to: employeeEmail,
     subject: 'Nueva Solicitud de Tiempo Extra Generada',
     html: `
@@ -115,21 +126,22 @@ const sendEmployeeTiempoExtraNotification = async (
           <p><strong>Cliente:</strong> ${cliente}</p>
           <p><strong>Motivo:</strong></p>
           <ul>
-            ${motivo.trabajoFinSemana.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
-            ${motivo.estadiaFinSemana.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
-            ${motivo.viajesFinSemana.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
-            ${motivo.diasFestivosLaborados.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
+            ${motivo.trabajoFinSemana?.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
+            ${motivo.estadiaFinSemana?.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
+            ${motivo.viajesFinSemana?.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
+            ${motivo.diasFestivosLaborados?.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
           </ul>
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>
-        <p>Saludos,<br>Sistema de Gestión de Empleados</p>
+        <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
       </div>
     `,
-    attachments: attachments
+    attachments,
   };
 
   try {
+    await delay(500);
     const result = await resend.emails.send(data);
     console.log(`✅ Email enviado a ${employeeEmail}`, result);
   } catch (error) {
@@ -137,10 +149,12 @@ const sendEmployeeTiempoExtraNotification = async (
   }
 };
 
-// Send vacation reminder email to employee
+// ===============================
+// 📩 Recordatorio de vacaciones
+// ===============================
 const sendVacationReminder = async (employeeEmail, employeeName, expirationDate, availableDays) => {
   const data = {
-    from: 'Mazak Soporte <notificaciones@resend.dev>',
+    from: 'Mazak Soporte <onboarding@resend.dev>',
     to: employeeEmail,
     subject: 'Recordatorio: Tus días de vacaciones están por vencer',
     html: `
@@ -153,12 +167,13 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
           <p><strong>Fecha de vencimiento:</strong> ${new Date(expirationDate).toLocaleDateString()}</p>
         </div>
         <p>Por favor, solicita tus vacaciones a través del sistema para no perder estos días.</p>
-        <p>Saludos,<br>Sistema de Gestión de Empleados</p>
+        <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
       </div>
-    `
+    `,
   };
 
   try {
+    await delay(500);
     const result = await resend.emails.send(data);
     console.log(`✅ Recordatorio de vacaciones enviado a ${employeeEmail}`, result);
   } catch (error) {
@@ -166,8 +181,9 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
   }
 };
 
+// ===============================
 module.exports = {
   sendTiempoExtraNotification,
   sendEmployeeTiempoExtraNotification,
-  sendVacationReminder
+  sendVacationReminder,
 };
