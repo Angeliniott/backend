@@ -1,17 +1,21 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+const fs = require('fs');
+const path = require('path');
 
-// Create transporter
-const transporter = nodemailer.createTransport({
-  host: 'smtp.office365.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    ciphers: 'SSLv3'
-  }
+// Initialize Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Test Resend connection on startup
+resend.emails.send({
+  from: 'onboarding@resend.dev',
+  to: 'test@example.com',
+  subject: 'Test',
+  html: '<p>Test</p>'
+}).then(() => {
+  console.log('✅ Resend API key is valid and working');
+}).catch((error) => {
+  console.log('⚠️  Resend API key validation failed:', error.message);
+  console.log('📧 Make sure your domain is verified in Resend dashboard');
 });
 
 
@@ -29,16 +33,16 @@ const sendTiempoExtraNotification = async (
 ) => {
   const attachments = [];
   if (reportePath) {
-    const fs = require('fs');
-    const path = require('path');
+    const fileBuffer = fs.readFileSync(reportePath);
+    const base64File = fileBuffer.toString('base64');
     attachments.push({
       filename: path.basename(reportePath),
-      path: reportePath
+      content: base64File
     });
   }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
+  const data = {
+    from: 'onboarding@resend.dev',
     to: admin2Email,
     subject: 'Nueva Solicitud de Tiempo Extra Pendiente de Aprobación',
     html: `
@@ -68,8 +72,8 @@ const sendTiempoExtraNotification = async (
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Email enviado a ${admin2Email}`);
+    const result = await resend.emails.send(data);
+    console.log(`✅ Email enviado a ${admin2Email}`, result);
   } catch (error) {
     console.error(`❌ Error enviando email a ${admin2Email}:`, error);
   }
@@ -88,16 +92,16 @@ const sendEmployeeTiempoExtraNotification = async (
 ) => {
   const attachments = [];
   if (reportePath) {
-    const fs = require('fs');
-    const path = require('path');
+    const fileBuffer = fs.readFileSync(reportePath);
+    const base64File = fileBuffer.toString('base64');
     attachments.push({
       filename: path.basename(reportePath),
-      path: reportePath
+      content: base64File
     });
   }
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
+  const data = {
+    from: 'onboarding@resend.dev',
     to: employeeEmail,
     subject: 'Nueva Solicitud de Tiempo Extra Generada',
     html: `
@@ -126,8 +130,8 @@ const sendEmployeeTiempoExtraNotification = async (
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Email enviado a ${employeeEmail}`);
+    const result = await resend.emails.send(data);
+    console.log(`✅ Email enviado a ${employeeEmail}`, result);
   } catch (error) {
     console.error(`❌ Error enviando email a ${employeeEmail}:`, error);
   }
@@ -135,8 +139,8 @@ const sendEmployeeTiempoExtraNotification = async (
 
 // Send vacation reminder email to employee
 const sendVacationReminder = async (employeeEmail, employeeName, expirationDate, availableDays) => {
-  const mailOptions = {
-    from: process.env.EMAIL_USER || 'notificacionesmazak@gmail.com',
+  const data = {
+    from: 'onboarding@resend.dev',
     to: employeeEmail,
     subject: 'Recordatorio: Tus días de vacaciones están por vencer',
     html: `
@@ -155,8 +159,8 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✅ Recordatorio de vacaciones enviado a ${employeeEmail}`);
+    const result = await resend.emails.send(data);
+    console.log(`✅ Recordatorio de vacaciones enviado a ${employeeEmail}`, result);
   } catch (error) {
     console.error(`❌ Error enviando recordatorio a ${employeeEmail}:`, error);
   }
