@@ -198,8 +198,8 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       });
     }
 
-    const inicio = new Date(fechaInicio);
-    const fin = new Date(fechaFin);
+    const inicio = new Date(fechaInicio + 'T12:00:00');
+    const fin = new Date(fechaFin + 'T12:00:00');
     if (fin < inicio) {
       return res.status(400).json({ error: 'Fechas inválidas' });
     }
