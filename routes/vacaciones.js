@@ -152,6 +152,34 @@ router.get('/resumen', authMiddleware, async (req, res) => {
       totalUsados += usadosPeriodo;
     }
 
+    // Enriquecer solicitudes con campos adicionales para PDF
+    const solicitudesEnriquecidas = solicitudes.map(sol => {
+      // Calcular antigüedad en años
+      const antiguedad = Math.floor((new Date() - new Date(user.fechaIngreso)) / (1000 * 60 * 60 * 24 * 365));
+
+      // Calcular días disponibles antes de esta solicitud
+      let diasDisponiblesAntes = 0;
+      for (const p of periodos) {
+        const usadosAntes = solicitudes
+          .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin && new Date(s.fechaFin) < new Date(sol.fechaFin))
+          .reduce((sum, s) => sum + s.diasSolicitados, 0);
+        diasDisponiblesAntes += (p.dias - usadosAntes);
+      }
+
+      // Días disponibles después (antes - diasSolicitados)
+      const diasDisponiblesDespues = diasDisponiblesAntes - sol.diasSolicitados;
+
+      return {
+        ...sol.toObject(),
+        departamento: user.dpt,
+        fechaContratacion: user.fechaIngreso.toISOString().slice(0, 10), // Formato YYYY-MM-DD
+        antiguedad,
+        diasDisponiblesAntes,
+        diasDisponiblesDespues,
+        diasReposicion: 0 // No existe, dejar como 0
+      };
+    });
+
     res.json({
       nombre: user.name,
       email: user.email,
@@ -160,7 +188,7 @@ router.get('/resumen', authMiddleware, async (req, res) => {
       usados: totalUsados,
       disponibles: totalGenerados - totalUsados,
       resumenPeriodos: resumen,
-      solicitudes
+      solicitudes: solicitudesEnriquecidas
     });
 
   } catch (err) {
