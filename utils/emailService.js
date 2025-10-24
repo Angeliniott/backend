@@ -9,21 +9,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Función auxiliar para evitar rate limit (2 req/segundo)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Test de conexión inicial (opcional)
-(async () => {
-  try {
-    await resend.emails.send({
-      from: 'Mazak Soporte <onboarding@resend.dev>',
-      to: 'angelgarza001a@gmail.com',
-      subject: '✅ Test de conexión Resend',
-      html: '<p>La API de Resend está funcionando correctamente en Render.</p>'
-    });
-    console.log('✅ Resend API key válida y funcionando');
-  } catch (error) {
-    console.log('⚠️  Falló el test de conexión con Resend:', error.message);
-    console.log('📧 Verifica tu RESEND_API_KEY en las variables de entorno.');
-  }
-})();
 
 // ===============================
 // 📩 Enviar correo de notificación a admin
