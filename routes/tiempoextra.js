@@ -197,13 +197,13 @@ router.get('/employee/solicitudes', authMiddleware, async (req, res) => {
   }
 });
 
-// GET: solicitudes pendientes para admin2
+// GET: solicitudes pendientes para admin y admin2
 router.get('/admin2/pendientes', authMiddleware, async (req, res) => {
   try {
     const userEmail = req.user.email;
     const user = await User.findOne({ email: userEmail });
 
-    if (!user || user.role !== 'admin2') {
+    if (!user || (user.role !== 'admin' && user.role !== 'admin2')) {
       return res.status(403).json({ error: 'Acceso no autorizado' });
     }
 
@@ -230,13 +230,13 @@ router.get('/admin2/pendientes', authMiddleware, async (req, res) => {
   }
 });
 
-// PUT: actualizar estado de solicitud por admin2
+// PUT: actualizar estado de solicitud por admin y admin2
 router.put('/admin2/:id', authMiddleware, async (req, res) => {
   try {
     const userEmail = req.user.email;
     const user = await User.findOne({ email: userEmail });
 
-    if (!user || user.role !== 'admin2') {
+    if (!user || (user.role !== 'admin' && user.role !== 'admin2')) {
       return res.status(403).json({ error: 'Acceso no autorizado' });
     }
 
