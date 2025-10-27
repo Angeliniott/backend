@@ -13,9 +13,17 @@ const solicitudTiempoExtraSchema = new mongoose.Schema({
     viajesFinSemana: { selected: { type: Boolean, default: false }, cantidad: { type: Number, default: 0 } },
     diasFestivosLaborados: { selected: { type: Boolean, default: false }, cantidad: { type: Number, default: 0 } }
   },
+  horasEntreSemana: { type: Number, default: 0 },
+  horasFinSemana: { type: Number, default: 0 },
+  diasFestivos: { type: Number, default: 0 },
+  bonoEstanciaFinSemana: { type: Number, default: 0 },
+  bonoViajeFinSemana: { type: Number, default: 0 },
+  justification: { type: String },
   reportePath: { type: String }, // Path to uploaded report file
   status: { type: String, enum: ['pendiente', 'aprobado', 'rechazado'], default: 'pendiente' },
   commentsAdmin: { type: String },
+  enterado: { type: Boolean, default: false },
+  trabajado: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 }, {

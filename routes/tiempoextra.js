@@ -90,6 +90,12 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
         viajesFinSemana: { selected: viajesFinSemana === 'true', cantidad: parseInt(cantidadViajes) || 0 },
         diasFestivosLaborados: { selected: diasFestivosLaborados === 'true', cantidad: parseInt(cantidadFestivos) || 0 }
       },
+      horasEntreSemana: parseInt(req.body.horasEntreSemana) || 0,
+      horasFinSemana: parseInt(req.body.horasFinSemana) || 0,
+      diasFestivos: parseInt(req.body.diasFestivos) || 0,
+      bonoEstanciaFinSemana: parseInt(req.body.bonoEstanciaFinSemana) || 0,
+      bonoViajeFinSemana: parseInt(req.body.bonoViajeFinSemana) || 0,
+      justification: req.body.justification || '',
       reportePath: req.file ? req.file.path : null
     });
 
@@ -230,6 +236,53 @@ router.put('/admin2/:id', authMiddleware, async (req, res) => {
     res.json({ message: 'Solicitud actualizada exitosamente', solicitud });
   } catch (err) {
     console.error('❌ Error en PUT /admin2/:id:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// PUT: marcar como enterado por empleado (solo una vez)
+router.put('/employee/:id/enterado', authMiddleware, async (req, res) => {
+  try {
+    const employeeEmail = req.user.email;
+    const { id } = req.params;
+
+    const solicitud = await SolicitudTiempoExtra.findOneAndUpdate(
+      { _id: id, employeeEmail, enterado: false },
+      { enterado: true, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!solicitud) {
+      return res.status(404).json({ error: 'Solicitud no encontrada o ya marcada como enterada' });
+    }
+
+    res.json({ message: 'Marcado como enterado', solicitud });
+  } catch (err) {
+    console.error('❌ Error en PUT /employee/:id/enterado:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// PUT: toggle trabajado por empleado
+router.put('/employee/:id/trabajado', authMiddleware, async (req, res) => {
+  try {
+    const employeeEmail = req.user.email;
+    const { id } = req.params;
+    const { trabajado } = req.body;
+
+    const solicitud = await SolicitudTiempoExtra.findOneAndUpdate(
+      { _id: id, employeeEmail },
+      { trabajado: !!trabajado, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!solicitud) {
+      return res.status(404).json({ error: 'Solicitud no encontrada' });
+    }
+
+    res.json({ message: 'Estado de trabajado actualizado', solicitud });
+  } catch (err) {
+    console.error('❌ Error en PUT /employee/:id/trabajado:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
