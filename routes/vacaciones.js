@@ -273,7 +273,18 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
 // Rutas admin para revisión
 router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const solicitudes = await SolicitudVacaciones.find().sort({ createdAt: -1 });
+    let solicitudes;
+    if (req.user.role === 'admin2') {
+      // Admin2 ve todas las solicitudes
+      solicitudes = await SolicitudVacaciones.find().sort({ createdAt: -1 });
+    } else if (req.user.role === 'admin') {
+      // Admin ve solo solicitudes de empleados bajo su mando
+      const empleados = await User.find({ reporta: req.user.email }).select('email');
+      const emails = empleados.map(u => u.email);
+      solicitudes = await SolicitudVacaciones.find({ email: { $in: emails } }).sort({ createdAt: -1 });
+    } else {
+      return res.status(403).json({ error: 'Acceso denegado' });
+    }
     res.json(solicitudes);
   } catch (err) {
     console.error('❌ Error en GET /admin/solicitudes:', err);
