@@ -270,6 +270,13 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
   }
 });
 
+// Mapa de admins a sus departamentos gestionados
+const adminDepartments = {
+  'edelgado@mazakcorp.com': 'finanzas',
+  'ffernandez@mazakcorp.com': 'apps',
+  'glopez@mazakcorp.com': 'servicio'
+};
+
 // Rutas admin para revisión
 router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) => {
   try {
@@ -278,8 +285,12 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
       // Admin2 ve todas las solicitudes
       solicitudes = await SolicitudVacaciones.find().sort({ createdAt: -1 });
     } else if (req.user.role === 'admin') {
-      // Admin ve solo solicitudes de empleados en su departamento
-      const empleados = await User.find({ dpt: req.user.dpt }).select('email');
+      // Admin ve solo solicitudes de empleados en su departamento gestionado
+      const managedDept = adminDepartments[req.user.email];
+      if (!managedDept) {
+        return res.status(403).json({ error: 'Acceso denegado: departamento no asignado' });
+      }
+      const empleados = await User.find({ dpt: managedDept }).select('email');
       const emails = empleados.map(u => u.email);
       solicitudes = await SolicitudVacaciones.find({ email: { $in: emails } }).sort({ createdAt: -1 });
     } else {
