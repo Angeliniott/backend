@@ -278,8 +278,8 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
       // Admin2 ve todas las solicitudes
       solicitudes = await SolicitudVacaciones.find().sort({ createdAt: -1 });
     } else if (req.user.role === 'admin') {
-      // Admin ve solo solicitudes de empleados bajo su mando
-      const empleados = await User.find({ reporta: req.user.email }).select('email');
+      // Admin ve solo solicitudes de empleados en su departamento
+      const empleados = await User.find({ dpt: req.user.dpt }).select('email');
       const emails = empleados.map(u => u.email);
       solicitudes = await SolicitudVacaciones.find({ email: { $in: emails } }).sort({ createdAt: -1 });
     } else {
