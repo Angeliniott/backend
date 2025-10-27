@@ -149,8 +149,28 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
       return res.status(404).json({ error: 'Admin no encontrado' });
     }
 
-    const solicitudes = await SolicitudTiempoExtra.find({ requesterEmail: adminEmail }).sort({ createdAt: -1 });
-    res.json(solicitudes);
+    let query = { requesterEmail: adminEmail };
+
+    // Check for filter parameter
+    if (req.query.filter === 'enterado_trabajado') {
+      query.enterado = true;
+      query.trabajado = true;
+    }
+
+    const solicitudes = await SolicitudTiempoExtra.find(query).sort({ createdAt: -1 });
+
+    // Populate employee names
+    const populatedSolicitudes = await Promise.all(
+      solicitudes.map(async (solicitud) => {
+        const employee = await User.findOne({ email: solicitud.employeeEmail }).select('name');
+        return {
+          ...solicitud.toObject(),
+          employeeName: employee ? employee.name : solicitud.employeeEmail
+        };
+      })
+    );
+
+    res.json(populatedSolicitudes);
   } catch (err) {
     console.error('❌ Error en GET /admin/solicitudes:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -161,7 +181,15 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
 router.get('/employee/solicitudes', authMiddleware, async (req, res) => {
   try {
     const employeeEmail = req.user.email;
-    const solicitudes = await SolicitudTiempoExtra.find({ employeeEmail }).sort({ createdAt: -1 });
+    let query = { employeeEmail };
+
+    // Check for filter parameter
+    if (req.query.filter === 'enterado_trabajado') {
+      query.enterado = true;
+      query.trabajado = true;
+    }
+
+    const solicitudes = await SolicitudTiempoExtra.find(query).sort({ createdAt: -1 });
     res.json(solicitudes);
   } catch (err) {
     console.error('❌ Error en GET /employee/solicitudes:', err);
