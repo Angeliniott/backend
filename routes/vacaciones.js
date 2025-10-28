@@ -155,7 +155,8 @@ router.get('/resumen', authMiddleware, async (req, res) => {
     // Enriquecer solicitudes con campos adicionales para PDF
     const solicitudesEnriquecidas = solicitudes.map(sol => {
       // Calcular antigüedad en años
-      const antiguedad = Math.floor((new Date() - new Date(user.fechaIngreso)) / (1000 * 60 * 60 * 24 * 365));
+      const antiguedadAnios = (new Date() - new Date(user.fechaIngreso)) / (1000 * 60 * 60 * 24 * 365);
+      const antiguedad = antiguedadAnios < 1 ? '<1' : Math.floor(antiguedadAnios);
 
       // Calcular días disponibles antes de esta solicitud
       let diasDisponiblesAntes = 0;
@@ -171,6 +172,7 @@ router.get('/resumen', authMiddleware, async (req, res) => {
 
       return {
         ...sol.toObject(),
+        fechaSolicitud: sol.createdAt, // Agregar fechaSolicitud
         departamento: user.dpt,
         fechaContratacion: user.fechaIngreso.toISOString().slice(0, 10), // Formato YYYY-MM-DD
         antiguedad,
