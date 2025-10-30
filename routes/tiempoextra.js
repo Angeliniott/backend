@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const User = require('../models/user');
 const SolicitudTiempoExtra = require('../models/solicitudTiempoExtra');
-const { authMiddleware, verifyAdmin } = require('../middleware/auth');
+const { authMiddleware, verifyAdmin, verifyTiempoExtraAdmin } = require('../middleware/auth');
 const { sendTiempoExtraNotification, sendEmployeeTiempoExtraNotification } = require('../utils/emailService');
 
 // ✅ Ensure uploads directory exists (fixes ENOENT error)
@@ -43,7 +43,7 @@ const upload = multer({
 });
 
 // GET: empleados por departamento del admin
-router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
+router.get('/empleados', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
   try {
     const adminEmail = req.user.email;
     const admin = await User.findOne({ email: adminEmail });
@@ -61,7 +61,7 @@ router.get('/empleados', authMiddleware, verifyAdmin, async (req, res) => {
 });
 
 // POST: solicitar tiempo extra
-router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'), async (req, res) => {
+router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single('reporte'), async (req, res) => {
   try {
     const requesterEmail = req.user.email;
     const { employeeEmail, cliente, startDate, endDate, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, trabajoFinSemana, estadiaFinSemana, viajesFinSemana, diasFestivosLaborados, cantidadTrabajo, cantidadEstadia, cantidadViajes, cantidadFestivos } = req.body;
@@ -140,7 +140,7 @@ router.post('/solicitar', authMiddleware, verifyAdmin, upload.single('reporte'),
 });
 
 // GET: solicitudes para admin
-router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) => {
+router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
   try {
     const adminEmail = req.user.email;
     const admin = await User.findOne({ email: adminEmail });

@@ -25,7 +25,15 @@ const verifyAdmin = (req, res, next) => {
   next();
 };
 
+const verifyTiempoExtraAdmin = (req, res, next) => {
+  if (!req.user || (req.user.role !== "admin" && req.user.role !== "admin2" && req.user.role !== "coordinador")) {
+    return res.status(403).json({ error: "Acceso denegado: solo administradores o coordinadores." });
+  }
+  next();
+};
+
 module.exports = {
   authMiddleware,
-  verifyAdmin
+  verifyAdmin,
+  verifyTiempoExtraAdmin
 };
