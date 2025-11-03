@@ -1,18 +1,27 @@
-# TODO: Implement "Tiempo por Tiempo" Feature
+# TODO: Modificar Supervisor en Vacaciones
 
-## Backend Changes
-- [x] Update models/solicitudTiempoExtra.js: Add type field and workedDates array
-- [x] Update routes/tiempoextra.js: Handle new type in /solicitar, validate and save workedDates
-- [x] Update utils/emailService.js: Modify email functions to handle new type
+## Información Recopilada
+- Archivo HTML: `../frontend/vacaciones.html` tiene select estático con opciones 'elizabeth', 'francisco', 'servicio'.
+- Modelo: `models/solicitudvacaciones.js` enum supervisor: ['elizabeth', 'francisco', 'servicio'].
+- Rutas: `routes/vacaciones.js` valida supervisor en enum, /resumen devuelve datos de usuario pero no incluye 'dpt'.
+- Usuario: `models/user.js` tiene 'dpt' y 'reporta'.
+- Mapeo departamento a supervisor default (inferido):
+  - hr: elizabeth
+  - apps: francisco
+  - servicio: servicio
+  - finanzas: francisco
+- Gerente General: fsantiago@mazakcorp.com
 
-## Frontend Changes
-- [x] Update ../frontend/tiempoextra.html: Add toggle, conditional fields for dates
-- [x] Update ../frontend/tiempoextra_admin2.html: Display workedDates for new type
-- [x] Update ../frontend/registro_peticiones_admin.html: Show workedDates in table for new type
+## Plan
+- [] Actualizar `models/solicitudvacaciones.js`: Agregar 'fsantiago@mazakcorp.com' al enum de supervisor.
+- [] Actualizar `routes/vacaciones.js`: Cambiar validación de supervisor para incluir nuevo, y en /resumen incluir 'departamento'.
+- [] Modificar `../frontend/vacaciones.html`: Cambiar select a dinámico, poblar con default basado en dpt y opción Gerente General.
 
-## Testing
-- [ ] Test form submission for both types
-- [ ] Test admin2 approval flow
-- [ ] Test employee enterado/trabajado marking
-- [ ] Verify emails for both types
-- [ ] Ensure backward compatibility
+## Archivos Dependientes
+- models/solicitudvacaciones.js
+- routes/vacaciones.js
+- ../frontend/vacaciones.html
+
+## Seguimiento
+- [] Probar funcionalidad después de cambios.
+- [] Verificar que select se pueble correctamente y envío funcione.

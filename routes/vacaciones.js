@@ -186,6 +186,7 @@ router.get('/resumen', authMiddleware, async (req, res) => {
       nombre: user.name,
       email: user.email,
       fechaIngreso: user.fechaIngreso,
+      departamento: user.dpt,
       generados: totalGenerados,
       usados: totalUsados,
       disponibles: totalGenerados - totalUsados,
@@ -209,7 +210,7 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Fechas requeridas' });
     }
 
-    if (!supervisor || !['elizabeth', 'francisco', 'servicio'].includes(supervisor)) {
+    if (!supervisor || !['elizabeth', 'francisco', 'servicio', 'fsantiago@mazakcorp.com'].includes(supervisor)) {
       return res.status(400).json({ error: 'Supervisor requerido o inválido' });
     }
 
