@@ -64,10 +64,24 @@ router.get('/empleados', authMiddleware, verifyTiempoExtraAdmin, async (req, res
 router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single('reporte'), async (req, res) => {
   try {
     const requesterEmail = req.user.email;
-    const { employeeEmail, cliente, startDate, endDate, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, trabajoFinSemana, estadiaFinSemana, viajesFinSemana, diasFestivosLaborados, cantidadTrabajo, cantidadEstadia, cantidadViajes, cantidadFestivos } = req.body;
+    const { employeeEmail, cliente, type, startDate, endDate, workedDates, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, trabajoFinSemana, estadiaFinSemana, viajesFinSemana, diasFestivosLaborados, cantidadTrabajo, cantidadEstadia, cantidadViajes, cantidadFestivos } = req.body;
 
-    if (!employeeEmail || !cliente || !startDate || !endDate) {
-      return res.status(400).json({ error: 'Todos los campos son requeridos' });
+    if (!employeeEmail || !cliente) {
+      return res.status(400).json({ error: 'Empleado y cliente son requeridos' });
+    }
+
+    const solicitudType = type || 'valor_agregado';
+
+    if (solicitudType === 'valor_agregado') {
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: 'Fecha de inicio y fin son requeridas para tiempo de valor agregado' });
+      }
+    } else if (solicitudType === 'tiempo_por_tiempo') {
+      if (!workedDates || !Array.isArray(workedDates) || workedDates.length === 0) {
+        return res.status(400).json({ error: 'Fechas trabajadas son requeridas para tiempo por tiempo' });
+      }
+    } else {
+      return res.status(400).json({ error: 'Tipo de solicitud inválido' });
     }
 
     // Verificar que el empleado esté en el mismo departamento
@@ -82,21 +96,23 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
       requesterEmail,
       employeeEmail,
       cliente,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
-      motivo: {
+      type: solicitudType,
+      startDate: solicitudType === 'valor_agregado' ? new Date(startDate) : undefined,
+      endDate: solicitudType === 'valor_agregado' ? new Date(endDate) : undefined,
+      workedDates: solicitudType === 'tiempo_por_tiempo' ? workedDates.map(date => new Date(date)) : [],
+      motivo: solicitudType === 'valor_agregado' ? {
         trabajoFinSemana: { selected: trabajoFinSemana === 'true', cantidad: parseInt(cantidadTrabajo) || 0 },
         estadiaFinSemana: { selected: estadiaFinSemana === 'true', cantidad: parseInt(cantidadEstadia) || 0 },
         viajesFinSemana: { selected: viajesFinSemana === 'true', cantidad: parseInt(cantidadViajes) || 0 },
         diasFestivosLaborados: { selected: diasFestivosLaborados === 'true', cantidad: parseInt(cantidadFestivos) || 0 }
-      },
+      } : undefined,
       horasEntreSemana: parseInt(req.body.horasEntreSemana) || 0,
       horasFinSemana: parseInt(req.body.horasFinSemana) || 0,
       diasFestivos: parseInt(req.body.diasFestivos) || 0,
       bonoEstanciaFinSemana: parseInt(req.body.bonoEstanciaFinSemana) || 0,
       bonoViajeFinSemana: parseInt(req.body.bonoViajeFinSemana) || 0,
       justification: req.body.justification || '',
-      reportePath: req.file ? req.file.path : null
+      reportePath: solicitudType === 'valor_agregado' ? (req.file ? req.file.path : null) : null
     });
 
     await nuevaSolicitud.save();
@@ -112,8 +128,10 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
         admin2.name,
         requester.name,
         employeeInfo.name,
+        nuevaSolicitud.type,
         nuevaSolicitud.startDate,
         nuevaSolicitud.endDate,
+        nuevaSolicitud.workedDates,
         nuevaSolicitud.cliente,
         nuevaSolicitud.motivo,
         nuevaSolicitud.reportePath
@@ -125,8 +143,10 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
       employeeUser.email,
       employeeInfo.name,
       requester.name,
+      nuevaSolicitud.type,
       nuevaSolicitud.startDate,
       nuevaSolicitud.endDate,
+      nuevaSolicitud.workedDates,
       nuevaSolicitud.cliente,
       nuevaSolicitud.motivo,
       nuevaSolicitud.reportePath

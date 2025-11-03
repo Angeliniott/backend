@@ -18,8 +18,10 @@ const sendTiempoExtraNotification = async (
   admin2Name,
   requesterName,
   employeeName,
+  type,
   startDate,
   endDate,
+  workedDates,
   cliente,
   motivo,
   reportePath
@@ -34,6 +36,26 @@ const sendTiempoExtraNotification = async (
     });
   }
 
+  let periodoText = '';
+  let motivoText = '';
+
+  if (type === 'valor_agregado') {
+    periodoText = `<p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>`;
+    motivoText = `
+      <p><strong>Motivo:</strong></p>
+      <ul>
+        ${motivo?.trabajoFinSemana?.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
+        ${motivo?.estadiaFinSemana?.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
+        ${motivo?.viajesFinSemana?.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
+        ${motivo?.diasFestivosLaborados?.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
+      </ul>
+    `;
+  } else if (type === 'tiempo_por_tiempo') {
+    const datesList = workedDates.map(date => new Date(date).toLocaleDateString()).join(', ');
+    periodoText = `<p><strong>Fechas trabajadas:</strong> ${datesList}</p>`;
+    motivoText = '<p><strong>Tipo:</strong> Tiempo por Tiempo</p>';
+  }
+
   const data = {
     from: 'Mazak Soporte <onboarding@resend.dev>',
     to: admin2Email,
@@ -46,15 +68,9 @@ const sendTiempoExtraNotification = async (
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           <p><strong>Empleado:</strong> ${employeeName}</p>
-          <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
+          ${periodoText}
           <p><strong>Cliente:</strong> ${cliente}</p>
-          <p><strong>Motivo:</strong></p>
-          <ul>
-            ${motivo.trabajoFinSemana?.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
-            ${motivo.estadiaFinSemana?.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
-            ${motivo.viajesFinSemana?.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
-            ${motivo.diasFestivosLaborados?.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
-          </ul>
+          ${motivoText}
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
@@ -80,8 +96,10 @@ const sendEmployeeTiempoExtraNotification = async (
   employeeEmail,
   employeeName,
   requesterName,
+  type,
   startDate,
   endDate,
+  workedDates,
   cliente,
   motivo,
   reportePath
@@ -96,6 +114,26 @@ const sendEmployeeTiempoExtraNotification = async (
     });
   }
 
+  let periodoText = '';
+  let motivoText = '';
+
+  if (type === 'valor_agregado') {
+    periodoText = `<p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>`;
+    motivoText = `
+      <p><strong>Motivo:</strong></p>
+      <ul>
+        ${motivo?.trabajoFinSemana?.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
+        ${motivo?.estadiaFinSemana?.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
+        ${motivo?.viajesFinSemana?.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
+        ${motivo?.diasFestivosLaborados?.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
+      </ul>
+    `;
+  } else if (type === 'tiempo_por_tiempo') {
+    const datesList = workedDates.map(date => new Date(date).toLocaleDateString()).join(', ');
+    periodoText = `<p><strong>Fechas trabajadas:</strong> ${datesList}</p>`;
+    motivoText = '<p><strong>Tipo:</strong> Tiempo por Tiempo</p>';
+  }
+
   const data = {
     from: 'Mazak Soporte <onboarding@resend.dev>',
     to: employeeEmail,
@@ -107,15 +145,9 @@ const sendEmployeeTiempoExtraNotification = async (
         <p>Tu jefe ha generado una solicitud de tiempo extra para ti. Aquí están los detalles:</p>
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
-          <p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>
+          ${periodoText}
           <p><strong>Cliente:</strong> ${cliente}</p>
-          <p><strong>Motivo:</strong></p>
-          <ul>
-            ${motivo.trabajoFinSemana?.selected ? `<li>TRABAJO EN FIN DE SEMANA: ${motivo.trabajoFinSemana.cantidad}</li>` : ''}
-            ${motivo.estadiaFinSemana?.selected ? `<li>ESTADIA EN FIN DE SEMANA: ${motivo.estadiaFinSemana.cantidad}</li>` : ''}
-            ${motivo.viajesFinSemana?.selected ? `<li>VIAJES DE FIN DE SEMANA: ${motivo.viajesFinSemana.cantidad}</li>` : ''}
-            ${motivo.diasFestivosLaborados?.selected ? `<li>DIAS FESTIVOS LABORADOS: ${motivo.diasFestivosLaborados.cantidad}</li>` : ''}
-          </ul>
+          ${motivoText}
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>

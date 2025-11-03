@@ -5,8 +5,10 @@ const solicitudTiempoExtraSchema = new mongoose.Schema({
   requesterEmail: { type: String, required: true }, // Admin who submitted
   employeeEmail: { type: String, required: true }, // Employee for whom it's requested
   cliente: { type: String, required: true }, // Cliente
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
+  type: { type: String, enum: ['valor_agregado', 'tiempo_por_tiempo'], default: 'valor_agregado' },
+  startDate: { type: Date },
+  endDate: { type: Date },
+  workedDates: [{ type: Date }], // For tiempo_por_tiempo type
   motivo: {
     trabajoFinSemana: { selected: { type: Boolean, default: false }, cantidad: { type: Number, default: 0 } },
     estadiaFinSemana: { selected: { type: Boolean, default: false }, cantidad: { type: Number, default: 0 } },

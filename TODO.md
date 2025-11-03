@@ -1,16 +1,18 @@
-# TODO: Implement "Coordinador" Role for Tiempo Extra Access
+# TODO: Implement "Tiempo por Tiempo" Feature
 
 ## Backend Changes
-- [x] Update models/user.js: Add 'coordinador' to role enum
-- [x] Update middleware/auth.js: Add verifyTiempoExtraAdmin middleware for 'admin', 'admin2', 'coordinador'
-- [x] Update routes/tiempoextra.js: Apply verifyTiempoExtraAdmin to /empleados, /solicitar, /admin/solicitudes; keep review routes restricted to 'admin' and 'admin2'
+- [x] Update models/solicitudTiempoExtra.js: Add type field and workedDates array
+- [x] Update routes/tiempoextra.js: Handle new type in /solicitar, validate and save workedDates
+- [x] Update utils/emailService.js: Modify email functions to handle new type
 
-## Frontend Changes (Note: These need to be done in the frontend repository)
-- [ ] Update dashboard.html: Show time extra button for coordinador role
-- [ ] Update tiempoextra.html: Allow access for coordinador
-- [ ] Update registro_peticiones_admin.html: Allow access for coordinador
-- [ ] Update tiempoextra_admin2.html: Deny access for coordinador
+## Frontend Changes
+- [x] Update ../frontend/tiempoextra.html: Add toggle, conditional fields for dates
+- [x] Update ../frontend/tiempoextra_admin2.html: Display workedDates for new type
+- [x] Update ../frontend/registro_peticiones_admin.html: Show workedDates in table for new type
 
 ## Testing
-- [x] Test backend routes with coordinador role
-- [ ] Test frontend access control
+- [ ] Test form submission for both types
+- [ ] Test admin2 approval flow
+- [ ] Test employee enterado/trabajado marking
+- [ ] Verify emails for both types
+- [ ] Ensure backward compatibility
