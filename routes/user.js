@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const User = require('../models/user'); // Ajusta el path si tu modelo está en otra carpeta
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 
@@ -17,11 +18,14 @@ router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
       return res.status(409).json({ error: 'El usuario ya existe' });
     }
 
+    // Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Crea el usuario
     const nuevoUsuario = new User({
       name,
       email,
-      password, // Nota: deberías hashear la contraseña
+      password: hashedPassword,
       role: role || 'empleado',
       fechaIngreso: new Date(fechaIngreso),
       dpt,
