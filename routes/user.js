@@ -63,11 +63,53 @@ router.get('/profile', authMiddleware, async (req, res) => {
 // Obtener todos los usuarios (solo admin)
 router.get('/all', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const users = await User.find({}).select('name email role dpt fechaIngreso reporta');
+    const users = await User.find({}).select('name email role dpt fechaIngreso reporta diasPendientesPrevios');
     res.json(users);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+});
+
+// Actualizar usuario por ID (solo admin)
+router.put('/:id', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const { name, email, role, fechaIngreso, dpt, reporta, diasPendientesPrevios } = req.body;
+
+    // Validaciones básicas
+    if (!name || !email || !fechaIngreso || !dpt) {
+      return res.status(400).json({ error: 'Faltan datos requeridos: name, email, fechaIngreso, dpt' });
+    }
+
+    // Verificar si el email ya existe en otro usuario
+    const existingUser = await User.findOne({ email, _id: { $ne: req.params.id } });
+    if (existingUser) {
+      return res.status(409).json({ error: 'El email ya está en uso por otro usuario' });
+    }
+
+    // Actualizar usuario
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        email,
+        role: role || 'empleado',
+        fechaIngreso: new Date(fechaIngreso),
+        dpt,
+        reporta: reporta || '',
+        diasPendientesPrevios: diasPendientesPrevios || 0
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json({ message: 'Usuario actualizado correctamente', user: updatedUser });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al actualizar el usuario' });
   }
 });
 

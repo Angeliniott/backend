@@ -75,7 +75,7 @@ function calcularDiasPorAniversario(fechaIngreso) {
     let dias;
     if (año === 0) {
       // Para el primer año, calcular meses trabajados y asignar 1 día por mes, hasta 12
-      const mesesTrabajados = (hoy.getFullYear() - fechaIngreso.getFullYear()) * 12 +
+      let mesesTrabajados = (hoy.getFullYear() - fechaIngreso.getFullYear()) * 12 +
                               (hoy.getMonth() - fechaIngreso.getMonth());
       // Si el día actual es menor que el día de ingreso, restar 1 mes
       if (hoy.getDate() < fechaIngreso.getDate()) {

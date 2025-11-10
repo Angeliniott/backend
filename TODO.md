@@ -1,27 +1,10 @@
-# TODO: Modificar Supervisor en Vacaciones
+# TODO: Add Edit Functionality to Employee Management
 
-## Información Recopilada
-- Archivo HTML: `../frontend/vacaciones.html` tiene select estático con opciones 'elizabeth', 'francisco', 'servicio'.
-- Modelo: `models/solicitudvacaciones.js` enum supervisor: ['elizabeth', 'francisco', 'servicio'].
-- Rutas: `routes/vacaciones.js` valida supervisor en enum, /resumen devuelve datos de usuario pero no incluye 'dpt'.
-- Usuario: `models/user.js` tiene 'dpt' y 'reporta'.
-- Mapeo departamento a supervisor default (inferido):
-  - hr: elizabeth
-  - apps: francisco
-  - servicio: servicio
-  - finanzas: francisco
-- Gerente General: fsantiago@mazakcorp.com
+## Steps to Complete
 
-## Plan
-- [] Actualizar `models/solicitudvacaciones.js`: Agregar 'fsantiago@mazakcorp.com' al enum de supervisor.
-- [] Actualizar `routes/vacaciones.js`: Cambiar validación de supervisor para incluir nuevo, y en /resumen incluir 'departamento'.
-- [] Modificar `../frontend/vacaciones.html`: Cambiar select a dinámico, poblar con default basado en dpt y opción Gerente General.
-
-## Archivos Dependientes
-- models/solicitudvacaciones.js
-- routes/vacaciones.js
-- ../frontend/vacaciones.html
-
-## Seguimiento
-- [] Probar funcionalidad después de cambios.
-- [] Verificar que select se pueble correctamente y envío funcione.
+- [x] Add PUT route in routes/user.js for updating user by ID (fields: name, email, role, dpt, fechaIngreso, reporta, diasPendientesPrevios)
+- [ ] In employee_management.html, add "Editar" button in the Acciones column of the employees table
+- [ ] Add a modal/form in HTML for editing employee details (include fields for name, email, role, dpt, fechaIngreso, reporta, diasPendientesPrevios with appropriate input types)
+- [ ] Add JavaScript to handle "Editar" button click: open modal and populate with current user data
+- [ ] Add JavaScript to handle edit form submission: validate data types, send PUT request to backend, handle response, reload table
+- [ ] Test the edit functionality: ensure updates work, data types are respected, and table reloads correctly
