@@ -26,10 +26,12 @@ const verifyAdmin = (req, res, next) => {
 };
 
 const verifyTiempoExtraAdmin = (req, res, next) => {
-  if (!req.user || (req.user.role !== "admin" && req.user.role !== "admin2" && req.user.role !== "coordinador")) {
-    return res.status(403).json({ error: "Acceso denegado: solo administradores o coordinadores." });
-  }
-  next();
+  // authMiddleware debe haber puesto req.user
+  if (!req.user || !req.user.role) return res.status(401).json({ message: 'No autenticado' });
+  const role = req.user.role;
+  // Permitir tanto admin como admin2
+  if (role === 'admin' || role === 'admin2') return next();
+  return res.status(403).json({ message: 'No autorizado' });
 };
 
 module.exports = {

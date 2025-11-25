@@ -162,14 +162,20 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
 // GET: solicitudes para admin
 router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
   try {
-    const adminEmail = req.user.email;
-    const admin = await User.findOne({ email: adminEmail });
+    const userEmail = req.user.email;
+    const user = await User.findOne({ email: userEmail });
 
-    if (!admin) {
-      return res.status(404).json({ error: 'Admin no encontrado' });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
-    let query = { requesterEmail: adminEmail };
+    // Query all solicitudes for admin2s and admins, filter by department
+    let query = {};
+    if (user.role === 'admin' || user.role === 'admin2') {
+      query = { requesterEmail: userEmail };
+      // Optionally extend query for admin2 to include all department solicitudes (e.g)
+      // But for now, keep it simple to match user email only
+    }
 
     // Check for filter parameter
     if (req.query.filter === 'enterado_trabajado') {
@@ -333,6 +339,12 @@ router.put('/employee/:id/trabajado', authMiddleware, async (req, res) => {
     console.error('❌ Error en PUT /employee/:id/trabajado:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
+});
+
+// Ruta para servir la vista protegida por rol (admin o admin2)
+router.get('/registro', authMiddleware, verifyTiempoExtraAdmin, (req, res) => {
+  // Ajusta la ruta hasta tu frontend si corresponde
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'registro_peticiones_admin.html'));
 });
 
 module.exports = router;
