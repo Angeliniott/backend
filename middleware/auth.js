@@ -26,11 +26,13 @@ const verifyAdmin = (req, res, next) => {
 };
 
 const verifyTiempoExtraAdmin = (req, res, next) => {
-  // authMiddleware debe haber puesto req.user
-  if (!req.user || !req.user.role) return res.status(401).json({ message: 'No autenticado' });
+  if (!req.user || !req.user.role) {
+    return res.status(401).json({ message: 'No autenticado' });
+  }
   const role = req.user.role;
-  // Permitir tanto admin como admin2
-  if (role === 'admin' || role === 'admin2') return next();
+  if (role === 'admin' || role === 'admin2') {
+    return next();
+  }
   return res.status(403).json({ message: 'No autorizado' });
 };
 
@@ -39,3 +41,12 @@ module.exports = {
   verifyAdmin,
   verifyTiempoExtraAdmin
 };
+
+router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
+  try {
+    const solicitudes = await SolicitudTiempoExtra.find(); // Asegúrate de que no haya filtros restrictivos aquí
+    res.json(solicitudes);
+  } catch (err) {
+    res.status(500).json({ message: 'Error al obtener solicitudes' });
+  }
+});
