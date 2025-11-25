@@ -178,6 +178,8 @@ router.get('/resumen', authMiddleware, async (req, res) => {
         antiguedad,
         diasDisponiblesAntes,
         diasDisponiblesDespues,
+        // Add disponibles field used in frontend for display
+        disponibles: diasDisponiblesDespues,
         diasReposicion: 0 // No existe, dejar como 0
       };
     });
