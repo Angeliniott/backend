@@ -19,7 +19,7 @@ const authMiddleware = (req, res, next) => {
 };
 
 const verifyAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== "admin" && req.user.role !== "admin2") {
+  if (!req.user || (req.user.role !== "admin" && req.user.role !== "admin2")) {
     return res.status(403).json({ error: "Acceso denegado: solo administradores." });
   }
   next();
@@ -41,12 +41,3 @@ module.exports = {
   verifyAdmin,
   verifyTiempoExtraAdmin
 };
-
-router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
-  try {
-    const solicitudes = await SolicitudTiempoExtra.find(); // Asegúrate de que no haya filtros restrictivos aquí
-    res.json(solicitudes);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al obtener solicitudes' });
-  }
-});
