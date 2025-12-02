@@ -162,44 +162,10 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
 // GET: solicitudes para admin
 router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
   try {
-    const userEmail = req.user.email;
-    const user = await User.findOne({ email: userEmail });
-
-    if (!user) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
-    // Query all solicitudes for admin2s and admins, filter by department
-    let query = {};
-    if (user.role === 'admin' || user.role === 'admin2') {
-      query = { requesterEmail: userEmail };
-      // Optionally extend query for admin2 to include all department solicitudes (e.g)
-      // But for now, keep it simple to match user email only
-    }
-
-    // Check for filter parameter
-    if (req.query.filter === 'enterado_trabajado') {
-      query.enterado = true;
-      query.trabajado = true;
-    }
-
-    const solicitudes = await SolicitudTiempoExtra.find(query).sort({ createdAt: -1 });
-
-    // Populate employee names
-    const populatedSolicitudes = await Promise.all(
-      solicitudes.map(async (solicitud) => {
-        const employee = await User.findOne({ email: solicitud.employeeEmail }).select('name');
-        return {
-          ...solicitud.toObject(),
-          employeeName: employee ? employee.name : solicitud.employeeEmail
-        };
-      })
-    );
-
-    res.json(populatedSolicitudes);
+    const solicitudes = await SolicitudTiempoExtra.find(); // Asegúrate de no filtrar solo por admin
+    res.json(solicitudes);
   } catch (err) {
-    console.error('❌ Error en GET /admin/solicitudes:', err);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ message: 'Error al obtener solicitudes' });
   }
 });
 
