@@ -32,12 +32,20 @@ connectDB();
 // Initialize vacation reminder job (runs daily)
 setInterval(checkAndSendVacationReminders, 24 * 60 * 60 * 1000); // 24 hours
 
+// Configurar CORS
+const corsOptions = {
+  origin: 'https://checkin-mazak.vercel.app', // Reemplaza con el dominio de tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+  credentials: true // Permitir cookies y encabezados de autorización
+};
+
 // Middlewares
-app.use(cors({ origin: '*' }));
 app.use(express.json());
+app.use(cors(corsOptions));
 
 // Rutas
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', cors(corsOptions), require('./routes/auth'));
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/special', specialCheckRoutes);
@@ -52,3 +60,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en puerto: ${PORT}`);
 });
+
