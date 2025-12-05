@@ -7,9 +7,9 @@ const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 // Crear nuevo usuario/empleado (solo admin)
 router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const { name, email, password, role, fechaIngreso, dpt, reporta, diasPendientesPrevios } = req.body;
-    if (!name || !email || !password || !fechaIngreso || !dpt) {
-      return res.status(400).json({ error: 'Faltan datos requeridos: name, email, password, fechaIngreso, dpt' });
+    const { name, email, password, role, fechaIngreso, dpt, reporta, diasPendientesPrevios, puesto } = req.body;
+    if (!name || !email || !password || !fechaIngreso || !dpt || !puesto) {
+      return res.status(400).json({ error: 'Faltan datos requeridos: name, email, password, fechaIngreso, dpt, puesto' });
     }
 
     // Verifica si el usuario ya existe
@@ -30,11 +30,12 @@ router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
       fechaIngreso: new Date(fechaIngreso),
       dpt,
       reporta: reporta || '',
-      diasPendientesPrevios: diasPendientesPrevios || 0
+      diasPendientesPrevios: diasPendientesPrevios || 0,
+      puesto,
     });
 
     await nuevoUsuario.save();
-    res.status(201).json({ message: 'Empleado creado correctamente', user: { name, email, role: nuevoUsuario.role, dpt: nuevoUsuario.dpt } });
+    res.status(201).json({ message: 'Empleado creado correctamente', user: { name, email, role: nuevoUsuario.role, dpt: nuevoUsuario.dpt, puesto: nuevoUsuario.puesto } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al crear el empleado' });
@@ -78,11 +79,11 @@ router.get('/all', authMiddleware, verifyAdmin, async (req, res) => {
 // Actualizar usuario por ID (solo admin)
 router.put('/:id', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const { name, email, role, fechaIngreso, dpt, reporta, diasPendientesPrevios } = req.body;
+    const { name, email, role, fechaIngreso, dpt, reporta, diasPendientesPrevios, puesto } = req.body;
 
     // Validaciones básicas
-    if (!name || !email || !fechaIngreso || !dpt) {
-      return res.status(400).json({ error: 'Faltan datos requeridos: name, email, fechaIngreso, dpt' });
+    if (!name || !email || !fechaIngreso || !dpt || !puesto) {
+      return res.status(400).json({ error: 'Faltan datos requeridos: name, email, fechaIngreso, dpt, puesto' });
     }
 
     // Verificar si el email ya existe en otro usuario
@@ -101,7 +102,8 @@ router.put('/:id', authMiddleware, verifyAdmin, async (req, res) => {
         fechaIngreso: new Date(fechaIngreso),
         dpt,
         reporta: reporta || '',
-        diasPendientesPrevios: diasPendientesPrevios || 0
+        diasPendientesPrevios: diasPendientesPrevios || 0,
+        puesto,
       },
       { new: true, runValidators: true }
     );

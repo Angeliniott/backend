@@ -344,4 +344,35 @@ router.get('/admin/pendientes', authMiddleware, verifyAdmin, async (req, res) =>
   }
 });
 
+// Calculate pending days and their validity
+router.get('/resumen', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const fechaIngreso = new Date(user.fechaIngreso);
+    const hoy = new Date();
+
+    // Calculate validity for previous days (18 months after anniversary)
+    const aniversario = new Date(fechaIngreso);
+    aniversario.setFullYear(hoy.getFullYear());
+    if (hoy < aniversario) aniversario.setFullYear(hoy.getFullYear() - 1);
+    const vigenciaPrevios = new Date(aniversario);
+    vigenciaPrevios.setMonth(vigenciaPrevios.getMonth() + 18);
+
+    // Calculate validity for current days (next anniversary)
+    const vigenciaActuales = new Date(aniversario);
+    vigenciaActuales.setFullYear(vigenciaActuales.getFullYear() + 1);
+
+    res.json({
+      diasPendientesPrevios: user.diasPendientesPrevios,
+      diasPendientesActuales: user.diasPendientesActuales,
+      vigenciaPrevios,
+      vigenciaActuales
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al calcular días pendientes' });
+  }
+});
+
 module.exports = router;

@@ -8,8 +8,12 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['admin', 'admin2', 'empleado', 'coordinador'], default: 'empleado' },
   fechaIngreso: { type: Date, required: true }, // NUEVO
   diasPendientesPrevios: { type: Number, default: 0 },
+  diasPendientesActuales: { type: Number, default: 0 },
+  vigenciaPrevios: { type: Date },
+  vigenciaActuales: { type: Date },
   dpt: { type: String, enum: ['apps', 'hr', 'servicio', 'finanzas'], required: true }, // NUEVO
-  reporta: { type: String }
+  reporta: { type: String },
+  puesto: { type: String, required: true }
 });
 
 module.exports = mongoose.model('user', userSchema);
