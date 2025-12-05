@@ -375,4 +375,51 @@ router.get('/resumen', authMiddleware, async (req, res) => {
   }
 });
 
+// Function to calculate and update pending days automatically
+async function actualizarDiasPendientes(user) {
+  const hoy = new Date();
+  const fechaIngreso = new Date(user.fechaIngreso);
+
+  // Calculate anniversary
+  const aniversario = new Date(fechaIngreso);
+  aniversario.setFullYear(hoy.getFullYear());
+  if (hoy < aniversario) aniversario.setFullYear(hoy.getFullYear() - 1);
+
+  // Move current days to previous if anniversary has passed
+  if (hoy >= aniversario) {
+    user.diasPendientesPrevios += user.diasPendientesActuales;
+    user.vigenciaPrevios = new Date(aniversario);
+    user.vigenciaPrevios.setMonth(user.vigenciaPrevios.getMonth() + 18);
+
+    // Calculate new current days based on Mexican law
+    const antiguedad = hoy.getFullYear() - fechaIngreso.getFullYear();
+    let nuevosDias = 12;
+    if (antiguedad >= 1 && antiguedad <= 4) {
+      nuevosDias += antiguedad * 2;
+    } else if (antiguedad >= 5) {
+      nuevosDias += 8 + Math.floor((antiguedad - 5) / 5) * 2;
+    }
+
+    user.diasPendientesActuales = nuevosDias;
+    user.vigenciaActuales = new Date(aniversario);
+    user.vigenciaActuales.setFullYear(user.vigenciaActuales.getFullYear() + 1);
+  }
+
+  await user.save();
+}
+
+// Middleware to update pending days before any vacation-related route
+router.use(authMiddleware, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (user) {
+      await actualizarDiasPendientes(user);
+    }
+    next();
+  } catch (err) {
+    console.error('Error updating pending days:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 module.exports = router;

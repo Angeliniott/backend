@@ -7,7 +7,7 @@ const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 // Crear nuevo usuario/empleado (solo admin)
 router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const { name, email, password, role, fechaIngreso, dpt, reporta, diasPendientesPrevios, puesto } = req.body;
+    const { name, email, password, role, fechaIngreso, dpt, reporta, puesto } = req.body;
     if (!name || !email || !password || !fechaIngreso || !dpt || !puesto) {
       return res.status(400).json({ error: 'Faltan datos requeridos: name, email, password, fechaIngreso, dpt, puesto' });
     }
@@ -30,7 +30,6 @@ router.post('/', authMiddleware, verifyAdmin, async (req, res) => {
       fechaIngreso: new Date(fechaIngreso),
       dpt,
       reporta: reporta || '',
-      diasPendientesPrevios: diasPendientesPrevios || 0,
       puesto,
     });
 
