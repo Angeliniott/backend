@@ -8,8 +8,13 @@ const solicitudVacacionesSchema = new mongoose.Schema({
   fechaInicio: { type: Date, required: true },
   fechaFin: { type: Date, required: true },
   diasSolicitados: { type: Number, required: true },
+  // Desglose por periodo
+  diasPeriodoPrevio: { type: Number, default: 0 }, // Días tomados del periodo anterior
+  diasPeriodoActual: { type: Number, default: 0 }, // Días tomados del periodo actual
+  vigenciaPrevio: { type: Date }, // Vigencia de los días del periodo anterior
+  vigenciaActual: { type: Date }, // Vigencia de los días del periodo actual
   motivo: { type: String },
-  supervisor: { type: String, enum: ['elizabeth', 'francisco', 'servicio', 'fsantiago@mazakcorp.com'], required: true }, // <-- AGREGADO
+  supervisor: { type: String, enum: ['elizabeth', 'francisco', 'servicio', 'fsantiago@mazakcorp.com'], required: true },
   estado: { type: String, enum: ['pendiente', 'aprobado', 'rechazado'], default: 'pendiente' },
   comentariosAdmin: { type: String },
   creadoEn: { type: Date, default: Date.now },

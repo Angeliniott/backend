@@ -170,17 +170,21 @@ router.get('/resumen', authMiddleware, async (req, res) => {
       // Días disponibles después (antes - diasSolicitados)
       const diasDisponiblesDespues = diasDisponiblesAntes - sol.diasSolicitados;
 
+      // Incluir desglose por periodo y vigencias
       return {
         ...sol.toObject(),
-        fechaSolicitud: sol.createdAt, // Agregar fechaSolicitud
+        fechaSolicitud: sol.createdAt,
         departamento: user.dpt,
-        fechaContratacion: user.fechaIngreso.toISOString().slice(0, 10), // Formato YYYY-MM-DD
+        fechaContratacion: user.fechaIngreso.toISOString().slice(0, 10),
         antiguedad,
         diasDisponiblesAntes,
         diasDisponiblesDespues,
-        // Add disponibles field used in frontend for display
         disponibles: diasDisponiblesDespues,
-        diasReposicion: 0 // No existe, dejar como 0
+        diasReposicion: 0,
+        diasPeriodoPrevio: sol.diasPeriodoPrevio || 0,
+        diasPeriodoActual: sol.diasPeriodoActual || 0,
+        vigenciaPrevio: sol.vigenciaPrevio || null,
+        vigenciaActual: sol.vigenciaActual || null
       };
     });
 
@@ -237,23 +241,57 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Fechas inválidas' });
     }
 
+
     const diasSolicitados = countWeekdaysExcludingHolidays(inicio, fin, parsedHolidays);
 
-    // Verificar disponibilidad
+    // Verificar disponibilidad y calcular desglose por periodo
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
     const solicitudes = await SolicitudVacaciones.find({ email });
     let disponibles = 0;
 
-    for (const p of periodos) {
+    // Calcular días disponibles por periodo (restando aprobados)
+    const periodosDisponibles = periodos.map(p => {
       const usados = solicitudes
         .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
-        .reduce((sum, s) => sum + s.diasSolicitados, 0);
+        .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
+      return {
+        inicio: p.inicio,
+        fin: p.fin,
+        dias: p.dias,
+        disponibles: p.dias - usados
+      };
+    });
 
-      disponibles += (p.dias - usados);
-    }
-
+    // Sumar todos los disponibles
+    disponibles = periodosDisponibles.reduce((sum, p) => sum + p.disponibles, 0);
     if (diasSolicitados > disponibles) {
       return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.` });
+    }
+
+    // Descontar primero del periodo más antiguo
+    let diasRestantes = diasSolicitados;
+    let diasPeriodoPrevio = 0;
+    let diasPeriodoActual = 0;
+    let vigenciaPrevio = null;
+    let vigenciaActual = null;
+
+    // Asumimos que solo puede haber dos periodos activos (previo y actual)
+    const activos = periodosDisponibles.filter(p => p.disponibles > 0);
+    if (activos.length === 0) {
+      return res.status(400).json({ error: 'No tienes días disponibles en ningún periodo.' });
+    }
+    // Tomar primero del más antiguo
+    if (activos[0].disponibles > 0) {
+      const tomar = Math.min(diasRestantes, activos[0].disponibles);
+      diasPeriodoPrevio = tomar;
+      vigenciaPrevio = activos[0].fin;
+      diasRestantes -= tomar;
+    }
+    if (diasRestantes > 0 && activos.length > 1 && activos[1].disponibles > 0) {
+      const tomar = Math.min(diasRestantes, activos[1].disponibles);
+      diasPeriodoActual = tomar;
+      vigenciaActual = activos[1].fin;
+      diasRestantes -= tomar;
     }
 
     const nuevaSolicitud = new SolicitudVacaciones({
@@ -264,7 +302,11 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       fechaFin: fin,
       diasSolicitados,
       motivo,
-      supervisor
+      supervisor,
+      diasPeriodoPrevio,
+      diasPeriodoActual,
+      vigenciaPrevio,
+      vigenciaActual
     });
 
     await nuevaSolicitud.save();
@@ -318,14 +360,17 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
       if (sol.usuario && typeof sol.usuario === 'object' && sol.usuario.name) {
         nombre = sol.usuario.name;
       } else if (sol.email) {
-        // Buscar usuario por email si no está poblado
         const user = await User.findOne({ email: sol.email });
         nombre = user && user.name ? user.name : '';
       }
-      // Retornar la solicitud con el campo nombre
+      // Retornar la solicitud con el campo nombre y desglose por periodo
       return {
         ...sol.toObject(),
-        nombre
+        nombre,
+        diasPeriodoPrevio: sol.diasPeriodoPrevio || 0,
+        diasPeriodoActual: sol.diasPeriodoActual || 0,
+        vigenciaPrevio: sol.vigenciaPrevio || null,
+        vigenciaActual: sol.vigenciaActual || null
       };
     }));
     res.json(solicitudesConNombre);
