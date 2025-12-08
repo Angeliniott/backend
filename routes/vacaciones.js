@@ -1,3 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
+const SolicitudVacaciones = require('../models/solicitudvacaciones');
+const { authMiddleware, verifyAdmin } = require('../middleware/auth');
+const { isEligibleForVacation, formatRemainingTime } = require('../utils/dateUtils');
+const { parseHolidays, countHolidaysInRange, countWeekdaysExcludingHolidays } = require('../utils/holidayUtils');
+
 // PREVIEW: calcular desglose de días por periodo sin guardar registro
 router.post('/preview', authMiddleware, async (req, res) => {
   try {
@@ -100,13 +108,6 @@ router.post('/preview', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
-const express = require('express');
-const router = express.Router();
-const User = require('../models/user');
-const SolicitudVacaciones = require('../models/solicitudvacaciones');
-const { authMiddleware, verifyAdmin } = require('../middleware/auth');
-const { isEligibleForVacation, formatRemainingTime } = require('../utils/dateUtils');
-const { parseHolidays, countHolidaysInRange, countWeekdaysExcludingHolidays } = require('../utils/holidayUtils');
 
 // Static list of holidays in DD/MM/YY format
 const HOLIDAYS = [
