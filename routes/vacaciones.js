@@ -257,6 +257,7 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
     }
 
     const nuevaSolicitud = new SolicitudVacaciones({
+      usuario: user._id,
       email,
       fechaIngreso: user.fechaIngreso,
       fechaInicio: inicio,

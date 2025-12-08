@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 
 const solicitudVacacionesSchema = new mongoose.Schema({
+  usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
   email: { type: String, required: true },
   fechaIngreso: { type: Date, required: true },
   fechaInicio: { type: Date, required: true },
