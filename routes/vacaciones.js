@@ -312,7 +312,23 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
       return res.status(403).json({ error: 'Acceso denegado' });
     }
 
-    res.json(solicitudes);
+    // Asegurar que cada solicitud tenga el nombre del usuario
+    const solicitudesConNombre = await Promise.all(solicitudes.map(async (sol) => {
+      let nombre = '';
+      if (sol.usuario && typeof sol.usuario === 'object' && sol.usuario.name) {
+        nombre = sol.usuario.name;
+      } else if (sol.email) {
+        // Buscar usuario por email si no está poblado
+        const user = await User.findOne({ email: sol.email });
+        nombre = user && user.name ? user.name : '';
+      }
+      // Retornar la solicitud con el campo nombre
+      return {
+        ...sol.toObject(),
+        nombre
+      };
+    }));
+    res.json(solicitudesConNombre);
   } catch (err) {
     console.error('❌ Error en GET /admin/solicitudes:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
