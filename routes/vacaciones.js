@@ -286,21 +286,31 @@ const adminDepartments = {
 router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     let solicitudes;
+
     if (req.user.role === 'admin2') {
       // Admin2 ve todas las solicitudes
-      solicitudes = await SolicitudVacaciones.find().sort({ createdAt: -1 });
+      solicitudes = await SolicitudVacaciones.find()
+        .populate('usuario', 'name') // Incluye el campo 'name' del usuario
+        .sort({ createdAt: -1 })
+        .exec();
     } else if (req.user.role === 'admin') {
       // Admin ve solo solicitudes de empleados en su departamento gestionado
       const managedDept = adminDepartments[req.user.email];
       if (!managedDept) {
         return res.status(403).json({ error: 'Acceso denegado: departamento no asignado' });
       }
-      const empleados = await User.find({ dpt: managedDept }).select('email');
-      const emails = empleados.map(u => u.email);
-      solicitudes = await SolicitudVacaciones.find({ email: { $in: emails } }).sort({ createdAt: -1 });
+
+      const empleados = await User.find({ dpt: managedDept }).select('_id'); // Busca IDs de usuarios en el departamento
+      const userIds = empleados.map(u => u._id);
+
+      solicitudes = await SolicitudVacaciones.find({ usuario: { $in: userIds } })
+        .populate('usuario', 'name') // Incluye el campo 'name' del usuario
+        .sort({ createdAt: -1 })
+        .exec();
     } else {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
+
     res.json(solicitudes);
   } catch (err) {
     console.error('❌ Error en GET /admin/solicitudes:', err);
