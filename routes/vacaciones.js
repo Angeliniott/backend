@@ -410,6 +410,7 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       diasPeriodoActual,
       vigenciaPrevio,
       vigenciaActual
+      ,disponibles // Guardar los días disponibles al momento de la solicitud
     });
 
     await nuevaSolicitud.save();

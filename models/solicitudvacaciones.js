@@ -17,6 +17,7 @@ const solicitudVacacionesSchema = new mongoose.Schema({
   supervisor: { type: String, enum: ['elizabeth', 'francisco', 'servicio', 'fsantiago@mazakcorp.com'], required: true },
   estado: { type: String, enum: ['pendiente', 'aprobado', 'rechazado'], default: 'pendiente' },
   comentariosAdmin: { type: String },
+  disponibles: { type: Number, default: 0 }, // Días disponibles al momento de la solicitud
   creadoEn: { type: Date, default: Date.now },
 }, {
   timestamps: true
