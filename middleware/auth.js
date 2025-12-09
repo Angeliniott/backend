@@ -30,7 +30,8 @@ const verifyTiempoExtraAdmin = (req, res, next) => {
     return res.status(401).json({ message: 'No autenticado' });
   }
   const role = req.user.role;
-  if (role === 'admin' || role === 'admin2') {
+  // Permitir acceso a admin, admin2 y coordinador para funcionalidades de tiempo extra
+  if (role === 'admin' || role === 'admin2' || role === 'coordinador') {
     return next();
   }
   return res.status(403).json({ message: 'No autorizado' });
