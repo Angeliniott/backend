@@ -67,8 +67,68 @@ router.get('/profile', authMiddleware, async (req, res) => {
 // Obtener todos los usuarios (solo admin)
 router.get('/all', authMiddleware, verifyAdmin, async (req, res) => {
   try {
-    const users = await User.find({}).select('name email role dpt fechaIngreso reporta diasPendientesPrevios');
-    res.json(users);
+    const users = await User.find({});
+    const SolicitudVacaciones = require('../models/solicitudvacaciones');
+    // Utiliza la misma función que en vacaciones.js
+    const calcularDiasPorAniversario = require('../routes/vacaciones.js').calcularDiasPorAniversario || function(fechaIngreso) {
+      const hoy = new Date();
+      const periodos = [];
+      for (let año = 0; año < 50; año++) {
+        const inicio = new Date(fechaIngreso);
+        inicio.setFullYear(inicio.getFullYear() + año);
+        const fin = new Date(inicio);
+        fin.setMonth(fin.getMonth() + 18);
+        if (fin < hoy) continue;
+        if (inicio > hoy) break;
+        let dias;
+        if (año === 0) {
+          let mesesTrabajados = (hoy.getFullYear() - fechaIngreso.getFullYear()) * 12 + (hoy.getMonth() - fechaIngreso.getMonth());
+          if (hoy.getDate() < fechaIngreso.getDate()) {
+            mesesTrabajados = Math.max(0, mesesTrabajados - 1);
+          }
+          dias = Math.min(mesesTrabajados, 12);
+        } else {
+          dias = 12;
+          if (año >= 1 && año <= 4) {
+            dias += año * 2;
+          } else if (año >= 5) {
+            dias += 8 + Math.floor((año - 5) / 5) * 2;
+          }
+        }
+        periodos.push({ inicio, fin, dias });
+      }
+      return periodos;
+    };
+
+    // Para cada usuario, calcular periodos y días disponibles
+    const usuariosConPeriodos = await Promise.all(users.map(async user => {
+      const solicitudes = await SolicitudVacaciones.find({ email: user.email });
+      const periodos = calcularDiasPorAniversario(user.fechaIngreso);
+      const periodosInfo = periodos.map(p => {
+        const usados = solicitudes
+          .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
+          .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
+        return {
+          inicio: p.inicio,
+          fin: p.fin,
+          diasGenerados: p.dias,
+          diasDisponibles: p.dias - usados,
+          vigencia: p.fin
+        };
+      });
+      return {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        dpt: user.dpt,
+        fechaIngreso: user.fechaIngreso,
+        reporta: user.reporta,
+        puesto: user.puesto,
+        periodosVacaciones: periodosInfo
+      };
+    }));
+    res.json(usuariosConPeriodos);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error al obtener usuarios' });
