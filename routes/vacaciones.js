@@ -350,12 +350,11 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
     // Verificar disponibilidad y calcular desglose por periodo
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
     const solicitudes = await SolicitudVacaciones.find({ email });
+    // Calcular días disponibles ANTES de esta solicitud (solo aprobadas y con fechaFin < inicio de la nueva solicitud)
     let disponibles = 0;
-
-    // Calcular días disponibles por periodo (restando aprobados)
     const periodosDisponibles = periodos.map(p => {
       const usados = solicitudes
-        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
+        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin && new Date(s.fechaFin) < inicio)
         .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
       return {
         inicio: p.inicio,
@@ -364,8 +363,6 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
         disponibles: p.dias - usados
       };
     });
-
-    // Sumar todos los disponibles
     disponibles = periodosDisponibles.reduce((sum, p) => sum + p.disponibles, 0);
     if (diasSolicitados > disponibles) {
       return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.` });
@@ -410,7 +407,7 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       diasPeriodoActual,
       vigenciaPrevio,
       vigenciaActual
-      ,disponibles // Guardar los días disponibles al momento de la solicitud
+      ,disponibles // Guardar los días disponibles al momento de la solicitud (antes de descontar la solicitud)
     });
 
     await nuevaSolicitud.save();
