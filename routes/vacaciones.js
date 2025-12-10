@@ -154,15 +154,20 @@ function calcularDiasPorAniversario(fechaIngreso) {
 
   for (let año = 2; año <= 50; año++) {
     const inicio = new Date(fechaIngreso);
-    inicio.setFullYear(inicio.getFullYear() + (año - 1));
-    const fin = new Date(inicio);
-    fin.setMonth(fin.getMonth() + 18);
+    inicio.setFullYear(inicio.getFullYear() + (año - 1)); // aniversario de ese año
+    const finVigencia = new Date(inicio);
+    finVigencia.setMonth(finVigencia.getMonth() + 18); // vigencia 18 meses desde el aniversario
 
-    if (fin < hoy) continue; // expirado
-    // Habilitados sólo si ya llegó el aniversario de ese año
-    const dias = hoy >= inicio ? diasPorAntiguedad(año) : 0;
-    periodos.push({ inicio, fin, dias });
-    // Cortar si el inicio está muy futuro
+    if (finVigencia < hoy) continue; // periodo completamente expirado
+
+    // Habilitados sólo al finalizar el año laboral correspondiente (12 meses después del aniversario)
+    const finLaboral = new Date(inicio);
+    finLaboral.setFullYear(finLaboral.getFullYear() + 1);
+    const dias = hoy >= finLaboral ? diasPorAntiguedad(año) : 0;
+
+    periodos.push({ inicio, fin: finVigencia, dias });
+
+    // Cortar si el inicio está muy en el futuro (optimización)
     const corteFuturo = new Date(hoy);
     corteFuturo.setFullYear(corteFuturo.getFullYear() + 3);
     if (inicio > corteFuturo) break;
