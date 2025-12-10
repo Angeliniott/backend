@@ -41,66 +41,25 @@ router.post('/preview', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Fechas inválidas' });
     }
 
-    const diasSolicitados = countWeekdaysExcludingHolidays(inicio, fin, parsedHolidays);
+    const diasSolicitados = contarDiasHabiles(inicio, fin);
 
-    // Verificar disponibilidad y calcular desglose por periodo
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
-    const solicitudes = await SolicitudVacaciones.find({ email });
-    let disponibles = 0;
+    const aprobadas = await SolicitudVacaciones.find({ email, estado: 'aprobado' });
+    const usados = obtenerUsadosPorPeriodo(aprobadas, periodos);
+    const desglose = distribuirDiasSolicitados(periodos, usados, diasSolicitados);
 
-    // Calcular días disponibles por periodo (restando aprobados)
-    const periodosDisponibles = periodos.map(p => {
-      const usados = solicitudes
-        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
-        .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
-      return {
-        inicio: p.inicio,
-        fin: p.fin,
-        dias: p.dias,
-        disponibles: p.dias - usados
-      };
-    });
-
-    // Sumar todos los disponibles
-    disponibles = periodosDisponibles.reduce((sum, p) => sum + p.disponibles, 0);
-    if (diasSolicitados > disponibles) {
-      return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.` });
+    if (desglose.restante > 0) {
+      const disponibles = periodos.reduce((sum, p, i) => sum + Math.max(0, p.dias - usados[i]), 0);
+      return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.`, disponibles });
     }
 
-    // Descontar primero del periodo más antiguo
-    let diasRestantes = diasSolicitados;
-    let diasPeriodoPrevio = 0;
-    let diasPeriodoActual = 0;
-    let vigenciaPrevio = null;
-    let vigenciaActual = null;
-
-    // Asumimos que solo puede haber dos periodos activos (previo y actual)
-    const activos = periodosDisponibles.filter(p => p.disponibles > 0);
-    if (activos.length === 0) {
-      return res.status(400).json({ error: 'No tienes días disponibles en ningún periodo.' });
-    }
-    // Tomar primero del más antiguo
-    if (activos[0].disponibles > 0) {
-      const tomar = Math.min(diasRestantes, activos[0].disponibles);
-      diasPeriodoPrevio = tomar;
-      vigenciaPrevio = activos[0].fin;
-      diasRestantes -= tomar;
-    }
-    if (diasRestantes > 0 && activos.length > 1 && activos[1].disponibles > 0) {
-      const tomar = Math.min(diasRestantes, activos[1].disponibles);
-      diasPeriodoActual = tomar;
-      vigenciaActual = activos[1].fin;
-      diasRestantes -= tomar;
-    }
-
-    // Devolver solo el desglose, no guardar nada
     res.json({
       solicitud: {
         diasSolicitados,
-        diasPeriodoPrevio,
-        diasPeriodoActual,
-        vigenciaPrevio,
-        vigenciaActual
+        diasPeriodoPrevio: desglose.diasPeriodoPrevio,
+        diasPeriodoActual: desglose.diasPeriodoActual,
+        vigenciaPrevio: desglose.vigenciaPrevio,
+        vigenciaActual: desglose.vigenciaActual
       }
     });
   } catch (err) {
@@ -162,62 +121,98 @@ const parsedHolidays = parseHolidays(HOLIDAYS);
 
 // ======================= FUNCIONES =======================
 
+function contarDiasHabiles(inicio, fin) {
+  return countWeekdaysExcludingHolidays(inicio, fin, parsedHolidays);
+}
+
 function calcularDiasPorAniversario(fechaIngreso) {
   const hoy = new Date();
   const periodos = [];
 
-  for (let año = 0; año < 50; año++) {
+  // Primer año: prestación especial
+  const inicio0 = new Date(fechaIngreso);
+  const primerAniv = new Date(inicio0);
+  primerAniv.setFullYear(primerAniv.getFullYear() + 1);
+  const seisMeses = new Date(inicio0);
+  seisMeses.setMonth(seisMeses.getMonth() + 6);
+  const fin0 = new Date(primerAniv);
+  fin0.setMonth(fin0.getMonth() + 18); // vigencia 18 meses desde primer aniversario
+
+  let dias0 = 0;
+  if (hoy >= seisMeses && hoy < primerAniv) dias0 = 6;
+  if (hoy >= primerAniv) dias0 = 12;
+  if (fin0 >= hoy) {
+    periodos.push({ inicio: inicio0, fin: fin0, dias: dias0 });
+  }
+
+  // Años siguientes: habilitan solo al aniversario, vigencia 18 meses desde cada aniversario
+  const diasPorAntiguedad = (n) => {
+    if (n === 1) return 12;
+    if (n >= 2 && n <= 5) return 10 + (n * 2); // 2:14, 3:16, 4:18, 5:20
+    return 20 + ((n - 5) * 2); // 6:22, 7:24, etc.
+  };
+
+  for (let año = 2; año <= 50; año++) {
     const inicio = new Date(fechaIngreso);
-    inicio.setFullYear(inicio.getFullYear() + año);
+    inicio.setFullYear(inicio.getFullYear() + (año - 1));
     const fin = new Date(inicio);
-    fin.setMonth(fin.getMonth() + 18); // vence 18 meses después
+    fin.setMonth(fin.getMonth() + 18);
 
     if (fin < hoy) continue; // expirado
-    if (inicio > hoy) break; // futuro
-
-    let dias;
-    if (año === 0) {
-      // Para el primer año, calcular meses trabajados y asignar 1 día por mes, hasta 12
-      let mesesTrabajados = (hoy.getFullYear() - fechaIngreso.getFullYear()) * 12 +
-                              (hoy.getMonth() - fechaIngreso.getMonth());
-      // Si el día actual es menor que el día de ingreso, restar 1 mes
-      if (hoy.getDate() < fechaIngreso.getDate()) {
-        mesesTrabajados = Math.max(0, mesesTrabajados - 1);
-      }
-      dias = Math.min(mesesTrabajados, 12);
-    } else {
-      // Para años siguientes, mantener lógica existente
-      dias = 12;
-      if (año >= 1 && año <= 4) {
-        dias += año * 2;
-      } else if (año >= 5) {
-        dias += 8 + Math.floor((año - 5) / 5) * 2;
-      }
-    }
-
+    // Habilitados sólo si ya llegó el aniversario de ese año
+    const dias = hoy >= inicio ? diasPorAntiguedad(año) : 0;
     periodos.push({ inicio, fin, dias });
+    // Cortar si el inicio está muy futuro
+    const corteFuturo = new Date(hoy);
+    corteFuturo.setFullYear(corteFuturo.getFullYear() + 3);
+    if (inicio > corteFuturo) break;
   }
 
   return periodos;
 }
 
-function calcularDiasUsadosPorPeriodo(solicitudes) {
-  const usados = {};
-
-  solicitudes
-    .filter(s => s.estado === 'aprobado')
-    .forEach(s => {
-      const fin = new Date(s.fechaFin);
-      for (const key in usados) {
-        const periodo = usados[key];
-        if (fin >= periodo.inicio && fin <= periodo.fin) {
-          periodo.usados += s.diasSolicitados;
-          return;
-        }
-      }
-    });
-
+function obtenerUsadosPorPeriodo(solicitudesAprobadas, periodos) {
+  const usados = periodos.map(() => 0);
+  for (const sol of solicitudesAprobadas) {
+    const inicio = new Date(sol.fechaInicio);
+    const fin = new Date(sol.fechaFin);
+    const dias = contarDiasHabiles(inicio, fin);
+    let restante = dias;
+    for (let i = 0; i < periodos.length && restante > 0; i++) {
+      const p = periodos[i];
+      const ref = new Date(sol.createdAt || sol.fechaSolicitud || inicio);
+      if (ref > p.fin) continue; // fuera de vigencia
+      const disponibleEnPeriodo = Math.max(0, p.dias - usados[i]);
+      const usa = Math.min(disponibleEnPeriodo, restante);
+      usados[i] += usa;
+      restante -= usa;
+    }
+  }
   return usados;
+}
+
+function distribuirDiasSolicitados(periodos, usados, diasSolicitados) {
+  let restante = diasSolicitados;
+  let diasPeriodoPrevio = 0;
+  let diasPeriodoActual = 0;
+  let vigenciaPrevio = null;
+  let vigenciaActual = null;
+
+  for (let i = 0; i < periodos.length && restante > 0; i++) {
+    const p = periodos[i];
+    const disponible = Math.max(0, p.dias - usados[i]);
+    if (disponible <= 0) continue;
+    const toma = Math.min(disponible, restante);
+    if (diasPeriodoPrevio === 0) {
+      diasPeriodoPrevio = toma;
+      vigenciaPrevio = p.fin;
+    } else {
+      diasPeriodoActual += toma;
+      vigenciaActual = p.fin;
+    }
+    restante -= toma;
+  }
+  return { diasPeriodoPrevio, diasPeriodoActual, vigenciaPrevio, vigenciaActual, restante };
 }
 
 // ======================= RUTAS =======================
@@ -225,82 +220,39 @@ function calcularDiasUsadosPorPeriodo(solicitudes) {
 // GET: resumen de vacaciones
 router.get('/resumen', authMiddleware, async (req, res) => {
   try {
-    const userEmail = req.user.email;
-    const user = await User.findOne({ email: userEmail });
+    const emailParam = req.query.email;
+    const user = emailParam ? await User.findOne({ email: emailParam }) : await User.findOne({ email: req.user.email });
 
     if (!user || !user.fechaIngreso) {
       return res.status(400).json({ error: 'Usuario no válido o sin fecha de ingreso' });
     }
 
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
-    const solicitudes = await SolicitudVacaciones.find({ email: userEmail });
+    const solicitudes = await SolicitudVacaciones.find({ email: user.email, estado: 'aprobado' });
 
-    const resumen = [];
-    let totalGenerados = 0;
-    let totalUsados = 0;
-
-    for (const p of periodos) {
+    // Calcular usados por periodo con base en aprobadas
+    const periodosResumen = periodos.map(p => {
       const usadosPeriodo = solicitudes
-        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
-        .reduce((sum, s) => sum + s.diasSolicitados, 0);
-
-      resumen.push({
-        periodo: `${p.inicio.toISOString().slice(0, 10)} → ${p.fin.toISOString().slice(0, 10)}`,
-        generados: p.dias,
-        usados: usadosPeriodo,
-        disponibles: p.dias - usadosPeriodo
-      });
-
-      totalGenerados += p.dias;
-      totalUsados += usadosPeriodo;
-    }
-
-    // Enriquecer solicitudes con campos adicionales para PDF
-    const solicitudesEnriquecidas = solicitudes.map(sol => {
-      // Calcular antigüedad en años
-      const antiguedadAnios = (new Date() - new Date(user.fechaIngreso)) / (1000 * 60 * 60 * 24 * 365);
-      const antiguedad = antiguedadAnios < 1 ? '<1' : Math.floor(antiguedadAnios);
-
-      // Calcular días disponibles antes de esta solicitud
-      let diasDisponiblesAntes = 0;
-      for (const p of periodos) {
-        const usadosAntes = solicitudes
-          .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin && new Date(s.fechaFin) < new Date(sol.fechaFin))
-          .reduce((sum, s) => sum + s.diasSolicitados, 0);
-        diasDisponiblesAntes += (p.dias - usadosAntes);
-      }
-
-      // Días disponibles después (antes - diasSolicitados)
-      const diasDisponiblesDespues = diasDisponiblesAntes - sol.diasSolicitados;
-
-      // Incluir desglose por periodo y vigencias
+        .filter(s => new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
+        .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
       return {
-        ...sol.toObject(),
-        fechaSolicitud: sol.createdAt,
-        departamento: user.dpt,
-        fechaContratacion: user.fechaIngreso.toISOString().slice(0, 10),
-        antiguedad,
-        diasDisponiblesAntes,
-        diasDisponiblesDespues,
-        disponibles: diasDisponiblesDespues,
-        diasReposicion: 0,
-        diasPeriodoPrevio: sol.diasPeriodoPrevio || 0,
-        diasPeriodoActual: sol.diasPeriodoActual || 0,
-        vigenciaPrevio: sol.vigenciaPrevio || null,
-        vigenciaActual: sol.vigenciaActual || null
+        inicioAniversario: p.inicio,
+        finAniversario: p.inicio, // fin del año laboral; no usado en vigencia
+        vigenciaHasta: p.fin,
+        habilitados: p.dias,
+        usados: usadosPeriodo,
+        disponibles: Math.max(0, p.dias - usadosPeriodo)
       };
     });
+    const disponiblesTotal = periodosResumen.reduce((sum, r) => sum + r.disponibles, 0);
 
     res.json({
       nombre: user.name,
       email: user.email,
       fechaIngreso: user.fechaIngreso,
       departamento: user.dpt,
-      generados: totalGenerados,
-      usados: totalUsados,
-      disponibles: totalGenerados - totalUsados,
-      resumenPeriodos: resumen,
-      solicitudes: solicitudesEnriquecidas
+      periodos: periodosResumen,
+      disponiblesTotal
     });
 
   } catch (err) {
@@ -345,53 +297,16 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
     }
 
 
-    const diasSolicitados = countWeekdaysExcludingHolidays(inicio, fin, parsedHolidays);
+    const diasSolicitados = contarDiasHabiles(inicio, fin);
 
-    // Verificar disponibilidad y calcular desglose por periodo
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
-    const solicitudes = await SolicitudVacaciones.find({ email });
-    // Calcular días disponibles ANTES de esta solicitud (solo aprobadas y con fechaFin < inicio de la nueva solicitud)
-    let disponibles = 0;
-    const periodosDisponibles = periodos.map(p => {
-      const usados = solicitudes
-        .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin && new Date(s.fechaFin) < inicio)
-        .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
-      return {
-        inicio: p.inicio,
-        fin: p.fin,
-        dias: p.dias,
-        disponibles: p.dias - usados
-      };
-    });
-    disponibles = periodosDisponibles.reduce((sum, p) => sum + p.disponibles, 0);
-    if (diasSolicitados > disponibles) {
+    const aprobadas = await SolicitudVacaciones.find({ email, estado: 'aprobado' });
+    const usados = obtenerUsadosPorPeriodo(aprobadas, periodos);
+    const desglose = distribuirDiasSolicitados(periodos, usados, diasSolicitados);
+
+    if (desglose.restante > 0) {
+      const disponibles = periodos.reduce((sum, p, i) => sum + Math.max(0, p.dias - usados[i]), 0);
       return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.` });
-    }
-
-    // Descontar primero del periodo más antiguo
-    let diasRestantes = diasSolicitados;
-    let diasPeriodoPrevio = 0;
-    let diasPeriodoActual = 0;
-    let vigenciaPrevio = null;
-    let vigenciaActual = null;
-
-    // Asumimos que solo puede haber dos periodos activos (previo y actual)
-    const activos = periodosDisponibles.filter(p => p.disponibles > 0);
-    if (activos.length === 0) {
-      return res.status(400).json({ error: 'No tienes días disponibles en ningún periodo.' });
-    }
-    // Tomar primero del más antiguo
-    if (activos[0].disponibles > 0) {
-      const tomar = Math.min(diasRestantes, activos[0].disponibles);
-      diasPeriodoPrevio = tomar;
-      vigenciaPrevio = activos[0].fin;
-      diasRestantes -= tomar;
-    }
-    if (diasRestantes > 0 && activos.length > 1 && activos[1].disponibles > 0) {
-      const tomar = Math.min(diasRestantes, activos[1].disponibles);
-      diasPeriodoActual = tomar;
-      vigenciaActual = activos[1].fin;
-      diasRestantes -= tomar;
     }
 
     const nuevaSolicitud = new SolicitudVacaciones({
@@ -403,10 +318,10 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       diasSolicitados,
       motivo,
       supervisor,
-      diasPeriodoPrevio,
-      diasPeriodoActual,
-      vigenciaPrevio,
-      vigenciaActual
+      diasPeriodoPrevio: desglose.diasPeriodoPrevio,
+      diasPeriodoActual: desglose.diasPeriodoActual,
+      vigenciaPrevio: desglose.vigenciaPrevio,
+      vigenciaActual: desglose.vigenciaActual
       ,disponibles // Guardar los días disponibles al momento de la solicitud (antes de descontar la solicitud)
     });
 
@@ -518,35 +433,7 @@ router.get('/admin/pendientes', authMiddleware, verifyAdmin, async (req, res) =>
 });
 
 // Calculate pending days and their validity
-router.get('/resumen', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-
-    const fechaIngreso = new Date(user.fechaIngreso);
-    const hoy = new Date();
-
-    // Calculate validity for previous days (18 months after anniversary)
-    const aniversario = new Date(fechaIngreso);
-    aniversario.setFullYear(hoy.getFullYear());
-    if (hoy < aniversario) aniversario.setFullYear(hoy.getFullYear() - 1);
-    const vigenciaPrevios = new Date(aniversario);
-    vigenciaPrevios.setMonth(vigenciaPrevios.getMonth() + 18);
-
-    // Calculate validity for current days (next anniversary)
-    const vigenciaActuales = new Date(aniversario);
-    vigenciaActuales.setFullYear(vigenciaActuales.getFullYear() + 1);
-
-    res.json({
-      diasPendientesPrevios: user.diasPendientesPrevios,
-      diasPendientesActuales: user.diasPendientesActuales,
-      vigenciaPrevios,
-      vigenciaActuales
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Error al calcular días pendientes' });
-  }
-});
+// (Eliminada ruta duplicada '/resumen' para consolidación)
 
 // Function to calculate and update pending days automatically
 async function actualizarDiasPendientes(user) {
