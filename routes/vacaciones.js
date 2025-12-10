@@ -309,6 +309,9 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: `Solo tienes ${disponibles} días disponibles.` });
     }
 
+    // Disponibles actuales al momento (referencia), después de considerar aprobadas previas
+    const disponibles = periodos.reduce((sum, p, i) => sum + Math.max(0, p.dias - usados[i]), 0);
+
     const nuevaSolicitud = new SolicitudVacaciones({
       usuario: user._id,
       email,
