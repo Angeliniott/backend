@@ -246,13 +246,39 @@ router.get('/resumen', authMiddleware, async (req, res) => {
     });
     const disponiblesTotal = periodosResumen.reduce((sum, r) => sum + r.disponibles, 0);
 
+    // Además, incluir solicitudes del usuario enriquecidas para compatibilidad con misvacaciones.html
+    const todasSolicitudes = await SolicitudVacaciones.find({ email: user.email }).lean();
+    const solicitudesEnriquecidas = todasSolicitudes.map(sol => {
+      // calcular días disponibles antes de esta solicitud (sumando disponibles por periodo antes de su fechaFin)
+      let diasDisponiblesAntes = 0;
+      for (const p of periodosResumen) {
+        const usadosAntes = todasSolicitudes
+          .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicioAniversario && new Date(s.fechaFin) <= p.vigenciaHasta && new Date(s.fechaFin) < new Date(sol.fechaFin))
+          .reduce((sum, s) => sum + ((s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0)), 0);
+        diasDisponiblesAntes += Math.max(0, p.habilitados - usadosAntes);
+      }
+      const diasDisponiblesDespues = Math.max(0, diasDisponiblesAntes - (sol.diasSolicitados || 0));
+      return {
+        ...sol,
+        fechaSolicitud: sol.createdAt,
+        departamento: user.dpt,
+        fechaContratacion: user.fechaIngreso,
+        antiguedad: Math.max(0, Math.floor((Date.now() - new Date(user.fechaIngreso)) / (1000*60*60*24*365))),
+        diasDisponiblesAntes,
+        diasDisponiblesDespues,
+        diasPendientesPrevios: sol.diasPeriodoPrevio || 0,
+        diasPendientesActuales: sol.diasPeriodoActual || 0
+      };
+    });
+
     res.json({
       nombre: user.name,
       email: user.email,
       fechaIngreso: user.fechaIngreso,
       departamento: user.dpt,
       periodos: periodosResumen,
-      disponiblesTotal
+      disponiblesTotal,
+      solicitudes: solicitudesEnriquecidas
     });
 
   } catch (err) {
