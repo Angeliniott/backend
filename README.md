@@ -31,6 +31,18 @@ Este backend implementa la lógica de solicitudes de vacaciones con conteo de d�
 - `GET /api/vacaciones/admin/solicitudes`
   - Devuelve solicitudes para revisión admin. El frontend obtiene “disponibles actuales” consultando `/resumen` por usuario.
 
+### Endpoint de depuración
+- `GET /api/vacaciones/debug/periodos`
+  - Verifica periodos calculados y días habilitados al día de hoy.
+  - Parámetros:
+    - `fechaIngreso=YYYY-MM-DD` para simular un ingreso específico.
+    - `email=user@example.com` (requiere rol admin) para consultar por usuario.
+    - Sin parámetros: usa el usuario autenticado.
+  - Respuesta: lista de periodos con `inicio`, `vigenciaHasta` y `habilitadosHoy`.
+  - Útil para validar casos como ingreso en noviembre 2023:
+    - Año 1: 12 habilitados en el primer aniversario; vigencia +18 meses.
+    - Años ≥2: días habilitados en el aniversario correspondiente; vigencia +18 meses.
+
 ## Feriados
 - Lista `HOLIDAYS` por año; mantenerla actualizada.
 - Utilizada en `countWeekdaysExcludingHolidays` para preview, solicitar y resumen.

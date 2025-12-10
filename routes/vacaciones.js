@@ -153,17 +153,17 @@ function calcularDiasPorAniversario(fechaIngreso) {
   };
 
   for (let año = 2; año <= 50; año++) {
+    // Para años >=2, el periodo inicia en el aniversario donde se habilitan esos días
     const inicio = new Date(fechaIngreso);
-    inicio.setFullYear(inicio.getFullYear() + (año - 1)); // aniversario de ese año
+    inicio.setFullYear(inicio.getFullYear() + año); // aniversario del año n
+
     const finVigencia = new Date(inicio);
-    finVigencia.setMonth(finVigencia.getMonth() + 18); // vigencia 18 meses desde el aniversario
+    finVigencia.setMonth(finVigencia.getMonth() + 18); // vigencia 18 meses desde ese aniversario
 
     if (finVigencia < hoy) continue; // periodo completamente expirado
 
-    // Habilitados sólo al finalizar el año laboral correspondiente (12 meses después del aniversario)
-    const finLaboral = new Date(inicio);
-    finLaboral.setFullYear(finLaboral.getFullYear() + 1);
-    const dias = hoy >= finLaboral ? diasPorAntiguedad(año) : 0;
+    // Habilitar días sólo al llegar ese aniversario
+    const dias = hoy >= inicio ? diasPorAntiguedad(año) : 0;
 
     periodos.push({ inicio, fin: finVigencia, dias });
 
@@ -517,3 +517,33 @@ router.use(authMiddleware, async (req, res, next) => {
 });
 
 module.exports = router;
+
+// DEBUG: endpoint opcional para verificar periodos y habilitados por fecha de ingreso
+// Uso: GET /api/vacaciones/debug/periodos?fechaIngreso=2023-11-01 (requiere token)
+//      GET /api/vacaciones/debug/periodos?email=user@example.com (admin)
+// Devuelve los periodos calculados con inicio, vigencia y días habilitados al día de hoy.
+router.get('/debug/periodos', authMiddleware, async (req, res) => {
+  try {
+    let fecha;
+    if (req.query.fechaIngreso) {
+      fecha = new Date(req.query.fechaIngreso);
+    } else if (req.query.email) {
+      const u = await User.findOne({ email: req.query.email });
+      if (!u) return res.status(404).json({ error: 'Usuario no encontrado' });
+      fecha = new Date(u.fechaIngreso);
+    } else {
+      const u = await User.findById(req.user.id);
+      fecha = new Date(u.fechaIngreso);
+    }
+    if (isNaN(fecha)) return res.status(400).json({ error: 'fechaIngreso inválida' });
+    const periodos = calcularDiasPorAniversario(fecha).map(p => ({
+      inicio: p.inicio,
+      vigenciaHasta: p.fin,
+      habilitadosHoy: p.dias
+    }));
+    res.json({ fechaIngreso: fecha, hoy: new Date(), periodos });
+  } catch (err) {
+    console.error('❌ Error en GET /vacaciones/debug/periodos:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
