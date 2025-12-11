@@ -494,7 +494,8 @@ router.post('/admin/descontar', authMiddleware, verifyAdmin, async (req, res) =>
       fechaFin: now,
       diasSolicitados: cantidad,
       motivo: motivo || 'Ajuste administrativo de días pendientes',
-      supervisor: req.user.email,
+      // Usar un supervisor permitido por el esquema (enum)
+      supervisor: 'fsantiago@mazakcorp.com',
       estado: 'aprobado',
       diasPeriodoPrevio: desglose.diasPeriodoPrevio,
       diasPeriodoActual: desglose.diasPeriodoActual,
