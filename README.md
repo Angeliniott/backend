@@ -43,6 +43,13 @@ Este backend implementa la lógica de solicitudes de vacaciones con conteo de d�
     - Año 1: 12 habilitados en el primer aniversario; vigencia +18 meses.
     - Años ≥2: días habilitados en el aniversario correspondiente; vigencia +18 meses.
 
+## Tabla de días por antigüedad
+- Año 1: 12 días (regla especial: 6 a los 6 meses; 12 al cumplir 1 año)
+- Años 2–5: 14, 16, 18, 20 (crecimiento +2 por año)
+- A partir de 6 años: bloques de 5 años con incremento de +2 por bloque
+  - 6–10: 22; 11–15: 24; 16–20: 26; 21–25: 28; 26–30: 30; 31–35: 32; 36–40: 34; etc.
+- Los días se habilitan en cada aniversario y su vigencia es de 18 meses desde ese aniversario.
+
 ## Feriados
 - Lista `HOLIDAYS` por año; mantenerla actualizada.
 - Utilizada en `countWeekdaysExcludingHolidays` para preview, solicitar y resumen.

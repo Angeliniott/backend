@@ -147,9 +147,14 @@ function calcularDiasPorAniversario(fechaIngreso) {
 
   // Años siguientes: habilitan solo al aniversario, vigencia 18 meses desde cada aniversario
   const diasPorAntiguedad = (n) => {
+    // Tabla solicitada:
+    // 1:12, 2:14, 3:16, 4:18, 5:20
+    // 6-10:22, 11-15:24, 16-20:26, 21-25:28, 26-30:30, 31-35:32, 36-40:34, ...
+    if (n <= 0) return 0;
     if (n === 1) return 12;
-    if (n >= 2 && n <= 5) return 10 + (n * 2); // 2:14, 3:16, 4:18, 5:20
-    return 20 + ((n - 5) * 2); // 6:22, 7:24, etc.
+    if (n >= 2 && n <= 5) return 10 + (n * 2);
+    const blockIndex = Math.floor((n - 6) / 5); // bloques de 5 años empezando en 6-10
+    return 22 + (blockIndex * 2);
   };
 
   for (let año = 2; año <= 50; año++) {
