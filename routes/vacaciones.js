@@ -460,6 +460,57 @@ router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) =
   }
 });
 
+// POST: admin descuenta días pendientes como si fuera una solicitud aprobada
+router.post('/admin/descontar', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const { email, cantidad, motivo } = req.body;
+    if (!email || !cantidad || cantidad <= 0) {
+      return res.status(400).json({ error: 'Email y cantidad > 0 son requeridos' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !user.fechaIngreso) {
+      return res.status(404).json({ error: 'Usuario no encontrado o sin fecha de ingreso' });
+    }
+
+    // Calcular periodos y usados actuales
+    const periodos = calcularDiasPorAniversario(user.fechaIngreso);
+    const aprobadas = await SolicitudVacaciones.find({ email, estado: 'aprobado' });
+    const usados = obtenerUsadosPorPeriodo(aprobadas, periodos);
+
+    // Distribuir como si fuera una solicitud
+    const desglose = distribuirDiasSolicitados(periodos, usados, cantidad);
+    if (desglose.restante > 0) {
+      const disponibles = periodos.reduce((sum, p, i) => sum + Math.max(0, p.dias - usados[i]), 0);
+      return res.status(400).json({ error: `Solo tiene ${disponibles} días disponibles para descontar.` });
+    }
+
+    const now = new Date();
+    const nueva = new SolicitudVacaciones({
+      usuario: user._id,
+      email,
+      fechaIngreso: user.fechaIngreso,
+      fechaInicio: now,
+      fechaFin: now,
+      diasSolicitados: cantidad,
+      motivo: motivo || 'Ajuste administrativo de días pendientes',
+      supervisor: req.user.email,
+      estado: 'aprobado',
+      diasPeriodoPrevio: desglose.diasPeriodoPrevio,
+      diasPeriodoActual: desglose.diasPeriodoActual,
+      vigenciaPrevio: desglose.vigenciaPrevio,
+      vigenciaActual: desglose.vigenciaActual,
+      disponibles: periodos.reduce((sum, p, i) => sum + Math.max(0, p.dias - usados[i]), 0)
+    });
+    await nueva.save();
+
+    res.status(201).json({ message: 'Días descontados', solicitud: nueva });
+  } catch (err) {
+    console.error('❌ Error en POST /admin/descontar:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // GET: contar solicitudes pendientes
 router.get('/admin/pendientes', authMiddleware, verifyAdmin, async (req, res) => {
   try {
