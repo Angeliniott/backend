@@ -277,7 +277,9 @@ router.get('/resumen', authMiddleware, async (req, res) => {
         diasDisponiblesAntes,
         diasDisponiblesDespues,
         diasPendientesPrevios: sol.diasPeriodoPrevio || 0,
-        diasPendientesActuales: sol.diasPeriodoActual || 0
+        diasPendientesActuales: sol.diasPeriodoActual || 0,
+        aprobadoPor: sol.aprobadoPor || null,
+        fechaAprobacion: sol.fechaAprobacion || null
       };
     });
 
@@ -443,9 +445,18 @@ router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) =
       return res.status(400).json({ error: 'Estado inválido' });
     }
 
+    const update = { estado, comentariosAdmin };
+    if (estado === 'aprobado') {
+      update.aprobadoPor = (req.user && (req.user.name || req.user.email)) || undefined;
+      update.fechaAprobacion = new Date();
+    } else if (estado === 'rechazado') {
+      update.aprobadoPor = undefined;
+      update.fechaAprobacion = undefined;
+    }
+
     const solicitud = await SolicitudVacaciones.findByIdAndUpdate(
       id,
-      { estado, comentariosAdmin },
+      update,
       { new: true }
     );
 
