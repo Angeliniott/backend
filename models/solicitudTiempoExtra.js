@@ -24,6 +24,7 @@ const solicitudTiempoExtraSchema = new mongoose.Schema({
   reportePath: { type: String }, // Path to uploaded report file
   status: { type: String, enum: ['pendiente', 'aprobado', 'rechazado'], default: 'pendiente' },
   commentsAdmin: { type: String },
+  approvedAt: { type: Date },
   enterado: { type: Boolean, default: false },
   trabajado: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },

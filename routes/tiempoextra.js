@@ -162,7 +162,38 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
 // GET: solicitudes para admin
 router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
   try {
-    const solicitudes = await SolicitudTiempoExtra.find(); // Asegúrate de no filtrar solo por admin
+    const { from, to } = req.query;
+    const requesterEmail = req.user.email;
+    const requester = await User.findOne({ email: requesterEmail });
+    if (!requester) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // If role is admin or coordinador, restrict to their department.
+    // If role is admin2, return across all departments.
+    let baseFilter = {};
+    if (requester.role === 'admin' || requester.role === 'coordinador') {
+      const deptEmployees = await User.find({ dpt: requester.dpt }).select('email');
+      const deptEmails = deptEmployees.map(u => u.email);
+      baseFilter.employeeEmail = { $in: deptEmails };
+    }
+
+    if (from || to) {
+      const fromDate = from ? new Date(from) : new Date('1970-01-01');
+      const toDate = to ? new Date(to) : new Date('2999-12-31');
+      // Include entire end day
+      toDate.setHours(23, 59, 59, 999);
+
+      const dateRangeOrs = [
+        { type: 'valor_agregado', startDate: { $lte: toDate }, endDate: { $gte: fromDate } },
+        { type: 'tiempo_por_tiempo', workedDates: { $elemMatch: { $gte: fromDate, $lte: toDate } } },
+        { createdAt: { $gte: fromDate, $lte: toDate } }
+      ];
+      const solicitudes = await SolicitudTiempoExtra.find({ ...baseFilter, $or: dateRangeOrs }).sort({ createdAt: -1 });
+      return res.json(solicitudes);
+    }
+
+    const solicitudes = await SolicitudTiempoExtra.find(baseFilter).sort({ createdAt: -1 });
     res.json(solicitudes);
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener solicitudes' });
@@ -179,6 +210,22 @@ router.get('/employee/solicitudes', authMiddleware, async (req, res) => {
     if (req.query.filter === 'enterado_trabajado') {
       query.enterado = true;
       query.trabajado = true;
+    }
+
+    const { from, to } = req.query;
+    if (from || to) {
+      const fromDate = from ? new Date(from) : new Date('1970-01-01');
+      const toDate = to ? new Date(to) : new Date('2999-12-31');
+      toDate.setHours(23, 59, 59, 999);
+
+      const dateRangeOrs = [
+        { type: 'valor_agregado', startDate: { $lte: toDate }, endDate: { $gte: fromDate } },
+        { type: 'tiempo_por_tiempo', workedDates: { $elemMatch: { $gte: fromDate, $lte: toDate } } },
+        { createdAt: { $gte: fromDate, $lte: toDate } }
+      ];
+
+      const solicitudes = await SolicitudTiempoExtra.find({ ...query, $or: dateRangeOrs }).sort({ createdAt: -1 });
+      return res.json(solicitudes);
     }
 
     const solicitudes = await SolicitudTiempoExtra.find(query).sort({ createdAt: -1 });
@@ -239,13 +286,21 @@ router.put('/admin2/:id', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Estado inválido' });
     }
 
+    const update = {
+      status,
+      commentsAdmin: commentsAdmin || '',
+      updatedAt: new Date()
+    };
+
+    if (status === 'aprobado') {
+      update.approvedAt = new Date();
+    } else {
+      update.approvedAt = null;
+    }
+
     const solicitud = await SolicitudTiempoExtra.findByIdAndUpdate(
       id,
-      {
-        status,
-        commentsAdmin: commentsAdmin || '',
-        updatedAt: new Date()
-      },
+      update,
       { new: true }
     );
 
