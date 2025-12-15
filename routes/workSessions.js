@@ -59,19 +59,46 @@ router.get('/complete-sessions', authMiddleware, verifyAdmin, async (req, res) =
       end.setDate(start.getDate() + 1);
       query.checkinTime = { $gte: start, $lt: end };
     }
-    if (email) {
-      query.email = email;
+    // Build allowed email set based on requester role/department
+    const requester = req.user; // contains email, role
+    let allowedEmails = null; // null means all
+    if (requester && requester.role === 'admin') {
+      const adminUser = await User.findOne({ email: requester.email }, 'dpt');
+      if (!adminUser) {
+        return res.status(403).json({ error: 'Usuario administrador no encontrado' });
+      }
+      const sameDeptUsers = await User.find({ dpt: adminUser.dpt }, 'email');
+      allowedEmails = new Set(sameDeptUsers.map(u => u.email));
+      if (allowedEmails.size === 0) return res.json([]);
     }
 
-    // Filtrar por supervisor si se especifica
-    let userEmails = [];
+    // Optional supervisor filter
+    let supervisorEmails = null;
     if (supervisor) {
       const users = await User.find({ reporta: supervisor }, 'email');
-      userEmails = users.map(user => user.email);
-      if (userEmails.length === 0) {
-        return res.json([]);
-      }
-      query.email = { $in: userEmails };
+      const arr = users.map(u => u.email);
+      supervisorEmails = new Set(arr);
+      if (arr.length === 0) return res.json([]);
+    }
+
+    // Combine filters: allowedEmails ∩ supervisorEmails ∩ [email?]
+    function intersectSets(a, b) {
+      if (!a) return b; if (!b) return a;
+      const out = new Set();
+      a.forEach(v => { if (b.has(v)) out.add(v); });
+      return out;
+    }
+
+    let finalEmails = null;
+    if (allowedEmails) finalEmails = new Set(allowedEmails);
+    if (supervisorEmails) finalEmails = intersectSets(finalEmails, supervisorEmails);
+    if (email) {
+      const single = new Set([email]);
+      finalEmails = intersectSets(finalEmails, single);
+    }
+    if (finalEmails) {
+      if (finalEmails.size === 0) return res.json([]);
+      query.email = { $in: Array.from(finalEmails) };
     }
 
     const sessions = await WorkSession.find(query)
@@ -81,7 +108,7 @@ router.get('/complete-sessions', authMiddleware, verifyAdmin, async (req, res) =
 
     // Get unique emails to fetch user names
     const emails = [...new Set(sessions.map(s => s.email))];
-    const users = await User.find({ email: { $in: emails } }, 'email name reporta');
+    const users = await User.find({ email: { $in: emails } }, 'email name reporta dpt');
 
     const userMap = users.reduce((map, user) => {
       map[user.email] = user.name;
