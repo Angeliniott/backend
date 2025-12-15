@@ -8,7 +8,10 @@ const workSessionSchema = new mongoose.Schema({
   checkoutTime: { type: Date },
   workDuration: { type: Number }, // in minutes
   date: { type: Date, required: true }, // normalized to start of day
-  status: { type: String, enum: ['open', 'completed'], default: 'open' }
+  status: { type: String, enum: ['open', 'completed'], default: 'open' },
+  autoClosed: { type: Boolean, default: false },
+  startLocationUrl: { type: String },
+  endLocationUrl: { type: String }
 }, { timestamps: true });
 
 // Index for efficient queries

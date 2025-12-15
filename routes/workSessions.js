@@ -11,10 +11,46 @@ function getStartOfDay(date) {
   return d;
 }
 
+// Auto-close any open sessions older than 10 hours
+async function autoCloseStaleSessions(filter = {}) {
+  const now = new Date();
+  const threshold = new Date(now.getTime() - 10 * 60 * 60 * 1000);
+  const stale = await WorkSession.find({ status: 'open', checkinTime: { $lte: threshold }, ...filter });
+  for (const s of stale) {
+    const maxEnd = new Date(s.checkinTime.getTime() + 10 * 60 * 60 * 1000);
+    s.checkoutTime = maxEnd;
+    s.workDuration = Math.floor((s.checkoutTime - s.checkinTime) / (1000 * 60));
+    s.status = 'completed';
+    s.autoClosed = true;
+    await s.save();
+  }
+}
+
+// GET - Open session for current user
+router.get('/open', authMiddleware, async (req, res) => {
+  try {
+    const email = req.user && req.user.email;
+    if (!email) return res.status(401).json({ error: 'No autorizado' });
+
+    // Auto-close if stale for this user
+    await autoCloseStaleSessions({ email });
+
+    const open = await WorkSession.findOne({ email, status: 'open' }).sort({ checkinTime: -1 });
+    if (!open) return res.json({ open: false });
+    return res.json({ open: true, session: { checkinTime: open.checkinTime } });
+  } catch (e) {
+    console.error('Error getting open session:', e);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // GET - Complete sessions report for admin
 router.get('/complete-sessions', authMiddleware, verifyAdmin, async (req, res) => {
   try {
     const { date, email, supervisor } = req.query;
+
+    // Ensure stale sessions are closed before reporting
+    await autoCloseStaleSessions();
 
     let query = { status: 'completed' };
     if (date) {
@@ -45,7 +81,7 @@ router.get('/complete-sessions', authMiddleware, verifyAdmin, async (req, res) =
 
     // Get unique emails to fetch user names
     const emails = [...new Set(sessions.map(s => s.email))];
-    const users = await User.find({ email: { $in: emails } }, 'email name');
+    const users = await User.find({ email: { $in: emails } }, 'email name reporta');
 
     const userMap = users.reduce((map, user) => {
       map[user.email] = user.name;
@@ -58,7 +94,9 @@ router.get('/complete-sessions', authMiddleware, verifyAdmin, async (req, res) =
       checkinTime: session.checkinTime,
       checkoutTime: session.checkoutTime,
       workDuration: session.workDuration,
-      status: session.status
+      status: session.status,
+      autoClosed: !!session.autoClosed,
+      supervisor: (users.find(u => u.email === session.email) || {}).reporta || ''
     }));
 
     res.json(result);

@@ -30,45 +30,43 @@ function getWeekStart(date) {
 }
 
 // ==================== POST CHECK-OUT ====================
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
-    const { email, latitude, longitude, distance, status } = req.body;
+    const { locationUrl } = req.body || {};
+    const email = req.user && req.user.email;
+    if (!email) return res.status(401).json({ error: 'No autorizado' });
 
-    if (
-      !email ||
-      typeof latitude !== 'number' ||
-      typeof longitude !== 'number'
-    ) {
-      return res.status(400).json({ error: 'Faltan o son inválidos los datos requeridos.' });
-    }
-
-    const newCheckout = new Checkin({
-      email,
-      latitude,
-      longitude,
-      distance: distance || null,
-      status: status || 'no especificado',
-      type: 'checkout'
-    });
+    const newCheckout = new Checkin({ email, type: 'checkout' });
 
     await newCheckout.save();
 
     // Complete work session
+    let autoClosedResp = false;
+    let foundSession = false;
     try {
       // Find the open work session for this email
       const openSession = await WorkSession.findOne({ email, status: 'open' })
         .sort({ checkinTime: -1 });
 
       if (openSession) {
+        foundSession = true;
+        // Clamp to 10 hours maximum
+        const maxEnd = new Date(openSession.checkinTime.getTime() + 10 * 60 * 60 * 1000);
+        const actualEnd = newCheckout.createdAt > maxEnd ? maxEnd : newCheckout.createdAt;
+        const autoClosed = newCheckout.createdAt > maxEnd;
+
         // Calculate work duration
-        const workDuration = calculateWorkDuration(openSession.checkinTime, newCheckout.createdAt);
+        const workDuration = calculateWorkDuration(openSession.checkinTime, actualEnd);
 
         // Update work session
         openSession.checkoutId = newCheckout._id;
-        openSession.checkoutTime = newCheckout.createdAt;
+        openSession.checkoutTime = actualEnd;
         openSession.workDuration = workDuration;
         openSession.status = 'completed';
+        openSession.autoClosed = autoClosed;
+        openSession.endLocationUrl = locationUrl || undefined;
         await openSession.save();
+        autoClosedResp = autoClosed;
 
         // Update daily work hours
         const date = getStartOfDay(openSession.checkinTime);
@@ -113,10 +111,13 @@ router.post('/', async (req, res) => {
     } catch (error) {
       console.error('Error completing work session:', error);
     }
-
+    if (!foundSession) {
+      return res.status(409).json({ error: 'no_open_session' });
+    }
     return res.status(201).json({
-      message: '✔️ Check-out registrado con éxito',
-      checkout: newCheckout
+      message: '✔️ Fin registrado con éxito',
+      checkout: newCheckout,
+      autoClosed: autoClosedResp
     });
 
   } catch (error) {
