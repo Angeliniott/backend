@@ -240,33 +240,25 @@ router.get('/resumen', authMiddleware, async (req, res) => {
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
     const solicitudes = await SolicitudVacaciones.find({ email: user.email, estado: 'aprobado' });
 
-    // Calcular usados por periodo con base en aprobadas
-    const periodosResumen = periodos.map(p => {
-      const usadosPeriodo = solicitudes
-        .filter(s => new Date(s.fechaFin) >= p.inicio && new Date(s.fechaFin) <= p.fin)
-        .reduce((sum, s) => sum + (s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0), 0);
-      return {
-        inicioAniversario: p.inicio,
-        finAniversario: p.inicio, // fin del año laboral; no usado en vigencia
-        vigenciaHasta: p.fin,
-        habilitados: p.dias,
-        usados: usadosPeriodo,
-        disponibles: Math.max(0, p.dias - usadosPeriodo)
-      };
-    });
+    // Calcular usados por periodo usando la misma lógica de distribución para evitar doble conteo por periodos solapados
+    const usadosPorPeriodo = obtenerUsadosPorPeriodo(solicitudes, periodos);
+    const periodosResumen = periodos.map((p, idx) => ({
+      inicioAniversario: p.inicio,
+      finAniversario: p.inicio, // fin del año laboral; no usado en vigencia
+      vigenciaHasta: p.fin,
+      habilitados: p.dias,
+      usados: usadosPorPeriodo[idx] || 0,
+      disponibles: Math.max(0, p.dias - (usadosPorPeriodo[idx] || 0))
+    }));
     const disponiblesTotal = periodosResumen.reduce((sum, r) => sum + r.disponibles, 0);
 
     // Además, incluir solicitudes del usuario enriquecidas para compatibilidad con misvacaciones.html
     const todasSolicitudes = await SolicitudVacaciones.find({ email: user.email }).lean();
     const solicitudesEnriquecidas = todasSolicitudes.map(sol => {
-      // calcular días disponibles antes de esta solicitud (sumando disponibles por periodo antes de su fechaFin)
-      let diasDisponiblesAntes = 0;
-      for (const p of periodosResumen) {
-        const usadosAntes = todasSolicitudes
-          .filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) >= p.inicioAniversario && new Date(s.fechaFin) <= p.vigenciaHasta && new Date(s.fechaFin) < new Date(sol.fechaFin))
-          .reduce((sum, s) => sum + ((s.diasPeriodoPrevio || 0) + (s.diasPeriodoActual || 0)), 0);
-        diasDisponiblesAntes += Math.max(0, p.habilitados - usadosAntes);
-      }
+      // Calcular días disponibles antes de esta solicitud usando distribución consistente para evitar doble conteo
+      const aprobadasAntes = todasSolicitudes.filter(s => s.estado === 'aprobado' && new Date(s.fechaFin) < new Date(sol.fechaFin));
+      const usadosAntesArr = obtenerUsadosPorPeriodo(aprobadasAntes, periodos);
+      const diasDisponiblesAntes = periodos.reduce((sum, p, idx) => sum + Math.max(0, (p.dias || 0) - (usadosAntesArr[idx] || 0)), 0);
       const diasDisponiblesDespues = Math.max(0, diasDisponiblesAntes - (sol.diasSolicitados || 0));
       return {
         ...sol,
