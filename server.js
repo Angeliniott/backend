@@ -33,7 +33,7 @@ setInterval(checkAndSendVacationReminders, 24 * 60 * 60 * 1000); // 24 hours
 
 // Configurar CORS
 const corsOptions = {
-  origin: 'https://www.portalmmx.com/', // Reemplaza con el dominio de tu frontend
+  origin: 'https://checkin-mazak.vercel.app', // Reemplaza con el dominio de tu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
   allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
   credentials: true // Permitir cookies y encabezados de autorización
