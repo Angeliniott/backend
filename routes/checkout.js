@@ -29,6 +29,8 @@ function getWeekStart(date) {
   return monday;
 }
 
+const MIN_MINUTES = 4 * 60; // mínimo 4 horas antes de permitir checkout
+
 // ==================== POST CHECK-OUT ====================
 router.post('/', authMiddleware, async (req, res) => {
   try {
@@ -36,84 +38,92 @@ router.post('/', authMiddleware, async (req, res) => {
     const email = req.user && req.user.email;
     if (!email) return res.status(401).json({ error: 'No autorizado' });
 
-    const newCheckout = new Checkin({ email, type: 'checkout' });
+    // Find open session first (do not create checkout if not allowed)
+    const openSession = await WorkSession.findOne({ email, status: 'open' }).sort({ checkinTime: -1 });
+    if (!openSession) {
+      return res.status(409).json({ error: 'no_open_session' });
+    }
 
+    // Enforce 4-hour minimum
+    const now = new Date();
+    const elapsedMin = Math.floor((now.getTime() - new Date(openSession.checkinTime).getTime()) / 60000);
+    if (elapsedMin < MIN_MINUTES) {
+      const remaining = MIN_MINUTES - elapsedMin;
+      return res.status(409).json({
+        error: 'min_duration_not_reached',
+        message: 'Aún no puedes finalizar la sesión. Deben transcurrir al menos 4 horas desde el inicio.',
+        remainingMinutes: remaining
+      });
+    }
+
+    // Create checkout record only after validations pass
+    const newCheckout = new Checkin({ email, type: 'checkout' });
     await newCheckout.save();
 
     // Complete work session
     let autoClosedResp = false;
-    let foundSession = false;
     try {
-      // Find the open work session for this email
-      const openSession = await WorkSession.findOne({ email, status: 'open' })
-        .sort({ checkinTime: -1 });
+      // Clamp to 10 hours maximum
+      const maxEnd = new Date(openSession.checkinTime.getTime() + 10 * 60 * 60 * 1000);
+      const actualEnd = newCheckout.createdAt > maxEnd ? maxEnd : newCheckout.createdAt;
+      const autoClosed = newCheckout.createdAt > maxEnd;
 
-      if (openSession) {
-        foundSession = true;
-        // Clamp to 10 hours maximum
-        const maxEnd = new Date(openSession.checkinTime.getTime() + 10 * 60 * 60 * 1000);
-        const actualEnd = newCheckout.createdAt > maxEnd ? maxEnd : newCheckout.createdAt;
-        const autoClosed = newCheckout.createdAt > maxEnd;
+      // Calculate work duration
+      const workDuration = calculateWorkDuration(openSession.checkinTime, actualEnd);
 
-        // Calculate work duration
-        const workDuration = calculateWorkDuration(openSession.checkinTime, actualEnd);
+      // Update work session
+      openSession.checkoutId = newCheckout._id;
+      openSession.checkoutTime = actualEnd;
+      openSession.workDuration = workDuration;
+      openSession.status = 'completed';
+      openSession.autoClosed = autoClosed;
+      openSession.endLocationUrl = locationUrl || undefined;
+      await openSession.save();
+      autoClosedResp = autoClosed;
 
-        // Update work session
-        openSession.checkoutId = newCheckout._id;
-        openSession.checkoutTime = actualEnd;
-        openSession.workDuration = workDuration;
-        openSession.status = 'completed';
-        openSession.autoClosed = autoClosed;
-        openSession.endLocationUrl = locationUrl || undefined;
-        await openSession.save();
-        autoClosedResp = autoClosed;
+      // Update daily work hours
+      const date = getStartOfDay(openSession.checkinTime);
+      let dailyHours = await DailyWorkHours.findOne({ email, date });
 
-        // Update daily work hours
-        const date = getStartOfDay(openSession.checkinTime);
-        let dailyHours = await DailyWorkHours.findOne({ email, date });
-        
-        if (!dailyHours) {
-          dailyHours = new DailyWorkHours({ email, date });
-        }
-        
-        dailyHours.totalMinutes += workDuration;
-        dailyHours.sessions.push(openSession._id);
-        dailyHours.isComplete = true;
-        await dailyHours.save();
-
-        // Update weekly work hours
-        const weekStart = getWeekStart(date);
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 6);
-        weekEnd.setHours(23, 59, 59, 999);
-
-        const year = weekStart.getFullYear();
-        const weekNumber = Math.ceil((weekStart - new Date(year, 0, 1)) / (7 * 24 * 60 * 60 * 1000));
-
-        let weeklyHours = await WeeklyWorkHours.findOne({ email, weekStart });
-        
-        if (!weeklyHours) {
-          weeklyHours = new WeeklyWorkHours({
-            email,
-            weekStart,
-            weekEnd,
-            year,
-            weekNumber
-          });
-        }
-        
-        weeklyHours.totalMinutes += workDuration;
-        if (!weeklyHours.dailyHours.includes(dailyHours._id)) {
-          weeklyHours.dailyHours.push(dailyHours._id);
-        }
-        await weeklyHours.save();
+      if (!dailyHours) {
+        dailyHours = new DailyWorkHours({ email, date });
       }
+
+      dailyHours.totalMinutes += workDuration;
+      dailyHours.sessions.push(openSession._id);
+      dailyHours.isComplete = true;
+      await dailyHours.save();
+
+      // Update weekly work hours
+      const weekStart = getWeekStart(date);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999);
+
+      const year = weekStart.getFullYear();
+      const weekNumber = Math.ceil((weekStart - new Date(year, 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+
+      let weeklyHours = await WeeklyWorkHours.findOne({ email, weekStart });
+
+      if (!weeklyHours) {
+        weeklyHours = new WeeklyWorkHours({
+          email,
+          weekStart,
+          weekEnd,
+          year,
+          weekNumber
+        });
+      }
+
+      weeklyHours.totalMinutes += workDuration;
+      if (!weeklyHours.dailyHours.includes(dailyHours._id)) {
+        weeklyHours.dailyHours.push(dailyHours._id);
+      }
+      await weeklyHours.save();
     } catch (error) {
       console.error('Error completing work session:', error);
     }
-    if (!foundSession) {
-      return res.status(409).json({ error: 'no_open_session' });
-    }
+
     return res.status(201).json({
       message: '✔️ Fin registrado con éxito',
       checkout: newCheckout,
