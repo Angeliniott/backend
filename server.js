@@ -81,7 +81,13 @@ app.use(cors(corsOptionsDelegate));
 // Preflight support
 // Express 5 / path-to-regexp v6: use (.*) instead of *
 // Express 5 + path-to-regexp v6: use regex group '(.*)' for catch-all
-app.options('/:path(.*)', cors(corsOptionsDelegate));
+    // Preflight support for all routes without path pattern (avoids path-to-regexp issues)
+    app.use((req, res, next) => {
+      if (req.method === 'OPTIONS') {
+        return cors(corsOptionsDelegate)(req, res, () => res.sendStatus(204));
+      }
+      next();
+    });
 
 // Rutas
 app.use('/api/auth', require('./routes/auth'));
