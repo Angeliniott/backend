@@ -128,7 +128,7 @@ const sendTiempoExtraNotification = async (
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
-        <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+        <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
     attachments,
@@ -205,7 +205,7 @@ const sendEmployeeTiempoExtraNotification = async (
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>
-        <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+        <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
     attachments,
@@ -238,7 +238,7 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
           <p><strong>Fecha de vencimiento:</strong> ${new Date(expirationDate).toLocaleDateString()}</p>
         </div>
         <p>Por favor, solicita tus vacaciones a través del sistema para no perder estos días.</p>
-        <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+        <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
   };
@@ -268,7 +268,7 @@ const sendVacationRequestToAdmins = async (adminEmails, employeeName, fechaInici
         ${motivo ? `<p><strong>Motivo:</strong> ${motivo}</p>` : ''}
       </div>
       <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
-      <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+      <p>Saludos,<br><strong>Portal del Empleado</strong></p>
     </div>
   `;
   try {
@@ -297,7 +297,7 @@ const sendVacationDecisionToEmployee = async ({
       <p>Tu solicitud de vacaciones ha sido <strong>${estado}</strong>${aprobadoPor ? ` por ${aprobadoPor}` : ''}.</p>
       ${comentariosAdmin ? `<p><strong>Comentarios:</strong> ${comentariosAdmin}</p>` : ''}
       <p>Puedes consultar el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
-      <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+      <p>Saludos,<br><strong>Portal del Empleado</strong></p>
     </div>
   `;
   try {
@@ -346,7 +346,7 @@ const sendTiempoExtraDecisionNotification = async ({
       </div>
       ${commentsAdmin ? `<p><strong>Comentarios del administrador:</strong> ${commentsAdmin}</p>` : ''}
       <p>Consulta el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
-      <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+      <p>Saludos,<br><strong>Portal del Empleado</strong></p>
     </div>
   `;
   try {
