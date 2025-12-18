@@ -80,8 +80,8 @@ app.use(express.json());
 app.use(cors(corsOptionsDelegate));
 // Preflight support
 // Express 5 / path-to-regexp v6: use (.*) instead of *
-// Express 5 requires leading slash; use /(.*) for catch-all
-app.options('/(.*)', cors(corsOptionsDelegate));
+// Express 5 + path-to-regexp v6: use a star param for catch-all
+app.options('/:path(*)', cors(corsOptionsDelegate));
 
 // Rutas
 app.use('/api/auth', require('./routes/auth'));
