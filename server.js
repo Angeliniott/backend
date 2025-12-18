@@ -61,7 +61,8 @@ const corsOptionsDelegate = (req, callback) => {
 app.use(express.json());
 app.use(cors(corsOptionsDelegate));
 // Preflight support
-app.options('*', cors(corsOptionsDelegate));
+// Express 5 / path-to-regexp v6: use (.*) instead of *
+app.options('(.*)', cors(corsOptionsDelegate));
 
 // Rutas
 app.use('/api/auth', require('./routes/auth'));
