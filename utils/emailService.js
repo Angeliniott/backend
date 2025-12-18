@@ -16,8 +16,17 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'https://checkin-mazak.vercel.a
 // Función auxiliar para evitar rate limit (2 req/segundo)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Envío genérico
+// Envío genérico con diagnósticos
 async function sendEmail({ to, cc, subject, html, attachments }) {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('⚠️ RESEND_API_KEY no está definido. Abortando envío de correo.');
+    throw new Error('RESEND_API_KEY ausente');
+  }
+  if (!to || (Array.isArray(to) && to.length === 0)) {
+    console.warn('⚠️ sendEmail llamado sin destinatarios válidos.');
+    throw new Error('Destinatario requerido');
+  }
+
   const data = {
     from: MAIL_FROM,
     to,
@@ -26,8 +35,32 @@ async function sendEmail({ to, cc, subject, html, attachments }) {
     html,
     attachments,
   };
-  await delay(500);
-  return resend.emails.send(data);
+
+  try {
+    console.log('✉️  Intentando enviar email', {
+      to: Array.isArray(to) ? to : [to],
+      cc: Array.isArray(cc) ? cc : (cc ? [cc] : []),
+      subject,
+      from: MAIL_FROM,
+    });
+    await delay(500);
+    const result = await resend.emails.send(data);
+    // Resend suele devolver { id, ... }
+    if (result && result.id) {
+      console.log('✅ Email aceptado por Resend', { id: result.id, subject });
+    } else {
+      console.log('✅ Email enviado (respuesta sin id)', { subject });
+    }
+    return result;
+  } catch (err) {
+    console.error('❌ Error al enviar email con Resend:', {
+      message: err?.message,
+      name: err?.name,
+      status: err?.status,
+      cause: err?.cause?.message || undefined,
+    });
+    throw err;
+  }
 }
 
 

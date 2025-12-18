@@ -17,7 +17,7 @@ router.post('/preview', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Fechas requeridas' });
     }
 
-    if (!supervisor || !['elizabeth', 'francisco', 'servicio', 'fsantiago@mazakcorp.com'].includes(supervisor)) {
+    if (!supervisor || !['elizabeth', 'francisco', 'servicio', 'gerencia', 'gerencia_general', 'fsantiago@mazakcorp.com'].includes(supervisor)) {
       return res.status(400).json({ error: 'Supervisor requerido o inválido' });
     }
 
@@ -361,12 +361,39 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
 
     await nuevaSolicitud.save();
 
-    // Notificar a admins del departamento del empleado
+    // Notificar según supervisor seleccionado; si es Gerencia General → fsantiago
     try {
-      const deptAdmins = await User.find({ role: 'admin', dpt: user.dpt }).select('email');
-      const adminEmails = deptAdmins.map(a => a.email);
+      const supRaw = supervisor || '';
+      const sup = supRaw.toLowerCase();
+      let recipients = [];
+
+      const map = {
+        elizabeth: process.env.SUP_ELIZABETH || 'edelgado@mazakcorp.com',
+        francisco: process.env.SUP_FRANCISCO || 'ffernandez@mazakcorp.com',
+        servicio: process.env.SUP_SERVICIO || 'glopez@mazakcorp.com',
+        gerencia: process.env.SUP_GERENCIA || 'fsantiago@mazakcorp.com',
+        gerencia_general: process.env.SUP_GERENCIA || 'fsantiago@mazakcorp.com',
+      };
+
+      if (supRaw.includes('@')) {
+        recipients = [supRaw];
+      } else if (map[sup]) {
+        recipients = [map[sup]];
+      } else {
+        // Fallback: admins por departamento (compatibilidad)
+        const deptAdmins = await User.find({ role: 'admin', dpt: user.dpt }).select('email');
+        recipients = deptAdmins.map(a => a.email).filter(Boolean);
+      }
+
+      console.log('🔎 Destinatarios para solicitud de vacaciones', {
+        supervisor: supRaw,
+        departamento: user.dpt,
+        cantidad: recipients.length,
+        emails: recipients,
+      });
+
       await sendVacationRequestToAdmins(
-        adminEmails,
+        recipients,
         user.name,
         inicio,
         fin,
