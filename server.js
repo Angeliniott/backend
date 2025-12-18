@@ -31,20 +31,40 @@ connectDB();
 // Initialize vacation reminder job (runs daily)
 setInterval(checkAndSendVacationReminders, 24 * 60 * 60 * 1000); // 24 hours
 
-// Configurar CORS
-const corsOptions = {
-  origin: 'https://checkin-mazak.vercel.app', // Reemplaza con el dominio de tu frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
-  credentials: true // Permitir cookies y encabezados de autorización
+// Configurar CORS con orígenes dinámicos
+const allowedOrigins = (process.env.CORS_ORIGINS || 'https://www.portalmmx.com,https://portalmmx.com,https://checkin-mazak.vercel.app')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
+const corsOptionsDelegate = (req, callback) => {
+  const requestOrigin = req.header('Origin');
+  let corsOptions;
+
+  if (!requestOrigin) {
+    // Non-CORS or same-origin requests
+    corsOptions = { origin: false };
+  } else if (allowedOrigins.includes(requestOrigin)) {
+    corsOptions = {
+      origin: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true
+    };
+  } else {
+    corsOptions = { origin: false };
+  }
+  callback(null, corsOptions);
 };
 
 // Middlewares
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors(corsOptionsDelegate));
+// Preflight support
+app.options('*', cors(corsOptionsDelegate));
 
 // Rutas
-app.use('/api/auth', cors(corsOptions), require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/vacaciones', vacacionesRoutes);
@@ -52,6 +72,11 @@ app.use('/api/user', userRoutes);
 app.use('/api/work-hours', workHoursRoutes);
 app.use('/api/work-sessions', workSessionsRoutes);
 app.use('/api/tiempoextra', tiempoExtraRoutes);
+
+// Ruta de salud para Render
+app.get('/', (req, res) => {
+  res.status(200).send('OK');
+});
 
 // Puerto de Render o local
 const PORT = process.env.PORT || 5000;
