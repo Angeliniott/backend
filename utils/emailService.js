@@ -7,7 +7,8 @@ const path = require('path');
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Configuración de emails
-const MAIL_FROM = process.env.MAIL_FROM || 'Mazak Soporte <onboarding@resend.dev>';
+// Soporta clave mal escrita MAIL_FORM como fallback
+const MAIL_FROM = process.env.MAIL_FROM || process.env.MAIL_FORM || 'Mazak Soporte <onboarding@resend.dev>';
 const HR_EMAIL = process.env.HR_EMAIL || 'mnery@mazakcorp.com';
 const LIZ_EMAIL = process.env.LIZ_EMAIL || 'edelgado@mazakcorp.com';
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://checkin-mazak.vercel.app';
