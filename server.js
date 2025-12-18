@@ -32,7 +32,7 @@ connectDB();
 setInterval(checkAndSendVacationReminders, 24 * 60 * 60 * 1000); // 24 hours
 
 // Configurar CORS con orígenes dinámicos
-const allowedOrigins = (process.env.CORS_ORIGINS || 'https://www.portalmmx.com,https://portalmmx.com,https://checkin-mazak.vercel.app')
+const allowedOrigins = (process.env.CORS_ORIGINS || 'https://www.portalmmx.com,https://portalmmx.com,https://checkin-mazak.vercel.app,https://*.vercel.app')
   .split(',')
   .map(o => o.trim())
   .filter(Boolean);
@@ -52,7 +52,25 @@ const corsOptionsDelegate = (req, callback) => {
       credentials: true
     };
   } else {
-    corsOptions = { origin: false };
+    // Support wildcard entries like https://*.vercel.app
+    const patterns = allowedOrigins
+      .filter(p => p.includes('*'))
+      .map(p => new RegExp('^' + p
+        .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+        .replace('\\*', '.*') + '$'));
+
+    const matchesWildcard = patterns.some(rx => rx.test(requestOrigin));
+
+    if (matchesWildcard) {
+      corsOptions = {
+        origin: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true
+      };
+    } else {
+      corsOptions = { origin: false };
+    }
   }
   callback(null, corsOptions);
 };
@@ -62,7 +80,8 @@ app.use(express.json());
 app.use(cors(corsOptionsDelegate));
 // Preflight support
 // Express 5 / path-to-regexp v6: use (.*) instead of *
-app.options('(.*)', cors(corsOptionsDelegate));
+// Express 5 requires leading slash; use /(.*) for catch-all
+app.options('/(.*)', cors(corsOptionsDelegate));
 
 // Rutas
 app.use('/api/auth', require('./routes/auth'));
