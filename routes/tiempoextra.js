@@ -30,15 +30,26 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /pdf|doc|docx|xls|xlsx|jpg|jpeg|png/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    // Robust MIME and extension checks
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedExts = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png'];
+    const okExt = allowedExts.includes(ext);
 
-    if (mimetype && extname) {
+    const mt = (file.mimetype || '').toLowerCase();
+    const okMime = (
+      mt.includes('pdf') ||
+      mt.includes('msword') ||
+      mt.includes('officedocument') ||
+      mt.includes('spreadsheet') ||
+      mt.includes('excel') ||
+      mt.startsWith('image/')
+    );
+
+    if (okExt && okMime) {
       return cb(null, true);
-    } else {
-      cb(new Error('Tipo de archivo no permitido'));
     }
+    console.warn('⚠️ Archivo rechazado por filtro:', { originalname: file.originalname, mimetype: file.mimetype, ext });
+    cb(new Error('Tipo de archivo no permitido'));
   }
 });
 
@@ -61,8 +72,16 @@ router.get('/empleados', authMiddleware, verifyTiempoExtraAdmin, async (req, res
 });
 
 // POST: solicitar tiempo extra
-router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single('reporte'), async (req, res) => {
-  try {
+router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, async (req, res) => {
+  // Ejecutar multer manualmente para capturar y devolver errores legibles
+  upload.single('reporte')(req, res, async (uploadErr) => {
+    if (uploadErr) {
+      const isSizeLimit = uploadErr.code === 'LIMIT_FILE_SIZE';
+      const message = isSizeLimit ? 'El archivo excede el límite de 10MB' : (uploadErr.message || 'Error al subir archivo');
+      console.error('❌ Error de subida (multer):', { message, code: uploadErr.code });
+      return res.status(400).json({ error: message });
+    }
+    try {
     const requesterEmail = req.user.email;
     const { employeeEmail, cliente, type, startDate, endDate, workedDates, horasEntreSemana, horasFinSemana, diasFestivos, bonoEstanciaFinSemana, bonoViajeFinSemana, trabajoFinSemana, estadiaFinSemana, viajesFinSemana, diasFestivosLaborados, cantidadTrabajo, cantidadEstadia, cantidadViajes, cantidadFestivos } = req.body;
 
@@ -154,10 +173,11 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
     );
 
     res.status(201).json({ message: 'Solicitud enviada', solicitud: nuevaSolicitud });
-  } catch (err) {
-    console.error('❌ Error en POST /tiempoextra/solicitar:', err);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
+    } catch (err) {
+      console.error('❌ Error en POST /tiempoextra/solicitar:', err);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  });
 });
 
 // GET: solicitudes para admin

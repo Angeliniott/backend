@@ -113,12 +113,12 @@ const sendTiempoExtraNotification = async (
   const data = {
     from: MAIL_FROM,
     to: admin2Email,
-    subject: 'Nueva Solicitud de Tiempo Extra Pendiente de Aprobación',
+    subject: 'Nueva Solicitud de Valor Agregado Pendiente de Aprobación',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Nueva Solicitud de Tiempo Extra</h2>
+        <h2 style="color: #333;">Nueva Solicitud de Valor Agregado</h2>
         <p>Hola ${admin2Name},</p>
-        <p>Se ha recibido una nueva solicitud de tiempo extra que requiere tu aprobación:</p>
+        <p>Se ha recibido una nueva solicitud de valor agregado que requiere tu aprobación:</p>
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           <p><strong>Empleado:</strong> ${employeeName}</p>
@@ -127,7 +127,7 @@ const sendTiempoExtraNotification = async (
           ${motivoText}
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
-        <p>Por favor, revisa la solicitud en el sistema y aprueba o rechaza según corresponda.</p>
+        <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
         <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
@@ -191,12 +191,12 @@ const sendEmployeeTiempoExtraNotification = async (
   const data = {
     from: MAIL_FROM,
     to: employeeEmail,
-    subject: 'Nueva Solicitud de Tiempo Extra Generada',
+    subject: 'Nueva Solicitud de Valor Agregado Generada',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Nueva Solicitud de Tiempo Extra</h2>
+        <h2 style="color: #333;">Nueva Solicitud de Valor Agregado</h2>
         <p>Hola ${employeeName},</p>
-        <p>Tu jefe ha generado una solicitud de tiempo extra para ti. Aquí están los detalles:</p>
+        <p>Tu jefe ha generado una solicitud de valor agregado para ti. Aquí están los detalles:</p>
         <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
           <p><strong>Solicitante:</strong> ${requesterName}</p>
           ${periodoText}
@@ -204,7 +204,7 @@ const sendEmployeeTiempoExtraNotification = async (
           ${motivoText}
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
-        <p>Puedes revisar el estado de aprobación en el dashboard del sistema.</p>
+        <p>Puedes revisar el estado de aprobación en el dashboard del portal.</p>
         <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
@@ -237,7 +237,7 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
           <p><strong>Días disponibles:</strong> ${availableDays}</p>
           <p><strong>Fecha de vencimiento:</strong> ${new Date(expirationDate).toLocaleDateString()}</p>
         </div>
-        <p>Por favor, solicita tus vacaciones a través del sistema para no perder estos días.</p>
+        <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
         <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
@@ -338,13 +338,13 @@ const sendTiempoExtraDecisionNotification = async ({
   }
   const baseHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #333;">Solicitud de tiempo extra ${aprobado ? 'aprobada' : 'rechazada'}</h2>
+      <h2 style="color: #333;">Solicitud de valor agregado ${aprobado ? 'aprobada' : 'rechazada'}</h2>
       <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
         <p><strong>Empleado:</strong> ${employeeName}</p>
         ${periodoText}
         <p><strong>Cliente:</strong> ${cliente || '-'}</p>
       </div>
-      ${commentsAdmin ? `<p><strong>Comentarios del administrador:</strong> ${commentsAdmin}</p>` : ''}
+      ${commentsAdmin ? `<p><strong>Comentarios del gerente:</strong> ${commentsAdmin}</p>` : ''}
       <p>Consulta el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
       <p>Saludos,<br><strong>Portal del Empleado</strong></p>
     </div>
@@ -354,18 +354,18 @@ const sendTiempoExtraDecisionNotification = async ({
     await sendEmail({
       to: requesterEmail,
       cc: aprobado ? [HR_EMAIL, LIZ_EMAIL] : undefined,
-      subject: `Tiempo extra ${aprobado ? 'aprobado' : 'rechazado'}`,
+      subject: `Valor Agregado ${aprobado ? 'aprobado' : 'rechazado'}`,
       html: baseHtml
     });
     // Al empleado
     await sendEmail({
       to: employeeEmail,
       cc: aprobado ? [HR_EMAIL, LIZ_EMAIL] : undefined,
-      subject: `Tu tiempo extra fue ${aprobado ? 'aprobado' : 'rechazado'}`,
+      subject: `Tu valor agregado fue ${aprobado ? 'aprobado' : 'rechazado'}`,
       html: baseHtml
     });
   } catch (error) {
-    console.error('❌ Error enviando decisión de tiempo extra:', error);
+    console.error('❌ Error enviando decisión de valor agregado:', error);
   }
 };
 
