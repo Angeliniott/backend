@@ -4,6 +4,7 @@ const User = require('../models/user');
 const SolicitudVacaciones = require('../models/solicitudvacaciones');
 const { authMiddleware, verifyAdmin } = require('../middleware/auth');
 const { isEligibleForVacation, formatRemainingTime } = require('../utils/dateUtils');
+const { sendVacationRequestToAdmins, sendVacationDecisionToEmployee } = require('../utils/emailService');
 const { parseHolidays, countHolidaysInRange, countWeekdaysExcludingHolidays } = require('../utils/holidayUtils');
 
 // PREVIEW: calcular desglose de días por periodo sin guardar registro
@@ -359,6 +360,23 @@ router.post('/solicitar', authMiddleware, async (req, res) => {
     });
 
     await nuevaSolicitud.save();
+
+    // Notificar a admins del departamento del empleado
+    try {
+      const deptAdmins = await User.find({ role: 'admin', dpt: user.dpt }).select('email');
+      const adminEmails = deptAdmins.map(a => a.email);
+      await sendVacationRequestToAdmins(
+        adminEmails,
+        user.name,
+        inicio,
+        fin,
+        diasSolicitados,
+        motivo
+      );
+    } catch (notifyErr) {
+      console.error('⚠️ Error enviando notificaciones de solicitud de vacaciones:', notifyErr);
+    }
+
     res.status(201).json({ message: 'Solicitud enviada', solicitud: nuevaSolicitud });
 
   } catch (err) {
@@ -454,6 +472,20 @@ router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) =
 
     if (!solicitud) {
       return res.status(404).json({ error: 'Solicitud no encontrada' });
+    }
+
+    // Notificar al empleado
+    try {
+      const employee = await User.findOne({ email: solicitud.email }).select('name email');
+      await sendVacationDecisionToEmployee({
+        employeeEmail: employee?.email || solicitud.email,
+        employeeName: employee?.name || solicitud.email,
+        estado,
+        comentariosAdmin,
+        aprobadoPor: update.aprobadoPor
+      });
+    } catch (notifyErr) {
+      console.error('⚠️ Error enviando notificación de decisión de vacaciones:', notifyErr);
     }
 
     res.json({ message: 'Estado actualizado', solicitud });

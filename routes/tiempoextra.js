@@ -7,7 +7,7 @@ const fs = require('fs');
 const User = require('../models/user');
 const SolicitudTiempoExtra = require('../models/solicitudTiempoExtra');
 const { authMiddleware, verifyAdmin, verifyTiempoExtraAdmin } = require('../middleware/auth');
-const { sendTiempoExtraNotification, sendEmployeeTiempoExtraNotification } = require('../utils/emailService');
+const { sendTiempoExtraNotification, sendEmployeeTiempoExtraNotification, sendTiempoExtraDecisionNotification } = require('../utils/emailService');
 
 // ✅ Ensure uploads directory exists (fixes ENOENT error)
 const uploadsPath = path.join(__dirname, '..', 'uploads');
@@ -117,15 +117,16 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, upload.single(
 
     await nuevaSolicitud.save();
 
-    // Notify all admin2 users via email
-    const admin2Users = await User.find({ role: 'admin2' }).select('email name');
-    const requester = await User.findOne({ email: requesterEmail }).select('name');
-    const employeeInfo = await User.findOne({ email: employeeEmail }).select('name');
+    // Notify department admins (gerentes) via email
+    const requester = await User.findOne({ email: requesterEmail }).select('name dpt role');
+    const employeeInfo = await User.findOne({ email: employeeEmail }).select('name dpt');
+    const dept = employeeInfo?.dpt || requester?.dpt;
+    const deptAdmins = await User.find({ role: 'admin', dpt: dept }).select('email name');
 
-    for (const admin2 of admin2Users) {
+    for (const admin of deptAdmins) {
       await sendTiempoExtraNotification(
-        admin2.email,
-        admin2.name,
+        admin.email,
+        admin.name,
         requester.name,
         employeeInfo.name,
         nuevaSolicitud.type,
@@ -306,6 +307,27 @@ router.put('/admin2/:id', authMiddleware, async (req, res) => {
 
     if (!solicitud) {
       return res.status(404).json({ error: 'Solicitud no encontrada' });
+    }
+
+    // Enviar notificaciones por decisión
+    try {
+      const requester = await User.findOne({ email: solicitud.requesterEmail }).select('name email');
+      const employee = await User.findOne({ email: solicitud.employeeEmail }).select('name email');
+      await sendTiempoExtraDecisionNotification({
+        requesterEmail: requester?.email || solicitud.requesterEmail,
+        requesterName: requester?.name || solicitud.requesterEmail,
+        employeeEmail: employee?.email || solicitud.employeeEmail,
+        employeeName: employee?.name || solicitud.employeeEmail,
+        status: solicitud.status,
+        commentsAdmin,
+        type: solicitud.type,
+        startDate: solicitud.startDate,
+        endDate: solicitud.endDate,
+        workedDates: solicitud.workedDates,
+        cliente: solicitud.cliente
+      });
+    } catch (notifyErr) {
+      console.error('⚠️ Error enviando emails de decisión de tiempo extra:', notifyErr);
     }
 
     res.json({ message: 'Solicitud actualizada exitosamente', solicitud });

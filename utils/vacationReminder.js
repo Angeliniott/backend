@@ -41,9 +41,9 @@ async function checkAndSendVacationReminders() {
       const solicitudes = await SolicitudVacaciones.find({ email: user.email });
 
       for (const periodo of periodos) {
-        // Calculate 2 months before expiration
+        // Calculate 3 months before expiration
         const reminderDate = new Date(periodo.fin);
-        reminderDate.setMonth(reminderDate.getMonth() - 2);
+        reminderDate.setMonth(reminderDate.getMonth() - 3);
 
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0); // reset time for date comparison

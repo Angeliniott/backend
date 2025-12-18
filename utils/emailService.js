@@ -6,8 +6,28 @@ const path = require('path');
 // Inicializa cliente de Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Configuración de emails
+const MAIL_FROM = process.env.MAIL_FROM || 'Mazak Soporte <onboarding@resend.dev>';
+const HR_EMAIL = process.env.HR_EMAIL || 'mnery@mazakcorp.com';
+const LIZ_EMAIL = process.env.LIZ_EMAIL || 'edelgado@mazakcorp.com';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://checkin-mazak.vercel.app';
+
 // Función auxiliar para evitar rate limit (2 req/segundo)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Envío genérico
+async function sendEmail({ to, cc, subject, html, attachments }) {
+  const data = {
+    from: MAIL_FROM,
+    to,
+    cc,
+    subject,
+    html,
+    attachments,
+  };
+  await delay(500);
+  return resend.emails.send(data);
+}
 
 
 // ===============================
@@ -57,7 +77,7 @@ const sendTiempoExtraNotification = async (
   }
 
   const data = {
-    from: 'Mazak Soporte <onboarding@resend.dev>',
+    from: MAIL_FROM,
     to: admin2Email,
     subject: 'Nueva Solicitud de Tiempo Extra Pendiente de Aprobación',
     html: `
@@ -135,7 +155,7 @@ const sendEmployeeTiempoExtraNotification = async (
   }
 
   const data = {
-    from: 'Mazak Soporte <onboarding@resend.dev>',
+    from: MAIL_FROM,
     to: employeeEmail,
     subject: 'Nueva Solicitud de Tiempo Extra Generada',
     html: `
@@ -171,7 +191,7 @@ const sendEmployeeTiempoExtraNotification = async (
 // ===============================
 const sendVacationReminder = async (employeeEmail, employeeName, expirationDate, availableDays) => {
   const data = {
-    from: 'Mazak Soporte <onboarding@resend.dev>',
+    from: MAIL_FROM,
     to: employeeEmail,
     subject: 'Recordatorio: Tus días de vacaciones están por vencer',
     html: `
@@ -199,8 +219,128 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
 };
 
 // ===============================
+// 📩 Vacaciones: notificar a admins cuando un empleado solicita
+// ===============================
+const sendVacationRequestToAdmins = async (adminEmails, employeeName, fechaInicio, fechaFin, diasSolicitados, motivo) => {
+  if (!adminEmails || adminEmails.length === 0) return;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333;">Nueva solicitud de vacaciones</h2>
+      <p>Se ha recibido una solicitud de vacaciones que requiere revisión:</p>
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Empleado:</strong> ${employeeName}</p>
+        <p><strong>Periodo:</strong> ${new Date(fechaInicio).toLocaleDateString()} - ${new Date(fechaFin).toLocaleDateString()}</p>
+        <p><strong>Días hábiles solicitados:</strong> ${diasSolicitados}</p>
+        ${motivo ? `<p><strong>Motivo:</strong> ${motivo}</p>` : ''}
+      </div>
+      <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+      <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+    </div>
+  `;
+  try {
+    await sendEmail({ to: adminEmails, subject: 'Nueva solicitud de vacaciones pendiente', html });
+  } catch (error) {
+    console.error('❌ Error enviando notificación de solicitud de vacaciones:', error);
+  }
+};
+
+// ===============================
+// 📩 Vacaciones: decisión del admin (notificar a empleado; CC RH si aprobado)
+// ===============================
+const sendVacationDecisionToEmployee = async ({
+  employeeEmail,
+  employeeName,
+  estado,
+  comentariosAdmin,
+  aprobadoPor
+}) => {
+  const aprobado = estado === 'aprobado';
+  const subject = aprobado ? 'Vacaciones aprobadas' : 'Vacaciones rechazadas';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333;">${subject}</h2>
+      <p>Hola ${employeeName},</p>
+      <p>Tu solicitud de vacaciones ha sido <strong>${estado}</strong>${aprobadoPor ? ` por ${aprobadoPor}` : ''}.</p>
+      ${comentariosAdmin ? `<p><strong>Comentarios:</strong> ${comentariosAdmin}</p>` : ''}
+      <p>Puedes consultar el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+      <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+    </div>
+  `;
+  try {
+    await sendEmail({
+      to: employeeEmail,
+      cc: aprobado ? [HR_EMAIL] : undefined,
+      subject,
+      html
+    });
+  } catch (error) {
+    console.error('❌ Error enviando decisión de vacaciones al empleado:', error);
+  }
+};
+
+// ===============================
+// 📩 Tiempo extra: decisión del admin (notificar a solicitante, empleado; CC RH y Liz si aprobado)
+// ===============================
+const sendTiempoExtraDecisionNotification = async ({
+  requesterEmail,
+  requesterName,
+  employeeEmail,
+  employeeName,
+  status,
+  commentsAdmin,
+  type,
+  startDate,
+  endDate,
+  workedDates,
+  cliente
+}) => {
+  const aprobado = status === 'aprobado';
+  let periodoText = '';
+  if (type === 'valor_agregado') {
+    periodoText = `<p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>`;
+  } else if (type === 'tiempo_por_tiempo') {
+    const datesList = (workedDates || []).map(date => new Date(date).toLocaleDateString()).join(', ');
+    periodoText = `<p><strong>Fechas trabajadas:</strong> ${datesList}</p>`;
+  }
+  const baseHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #333;">Solicitud de tiempo extra ${aprobado ? 'aprobada' : 'rechazada'}</h2>
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Empleado:</strong> ${employeeName}</p>
+        ${periodoText}
+        <p><strong>Cliente:</strong> ${cliente || '-'}</p>
+      </div>
+      ${commentsAdmin ? `<p><strong>Comentarios del administrador:</strong> ${commentsAdmin}</p>` : ''}
+      <p>Consulta el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+      <p>Saludos,<br><strong>Sistema de Gestión de Empleados</strong></p>
+    </div>
+  `;
+  try {
+    // A solicitante
+    await sendEmail({
+      to: requesterEmail,
+      cc: aprobado ? [HR_EMAIL, LIZ_EMAIL] : undefined,
+      subject: `Tiempo extra ${aprobado ? 'aprobado' : 'rechazado'}`,
+      html: baseHtml
+    });
+    // Al empleado
+    await sendEmail({
+      to: employeeEmail,
+      cc: aprobado ? [HR_EMAIL, LIZ_EMAIL] : undefined,
+      subject: `Tu tiempo extra fue ${aprobado ? 'aprobado' : 'rechazado'}`,
+      html: baseHtml
+    });
+  } catch (error) {
+    console.error('❌ Error enviando decisión de tiempo extra:', error);
+  }
+};
+
+// ===============================
 module.exports = {
   sendTiempoExtraNotification,
   sendEmployeeTiempoExtraNotification,
   sendVacationReminder,
+  sendVacationRequestToAdmins,
+  sendVacationDecisionToEmployee,
+  sendTiempoExtraDecisionNotification,
 };
