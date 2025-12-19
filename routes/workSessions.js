@@ -244,7 +244,7 @@ router.get('/admin-sessions', authMiddleware, verifyAdmin, async (req, res) => {
 // POST - Create manual (artificial) completed session (superadmin only)
 router.post('/manual', authMiddleware, verifySuperAdmin, async (req, res) => {
   try {
-    const { email, date, startTime, endTime, startLocationUrl, endLocationUrl } = req.body || {};
+    const { email, date, startTime, endTime, startLocationUrl, endLocationUrl, tzOffsetMinutes } = req.body || {};
 
     if (!email || !date || !startTime || !endTime) {
       return res.status(400).json({ error: 'Faltan campos: email, date (YYYY-MM-DD), startTime (HH:mm), endTime (HH:mm)' });
@@ -263,14 +263,20 @@ router.post('/manual', authMiddleware, verifySuperAdmin, async (req, res) => {
     if ([Y, M, D, sh, sm, eh, em].some(v => Number.isNaN(v))) {
       return res.status(400).json({ error: 'Fecha u horas inválidas' });
     }
-    const checkinTime = new Date(Y, M - 1, D, sh, sm, 0, 0);
-    const checkoutTime = new Date(Y, M - 1, D, eh, em, 0, 0);
+    // Interpret input as local browser time; convert to UTC using tzOffsetMinutes
+    const offsetMin = Number.isFinite(tzOffsetMinutes) ? tzOffsetMinutes : 0; // e.g., 360 for UTC-6
+    const localCheckin = new Date(Y, M - 1, D, sh, sm, 0, 0);
+    const localCheckout = new Date(Y, M - 1, D, eh, em, 0, 0);
+    const checkinTime = new Date(localCheckin.getTime() + offsetMin * 60000);
+    const checkoutTime = new Date(localCheckout.getTime() + offsetMin * 60000);
     if (checkoutTime <= checkinTime) {
       return res.status(400).json({ error: 'La hora fin debe ser posterior a la hora inicio' });
     }
 
     const workDuration = Math.floor((checkoutTime - checkinTime) / 60000);
-    const dayStart = getStartOfDay(checkinTime);
+    // Day start aligned to the user's local day, stored in UTC
+    const localDayStart = new Date(Y, M - 1, D, 0, 0, 0, 0);
+    const dayStart = new Date(localDayStart.getTime() + offsetMin * 60000);
 
     // Create corresponding checkin/checkout audit docs with custom timestamps
     const manualCheckin = new Checkin({ email, type: 'checkin' });
