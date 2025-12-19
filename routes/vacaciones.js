@@ -448,19 +448,26 @@ router.get('/admin/solicitudes', authMiddleware, verifyAdmin, async (req, res) =
       return res.status(403).json({ error: 'Acceso denegado' });
     }
 
-    // Asegurar que cada solicitud tenga el nombre del usuario
+    // Asegurar que cada solicitud tenga el nombre y departamento del usuario
     const solicitudesConNombre = await Promise.all(solicitudes.map(async (sol) => {
       let nombre = '';
-      if (sol.usuario && typeof sol.usuario === 'object' && sol.usuario.name) {
-        nombre = sol.usuario.name;
-      } else if (sol.email) {
-        const user = await User.findOne({ email: sol.email });
-        nombre = user && user.name ? user.name : '';
+      let departamento = '';
+      if (sol.usuario && typeof sol.usuario === 'object') {
+        // Tenemos referencia poblada de usuario con name (pero no dpt), buscar dpt por email
+        nombre = sol.usuario.name || '';
       }
-      // Retornar la solicitud con el campo nombre y desglose por periodo
+      if (sol.email) {
+        const user = await User.findOne({ email: sol.email });
+        if (user) {
+          if (!nombre) nombre = user.name || '';
+          departamento = user.dpt || '';
+        }
+      }
+      // Retornar la solicitud con el campo nombre, departamento y desglose por periodo
       return {
         ...sol.toObject(),
         nombre,
+        departamento,
         diasPeriodoPrevio: sol.diasPeriodoPrevio || 0,
         diasPeriodoActual: sol.diasPeriodoActual || 0,
         vigenciaPrevio: sol.vigenciaPrevio || null,
@@ -518,6 +525,32 @@ router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) =
     res.json({ message: 'Estado actualizado', solicitud });
   } catch (err) {
     console.error('❌ Error en POST /admin/actualizar:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// POST: admin cancela una decisión previa y devuelve la solicitud a 'pendiente'
+router.post('/admin/cancelar', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: 'Id requerido' });
+
+    const solicitud = await SolicitudVacaciones.findById(id);
+    if (!solicitud) return res.status(404).json({ error: 'Solicitud no encontrada' });
+
+    if (!['aprobado', 'rechazado'].includes(solicitud.estado)) {
+      return res.status(400).json({ error: 'Solo se pueden cancelar solicitudes aprobadas o rechazadas' });
+    }
+
+    solicitud.estado = 'pendiente';
+    solicitud.aprobadoPor = undefined;
+    solicitud.fechaAprobacion = undefined;
+    await solicitud.save();
+
+    // Notificación opcional: no enviar correo al cancelar para evitar ruido, pero se podría implementar
+    return res.json({ message: 'Solicitud revertida a pendiente', solicitud });
+  } catch (err) {
+    console.error('❌ Error en POST /admin/cancelar:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
