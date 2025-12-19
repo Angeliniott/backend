@@ -11,7 +11,8 @@ const workSessionSchema = new mongoose.Schema({
   status: { type: String, enum: ['open', 'completed'], default: 'open' },
   autoClosed: { type: Boolean, default: false },
   startLocationUrl: { type: String },
-  endLocationUrl: { type: String }
+  endLocationUrl: { type: String },
+  isArtificial: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // Index for efficient queries

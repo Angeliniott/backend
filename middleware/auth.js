@@ -25,6 +25,13 @@ const verifyAdmin = (req, res, next) => {
   next();
 };
 
+const verifySuperAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin2') {
+    return res.status(403).json({ error: 'Acceso denegado: solo superadministradores.' });
+  }
+  next();
+};
+
 const verifyTiempoExtraAdmin = (req, res, next) => {
   if (!req.user || !req.user.role) {
     return res.status(401).json({ message: 'No autenticado' });
@@ -40,5 +47,6 @@ const verifyTiempoExtraAdmin = (req, res, next) => {
 module.exports = {
   authMiddleware,
   verifyAdmin,
-  verifyTiempoExtraAdmin
+  verifyTiempoExtraAdmin,
+  verifySuperAdmin
 };

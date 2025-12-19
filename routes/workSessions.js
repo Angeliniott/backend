@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const WorkSession = require('../models/WorkSession');
 const User = require('../models/user');
-const { authMiddleware, verifyAdmin } = require('../middleware/auth');
+const Checkin = require('../models/checkin');
+const DailyWorkHours = require('../models/DailyWorkHours');
+const WeeklyWorkHours = require('../models/WeeklyWorkHours');
+const { authMiddleware, verifyAdmin, verifySuperAdmin } = require('../middleware/auth');
 
 // Helper function to get start of day
 function getStartOfDay(date) {
@@ -123,7 +126,10 @@ router.get('/complete-sessions', authMiddleware, verifyAdmin, async (req, res) =
       workDuration: session.workDuration,
       status: session.status,
       autoClosed: !!session.autoClosed,
-      supervisor: (users.find(u => u.email === session.email) || {}).reporta || ''
+      supervisor: (users.find(u => u.email === session.email) || {}).reporta || '',
+      startLocationUrl: session.startLocationUrl || '',
+      endLocationUrl: session.endLocationUrl || '',
+      isArtificial: !!session.isArtificial
     }));
 
     res.json(result);
@@ -221,7 +227,10 @@ router.get('/admin-sessions', authMiddleware, verifyAdmin, async (req, res) => {
         durationMinutes: durationMinutes || 0,
         status: s.status,
         autoClosed: !!s.autoClosed,
-        supervisor: uinfo.supervisor || ''
+        supervisor: uinfo.supervisor || '',
+        startLocationUrl: s.startLocationUrl || '',
+        endLocationUrl: s.endLocationUrl || '',
+        isArtificial: !!s.isArtificial
       };
     });
 
@@ -229,6 +238,104 @@ router.get('/admin-sessions', authMiddleware, verifyAdmin, async (req, res) => {
   } catch (error) {
     console.error('Error fetching admin sessions:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST - Create manual (artificial) completed session (superadmin only)
+router.post('/manual', authMiddleware, verifySuperAdmin, async (req, res) => {
+  try {
+    const { email, date, startTime, endTime, startLocationUrl, endLocationUrl } = req.body || {};
+
+    if (!email || !date || !startTime || !endTime) {
+      return res.status(400).json({ error: 'Faltan campos: email, date (YYYY-MM-DD), startTime (HH:mm), endTime (HH:mm)' });
+    }
+
+    // Validate user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Build local Date objects
+    const [Y, M, D] = String(date).split('-').map(n => parseInt(n, 10));
+    const [sh, sm] = String(startTime).split(':').map(n => parseInt(n, 10));
+    const [eh, em] = String(endTime).split(':').map(n => parseInt(n, 10));
+    if ([Y, M, D, sh, sm, eh, em].some(v => Number.isNaN(v))) {
+      return res.status(400).json({ error: 'Fecha u horas inválidas' });
+    }
+    const checkinTime = new Date(Y, M - 1, D, sh, sm, 0, 0);
+    const checkoutTime = new Date(Y, M - 1, D, eh, em, 0, 0);
+    if (checkoutTime <= checkinTime) {
+      return res.status(400).json({ error: 'La hora fin debe ser posterior a la hora inicio' });
+    }
+
+    const workDuration = Math.floor((checkoutTime - checkinTime) / 60000);
+    const dayStart = getStartOfDay(checkinTime);
+
+    // Create corresponding checkin/checkout audit docs with custom timestamps
+    const manualCheckin = new Checkin({ email, type: 'checkin' });
+    manualCheckin.createdAt = checkinTime;
+    const manualCheckout = new Checkin({ email, type: 'checkout' });
+    manualCheckout.createdAt = checkoutTime;
+    await manualCheckin.save();
+    await manualCheckout.save();
+
+    // Create work session
+    const ws = new WorkSession({
+      email,
+      checkinId: manualCheckin._id,
+      checkoutId: manualCheckout._id,
+      checkinTime,
+      checkoutTime,
+      workDuration,
+      date: dayStart,
+      status: 'completed',
+      autoClosed: false,
+      startLocationUrl: startLocationUrl || undefined,
+      endLocationUrl: endLocationUrl || undefined,
+      isArtificial: true
+    });
+    await ws.save();
+
+    // Update daily hours
+    let daily = await DailyWorkHours.findOne({ email, date: dayStart });
+    if (!daily) daily = new DailyWorkHours({ email, date: dayStart, totalMinutes: 0, sessions: [] });
+    daily.totalMinutes += workDuration;
+    if (!daily.sessions.find(id => String(id) === String(ws._id))) {
+      daily.sessions.push(ws._id);
+    }
+    daily.isComplete = true;
+    await daily.save();
+
+    // Update weekly hours
+    const weekStart = (() => {
+      const d = new Date(dayStart);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(d.setDate(diff));
+      monday.setHours(0, 0, 0, 0);
+      return monday;
+    })();
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+    const year = weekStart.getFullYear();
+    const weekNumber = Math.ceil((weekStart - new Date(year, 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+
+    let weekly = await WeeklyWorkHours.findOne({ email, weekStart });
+    if (!weekly) {
+      weekly = new WeeklyWorkHours({ email, weekStart, weekEnd, year, weekNumber, totalMinutes: 0, dailyHours: [] });
+    }
+    weekly.totalMinutes += workDuration;
+    if (!weekly.dailyHours.find(id => String(id) === String(daily._id))) {
+      weekly.dailyHours.push(daily._id);
+    }
+    await weekly.save();
+
+    return res.status(201).json({ message: 'Sesión manual creada', sessionId: ws._id });
+  } catch (error) {
+    console.error('Error creating manual session:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
