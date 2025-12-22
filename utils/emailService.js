@@ -127,7 +127,7 @@ const sendTiempoExtraNotification = async (
           ${motivoText}
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
-        <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+        <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">Portal de empleados</a></p>
         <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
@@ -205,6 +205,7 @@ const sendEmployeeTiempoExtraNotification = async (
           ${reportePath ? `<p><strong>Reporte adjunto:</strong> Sí</p>` : ''}
         </div>
         <p>Puedes revisar el estado de aprobación en el dashboard del portal.</p>
+        <p>Accede al portal: <a href="${FRONTEND_URL}" target="_blank">Portal de empleados</a></p>
         <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
@@ -237,7 +238,7 @@ const sendVacationReminder = async (employeeEmail, employeeName, expirationDate,
           <p><strong>Días disponibles:</strong> ${availableDays}</p>
           <p><strong>Fecha de vencimiento:</strong> ${new Date(expirationDate).toLocaleDateString()}</p>
         </div>
-        <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+        <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">Portal de empleados</a></p>
         <p>Saludos,<br><strong>Portal del Empleado</strong></p>
       </div>
     `,
@@ -267,7 +268,7 @@ const sendVacationRequestToAdmins = async (adminEmails, employeeName, fechaInici
         <p><strong>Días hábiles solicitados:</strong> ${diasSolicitados}</p>
         ${motivo ? `<p><strong>Motivo:</strong> ${motivo}</p>` : ''}
       </div>
-      <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+      <p>Gestiona esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">Portal de empleados</a></p>
       <p>Saludos,<br><strong>Portal del Empleado</strong></p>
     </div>
   `;
@@ -296,7 +297,7 @@ const sendVacationDecisionToEmployee = async ({
       <p>Hola ${employeeName},</p>
       <p>Tu solicitud de vacaciones ha sido <strong>${estado}</strong>${aprobadoPor ? ` por ${aprobadoPor}` : ''}.</p>
       ${comentariosAdmin ? `<p><strong>Comentarios:</strong> ${comentariosAdmin}</p>` : ''}
-      <p>Puedes consultar el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
+      <p>Puedes consultar el detalle en: <a href="${FRONTEND_URL}" target="_blank">Portal de empleados</a></p>
       <p>Saludos,<br><strong>Portal del Empleado</strong></p>
     </div>
   `;
@@ -352,6 +353,7 @@ const sendTiempoExtraDecisionNotification = async ({
       </div>
       ${commentsAdmin ? `<p><strong>Comentarios del gerente:</strong> ${commentsAdmin}</p>` : ''}
       <p>Este correo incluye el adjunto cargado durante la aprobación.</p>
+      <p>Consulta esta solicitud en: <a href="${FRONTEND_URL}" target="_blank">Portal de empleados</a></p>
     </div>
   `;
 
