@@ -211,11 +211,21 @@ router.get('/admin/solicitudes', authMiddleware, verifyTiempoExtraAdmin, async (
         { createdAt: { $gte: fromDate, $lte: toDate } }
       ];
       const solicitudes = await SolicitudTiempoExtra.find({ ...baseFilter, $or: dateRangeOrs }).sort({ createdAt: -1 });
-      return res.json(solicitudes);
+      // Enrich with employee names
+      const emails = [...new Set(solicitudes.map(s => s.employeeEmail).filter(Boolean))];
+      const users = await User.find({ email: { $in: emails } }).select('email name');
+      const nameMap = Object.fromEntries(users.map(u => [u.email, u.name]));
+      const enriched = solicitudes.map(s => ({ ...s.toObject(), employeeName: nameMap[s.employeeEmail] }));
+      return res.json(enriched);
     }
 
     const solicitudes = await SolicitudTiempoExtra.find(baseFilter).sort({ createdAt: -1 });
-    res.json(solicitudes);
+    // Enrich with employee names
+    const emails = [...new Set(solicitudes.map(s => s.employeeEmail).filter(Boolean))];
+    const users = await User.find({ email: { $in: emails } }).select('email name');
+    const nameMap = Object.fromEntries(users.map(u => [u.email, u.name]));
+    const enriched = solicitudes.map(s => ({ ...s.toObject(), employeeName: nameMap[s.employeeEmail] }));
+    res.json(enriched);
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener solicitudes' });
   }
