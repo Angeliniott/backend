@@ -538,17 +538,18 @@ router.post('/admin/cancelar', authMiddleware, verifyAdmin, async (req, res) => 
     const solicitud = await SolicitudVacaciones.findById(id);
     if (!solicitud) return res.status(404).json({ error: 'Solicitud no encontrada' });
 
-    if (!['aprobado', 'rechazado'].includes(solicitud.estado)) {
-      return res.status(400).json({ error: 'Solo se pueden cancelar solicitudes aprobadas o rechazadas' });
+    // Solo permitir cancelar si la solicitud previamente fue aprobada
+    if (solicitud.estado !== 'aprobado') {
+      return res.status(400).json({ error: 'Solo se pueden cancelar solicitudes aprobadas' });
     }
 
-    solicitud.estado = 'pendiente';
+    // Marcar como cancelado para bloquear acciones; al no estar 'aprobado', deja de contar para el uso de días
+    solicitud.estado = 'cancelado';
     solicitud.aprobadoPor = undefined;
     solicitud.fechaAprobacion = undefined;
     await solicitud.save();
 
-    // Notificación opcional: no enviar correo al cancelar para evitar ruido, pero se podría implementar
-    return res.json({ message: 'Solicitud revertida a pendiente', solicitud });
+    return res.json({ message: 'Solicitud cancelada y días devueltos al disponible', solicitud });
   } catch (err) {
     console.error('❌ Error en POST /admin/cancelar:', err);
     res.status(500).json({ error: 'Error interno del servidor' });

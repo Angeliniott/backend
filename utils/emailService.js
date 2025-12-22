@@ -326,9 +326,14 @@ const sendTiempoExtraDecisionNotification = async ({
   startDate,
   endDate,
   workedDates,
-  cliente
+  cliente,
+  attachmentPath
 }) => {
   const aprobado = status === 'aprobado';
+  if (!aprobado) {
+    return; // Solo enviar correos cuando está aprobado
+  }
+
   let periodoText = '';
   if (type === 'valor_agregado') {
     periodoText = `<p><strong>Periodo:</strong> ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}</p>`;
@@ -336,33 +341,32 @@ const sendTiempoExtraDecisionNotification = async ({
     const datesList = (workedDates || []).map(date => new Date(date).toLocaleDateString()).join(', ');
     periodoText = `<p><strong>Fechas trabajadas:</strong> ${datesList}</p>`;
   }
-  const baseHtml = `
+
+  const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #333;">Solicitud de valor agregado ${aprobado ? 'aprobada' : 'rechazada'}</h2>
+      <h2 style="color: #333;">Solicitud de valor agregado aprobada</h2>
       <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
         <p><strong>Empleado:</strong> ${employeeName}</p>
         ${periodoText}
         <p><strong>Cliente:</strong> ${cliente || '-'}</p>
       </div>
       ${commentsAdmin ? `<p><strong>Comentarios del gerente:</strong> ${commentsAdmin}</p>` : ''}
-      <p>Consulta el detalle en: <a href="${FRONTEND_URL}" target="_blank">${FRONTEND_URL}</a></p>
-      <p>Saludos,<br><strong>Portal del Empleado</strong></p>
+      <p>Este correo incluye el adjunto cargado durante la aprobación.</p>
     </div>
   `;
+
+  const attachments = [];
+  if (attachmentPath && fs.existsSync(attachmentPath)) {
+    const fileBuffer = fs.readFileSync(attachmentPath);
+    attachments.push({ filename: path.basename(attachmentPath), content: fileBuffer.toString('base64') });
+  }
+
   try {
-    // A solicitante
     await sendEmail({
-      to: requesterEmail,
-      cc: aprobado ? [HR_EMAIL, LIZ_EMAIL] : undefined,
-      subject: `Valor Agregado ${aprobado ? 'aprobado' : 'rechazado'}`,
-      html: baseHtml
-    });
-    // Al empleado
-    await sendEmail({
-      to: employeeEmail,
-      cc: aprobado ? [HR_EMAIL, LIZ_EMAIL] : undefined,
-      subject: `Tu valor agregado fue ${aprobado ? 'aprobado' : 'rechazado'}`,
-      html: baseHtml
+      to: [LIZ_EMAIL, HR_EMAIL],
+      subject: 'Valor Agregado aprobado',
+      html,
+      attachments: attachments.length ? attachments : undefined
     });
   } catch (error) {
     console.error('❌ Error enviando decisión de valor agregado:', error);

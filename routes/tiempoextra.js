@@ -311,7 +311,33 @@ router.put('/admin2/:id', authMiddleware, async (req, res) => {
     }
 
     const { id } = req.params;
-    const { status, commentsAdmin } = req.body;
+
+    // Detect multipart for approval with attachment
+    const isMultipart = (req.headers['content-type'] || '').toLowerCase().includes('multipart/form-data');
+    let status, commentsAdmin;
+    let decisionAttachmentPath = null;
+
+    if (isMultipart) {
+      // Run multer to accept 'adjunto' file
+      await new Promise((resolve, reject) => {
+        upload.single('adjunto')(req, res, (err) => {
+          if (err) {
+            const isSizeLimit = err.code === 'LIMIT_FILE_SIZE';
+            const message = isSizeLimit ? 'El adjunto excede el límite de 10MB' : (err.message || 'Error al subir adjunto');
+            return reject({ status: 400, error: message });
+          }
+          resolve();
+        });
+      }).catch((e) => { throw e; });
+      status = req.body.status;
+      commentsAdmin = req.body.commentsAdmin || '';
+      if (req.file && req.file.path) {
+        decisionAttachmentPath = req.file.path;
+      }
+    } else {
+      status = req.body.status;
+      commentsAdmin = req.body.commentsAdmin || '';
+    }
 
     if (!['aprobado', 'rechazado'].includes(status)) {
       return res.status(400).json({ error: 'Estado inválido' });
@@ -325,6 +351,10 @@ router.put('/admin2/:id', authMiddleware, async (req, res) => {
 
     if (status === 'aprobado') {
       update.approvedAt = new Date();
+      // Require attachment when approving
+      if (!decisionAttachmentPath) {
+        return res.status(400).json({ error: 'Adjuntar archivo es obligatorio para aprobar.' });
+      }
     } else {
       update.approvedAt = null;
     }
@@ -339,25 +369,28 @@ router.put('/admin2/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Solicitud no encontrada' });
     }
 
-    // Enviar notificaciones por decisión
-    try {
-      const requester = await User.findOne({ email: solicitud.requesterEmail }).select('name email');
-      const employee = await User.findOne({ email: solicitud.employeeEmail }).select('name email');
-      await sendTiempoExtraDecisionNotification({
-        requesterEmail: requester?.email || solicitud.requesterEmail,
-        requesterName: requester?.name || solicitud.requesterEmail,
-        employeeEmail: employee?.email || solicitud.employeeEmail,
-        employeeName: employee?.name || solicitud.employeeEmail,
-        status: solicitud.status,
-        commentsAdmin,
-        type: solicitud.type,
-        startDate: solicitud.startDate,
-        endDate: solicitud.endDate,
-        workedDates: solicitud.workedDates,
-        cliente: solicitud.cliente
-      });
-    } catch (notifyErr) {
-      console.error('⚠️ Error enviando emails de decisión de tiempo extra:', notifyErr);
+    // Enviar notificaciones por decisión solo si se aprueba
+    if (solicitud.status === 'aprobado') {
+      try {
+        const requester = await User.findOne({ email: solicitud.requesterEmail }).select('name email');
+        const employee = await User.findOne({ email: solicitud.employeeEmail }).select('name email');
+        await sendTiempoExtraDecisionNotification({
+          requesterEmail: requester?.email || solicitud.requesterEmail,
+          requesterName: requester?.name || solicitud.requesterEmail,
+          employeeEmail: employee?.email || solicitud.employeeEmail,
+          employeeName: employee?.name || solicitud.employeeEmail,
+          status: solicitud.status,
+          commentsAdmin,
+          type: solicitud.type,
+          startDate: solicitud.startDate,
+          endDate: solicitud.endDate,
+          workedDates: solicitud.workedDates,
+          cliente: solicitud.cliente,
+          attachmentPath: decisionAttachmentPath
+        });
+      } catch (notifyErr) {
+        console.error('⚠️ Error enviando emails de decisión de tiempo extra:', notifyErr);
+      }
     }
 
     res.json({ message: 'Solicitud actualizada exitosamente', solicitud });

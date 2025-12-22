@@ -15,7 +15,7 @@ const solicitudVacacionesSchema = new mongoose.Schema({
   vigenciaActual: { type: Date }, // Vigencia de los días del periodo actual
   motivo: { type: String },
   supervisor: { type: String, enum: ['elizabeth', 'francisco', 'servicio', 'fsantiago@mazakcorp.com'], required: true },
-  estado: { type: String, enum: ['pendiente', 'aprobado', 'rechazado'], default: 'pendiente' },
+  estado: { type: String, enum: ['pendiente', 'aprobado', 'rechazado', 'cancelado'], default: 'pendiente' },
   comentariosAdmin: { type: String },
   aprobadoPor: { type: String },
   fechaAprobacion: { type: Date },
