@@ -124,6 +124,14 @@ router.post('/', authMiddleware, async (req, res) => {
     const email = req.user && req.user.email;
     if (!email) return res.status(401).json({ error: 'No autorizado' });
 
+    // Enforce active location for check-in
+    if (!locationUrl || typeof locationUrl !== 'string' || !locationUrl.trim()) {
+      return res.status(400).json({
+        error: 'location_required',
+        message: 'Debes activar la ubicación (GPS) y otorgar permisos para registrar el inicio.'
+      });
+    }
+
     // Prevent duplicate open sessions
     const existingOpen = await WorkSession.findOne({ email, status: 'open' }).sort({ checkinTime: -1 });
     if (existingOpen) {
@@ -142,7 +150,7 @@ router.post('/', authMiddleware, async (req, res) => {
       checkinId: newCheckin._id,
       checkinTime: newCheckin.createdAt,
       date,
-      startLocationUrl: locationUrl || undefined
+      startLocationUrl: locationUrl
     });
 
     await workSession.save();
@@ -164,6 +172,14 @@ router.post('/checkout', authMiddleware, async (req, res) => {
     const { locationUrl } = req.body || {};
     const email = req.user && req.user.email;
     if (!email) return res.status(401).json({ error: 'No autorizado' });
+
+    // Enforce active location for check-out
+    if (!locationUrl || typeof locationUrl !== 'string' || !locationUrl.trim()) {
+      return res.status(400).json({
+        error: 'location_required',
+        message: 'Debes activar la ubicación (GPS) y otorgar permisos para registrar el fin.'
+      });
+    }
 
     const newCheckout = new Checkin({ email, type: "checkout" });
 
@@ -188,7 +204,7 @@ router.post('/checkout', authMiddleware, async (req, res) => {
       openSession.workDuration = workDuration;
       openSession.status = 'completed';
       openSession.autoClosed = autoClosed;
-      openSession.endLocationUrl = locationUrl || undefined;
+      openSession.endLocationUrl = locationUrl;
       await openSession.save();
 
       // Update daily work hours

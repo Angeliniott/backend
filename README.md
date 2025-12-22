@@ -62,3 +62,8 @@ Este backend implementa la lógica de solicitudes de vacaciones con conteo de d�
 - Ejecutar servidor y probar endpoints con token de usuario.
 - Verificar `/preview`, `/solicitar`, `/resumen`.
 - Revisar `routes/vacaciones.js` para lógica consolidada.
+
+## Administración de Tiempo (Check-in/Check-out)
+- Requisito de ubicación: para registrar inicio y fin de sesión se debe enviar `locationUrl` (por ejemplo, `https://www.google.com/maps?q=<lat>,<lng>`).
+- Los endpoints rechazarán la solicitud con `400 location_required` si la ubicación no está activa o no se proporcionó.
+- Campos guardados en `WorkSession`: `startLocationUrl` y `endLocationUrl`.

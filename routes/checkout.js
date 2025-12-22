@@ -38,6 +38,14 @@ router.post('/', authMiddleware, async (req, res) => {
     const email = req.user && req.user.email;
     if (!email) return res.status(401).json({ error: 'No autorizado' });
 
+    // Enforce active location for check-out
+    if (!locationUrl || typeof locationUrl !== 'string' || !locationUrl.trim()) {
+      return res.status(400).json({
+        error: 'location_required',
+        message: 'Debes activar la ubicación (GPS) y otorgar permisos para registrar el fin.'
+      });
+    }
+
     // Find open session first (do not create checkout if not allowed)
     const openSession = await WorkSession.findOne({ email, status: 'open' }).sort({ checkinTime: -1 });
     if (!openSession) {
@@ -77,7 +85,7 @@ router.post('/', authMiddleware, async (req, res) => {
       openSession.workDuration = workDuration;
       openSession.status = 'completed';
       openSession.autoClosed = autoClosed;
-      openSession.endLocationUrl = locationUrl || undefined;
+      openSession.endLocationUrl = locationUrl;
       await openSession.save();
       autoClosedResp = autoClosed;
 
