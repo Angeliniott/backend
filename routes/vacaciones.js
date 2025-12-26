@@ -489,6 +489,25 @@ router.post('/admin/actualizar', authMiddleware, verifyAdmin, async (req, res) =
       return res.status(400).json({ error: 'Estado inválido' });
     }
 
+    // Cargar solicitud para verificar el rol del solicitante
+    const solicitudActual = await SolicitudVacaciones.findById(id);
+    if (!solicitudActual) {
+      return res.status(404).json({ error: 'Solicitud no encontrada' });
+    }
+
+    // Si el solicitante es admin/admin2, solo Gerencia General (fsantiago) puede aprobar/rechazar
+    try {
+      const solicitante = await User.findOne({ email: solicitudActual.email }).select('role');
+      if (solicitante && (solicitante.role === 'admin' || solicitante.role === 'admin2')) {
+        const approverEmail = (req.user && req.user.email) || '';
+        if (approverEmail.toLowerCase() !== 'fsantiago@mazakcorp.com') {
+          return res.status(403).json({ error: 'Solo Gerencia General puede decidir solicitudes de usuarios admin/admin2.' });
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ No se pudo verificar el rol del solicitante:', e?.message || e);
+    }
+
     const update = { estado, comentariosAdmin };
     if (estado === 'aprobado') {
       update.aprobadoPor = (req.user && (req.user.name || req.user.email)) || undefined;

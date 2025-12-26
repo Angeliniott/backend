@@ -131,7 +131,7 @@ router.post('/solicitar', authMiddleware, verifyTiempoExtraAdmin, async (req, re
       bonoEstanciaFinSemana: parseInt(req.body.bonoEstanciaFinSemana) || 0,
       bonoViajeFinSemana: parseInt(req.body.bonoViajeFinSemana) || 0,
       justification: req.body.justification || '',
-      reportePath: solicitudType === 'valor_agregado' ? (req.file ? req.file.path : null) : null
+      reportePath: req.file ? req.file.path : null
     });
 
     await nuevaSolicitud.save();
