@@ -187,7 +187,12 @@ function obtenerUsadosPorPeriodo(solicitudesAprobadas, periodos) {
   for (const sol of solicitudesAprobadas) {
     const inicio = new Date(sol.fechaInicio);
     const fin = new Date(sol.fechaFin);
-    const dias = contarDiasHabiles(inicio, fin);
+    // Preferir el valor explícito de la solicitud cuando exista.
+    // Esto corrige el caso de descuentos administrativos donde
+    // fechaInicio === fechaFin pero se desea descontar más de 1 día.
+    const dias = typeof sol.diasSolicitados === 'number' && sol.diasSolicitados > 0
+      ? sol.diasSolicitados
+      : contarDiasHabiles(inicio, fin);
     let restante = dias;
     for (let i = 0; i < periodos.length && restante > 0; i++) {
       const p = periodos[i];
