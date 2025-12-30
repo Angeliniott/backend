@@ -67,3 +67,69 @@ Este backend implementa la lógica de solicitudes de vacaciones con conteo de d�
 - Requisito de ubicación: para registrar inicio y fin de sesión se debe enviar `locationUrl` (por ejemplo, `https://www.google.com/maps?q=<lat>,<lng>`).
 - Los endpoints rechazarán la solicitud con `400 location_required` si la ubicación no está activa o no se proporcionó.
 - Campos guardados en `WorkSession`: `startLocationUrl` y `endLocationUrl`.
+
+## Reset de Base de Datos (manteniendo usuarios)
+
+Este proyecto incluye un script para limpiar datos de prueba y dejar la base “como nueva” conservando la colección de usuarios. El script:
+
+- Borra colecciones: `Vacaciones`, `SolicitudVacaciones`, `SolicitudTiempoExtra`, `Checkin`, `WorkSession`, `DailyWorkHours`, `WeeklyWorkHours`, `SpecialCheck`.
+- Conserva `user` intacta.
+- Opcionalmente limpia archivos en `uploads/`.
+- Opcionalmente crea respaldos JSON por colección en `backend/backups/`.
+- Recalcula a cada usuario sus días de vacaciones “actuales” al máximo según antigüedad y fija vigencias; deja 0 en “previos”.
+
+Archivos relevantes:
+- Script: [backend/scripts/resetDatabase.js](backend/scripts/resetDatabase.js)
+- Respaldo (cuando se usa `--backup`): [backend/backups/](backend/backups/)
+
+Requisitos:
+- Definir `MONGO_URI` en `.env`.
+
+Comandos:
+
+```powershell
+cd c:\Users\angel\OneDrive\Documents\GitHub\backend
+
+# Vista previa sin cambios (recomendado)
+npm run reset:db:dry
+
+# Reset estándar (borra colecciones objetivo; conserva uploads)
+npm run reset:db
+
+# Reset completo (con respaldo JSON y limpieza de uploads)
+npm run reset:db:full
+```
+
+Flags (si corres el script directamente):
+- `--dry-run`: muestra el plan sin cambiar datos.
+- `--confirm`: requerido para ejecutar cambios.
+- `--with-uploads`: borra archivos en `uploads/`.
+- `--backup`: exporta cada colección a JSON antes de borrar.
+
+Qué esperar tras el reset:
+- Las colecciones objetivo quedan en 0 documentos.
+- Los usuarios conservan su registro y quedan con:
+  - `diasPendientesPrevios = 0`
+  - `diasPendientesActuales =` días máximos según antigüedad actual
+  - `vigenciaActuales =` un año desde su aniversario vigente
+
+Notas de seguridad:
+- Ejecuta primero `npm run reset:db:dry` para verificar conteos.
+- En producción, usa siempre el modo con `--backup` para trazabilidad.
+- El script evita validaciones de campos obligatorios de `user` al actualizar saldos (actualiza por `updateOne`).
+ - Guard-rail: si `NODE_ENV=production`, el script se bloquea salvo que exportes `ALLOW_RESET=true` explícitamente.
+
+## Deploy en Render (checklist rápido)
+
+- Variables de entorno obligatorias:
+  - `MONGO_URI`: cadena de conexión a MongoDB Atlas.
+  - `JWT_SECRET`: secreto para firmar tokens.
+  - `CORS_ORIGINS`: lista separada por comas con dominios frontend permitidos (por ejemplo: `https://www.portalmmx.com,https://portalmmx.com,https://checkin-mazak.vercel.app,https://*.vercel.app`).
+  - `FRONTEND_URL`: URL del portal para enlaces en correos (ej. `https://checkin-mazak.vercel.app`).
+- Variables opcionales (correo):
+  - `RESEND_API_KEY`, `MAIL_FROM`, `HR_EMAIL`, `LIZ_EMAIL`.
+  - Si faltan, los correos se registran como intentos fallidos en logs pero no rompen el flujo de las rutas.
+- Supervisores opcionales: `SUP_ELIZABETH`, `SUP_FRANCISCO`, `SUP_SERVICIO`, `SUP_GERENCIA`.
+- Comando de inicio: `npm start`.
+- Healthcheck: GET `/` debe responder `OK`.
+- Protección de reset en producción: no se ejecuta salvo `ALLOW_RESET=true` y `--confirm`.

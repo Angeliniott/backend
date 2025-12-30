@@ -1,0 +1,154 @@
+[
+  {
+    "_id": "689f4f88327df5b0a37d886a",
+    "email": "mnery@mazakcorp.com",
+    "weekStart": "2025-08-11T00:00:00.000Z",
+    "weekEnd": "2025-08-17T23:59:59.999Z",
+    "totalMinutes": 1044,
+    "dailyHours": [
+      "689f4f88327df5b0a37d8867"
+    ],
+    "year": 2025,
+    "weekNumber": 32,
+    "createdAt": "2025-08-15T15:17:28.626Z",
+    "updatedAt": "2025-08-15T15:17:28.626Z",
+    "__v": 0
+  },
+  {
+    "_id": "68dd6cd2918f07c960cd639b",
+    "email": "mnery@mazakcorp.com",
+    "weekStart": "2025-09-29T00:00:00.000Z",
+    "weekEnd": "2025-10-05T23:59:59.999Z",
+    "totalMinutes": 0,
+    "dailyHours": [
+      "68dd6cd2918f07c960cd6394"
+    ],
+    "year": 2025,
+    "weekNumber": 39,
+    "createdAt": "2025-10-01T18:02:58.495Z",
+    "updatedAt": "2025-10-01T18:02:58.495Z",
+    "__v": 0
+  },
+  {
+    "_id": "68f01d676b7444a79b55d87b",
+    "email": "mnery@mazakcorp.com",
+    "weekStart": "2025-10-13T00:00:00.000Z",
+    "weekEnd": "2025-10-19T23:59:59.999Z",
+    "totalMinutes": 0,
+    "dailyHours": [
+      "68f01d666b7444a79b55d870"
+    ],
+    "year": 2025,
+    "weekNumber": 41,
+    "createdAt": "2025-10-15T22:17:11.069Z",
+    "updatedAt": "2025-10-15T22:17:11.069Z",
+    "__v": 0
+  },
+  {
+    "_id": "68f13903f1c416d6b442317b",
+    "email": "agarza@mazakcorp.com",
+    "weekStart": "2025-10-13T00:00:00.000Z",
+    "weekEnd": "2025-10-19T23:59:59.999Z",
+    "totalMinutes": 0,
+    "dailyHours": [
+      "68f13903f1c416d6b4423178"
+    ],
+    "year": 2025,
+    "weekNumber": 41,
+    "createdAt": "2025-10-16T18:27:15.245Z",
+    "updatedAt": "2025-10-16T18:27:15.245Z",
+    "__v": 0
+  },
+  {
+    "_id": "68f2812b29f17fb571105db2",
+    "email": "lvillarreal@mazakcorp.com",
+    "weekStart": "2025-10-13T00:00:00.000Z",
+    "weekEnd": "2025-10-19T23:59:59.999Z",
+    "totalMinutes": 0,
+    "dailyHours": [
+      "68f2812b29f17fb571105daf"
+    ],
+    "year": 2025,
+    "weekNumber": 41,
+    "createdAt": "2025-10-17T17:47:23.620Z",
+    "updatedAt": "2025-10-17T17:47:23.620Z",
+    "__v": 0
+  },
+  {
+    "_id": "69403e876727512c3528e1a7",
+    "email": "agarza@mazakcorp.com",
+    "weekStart": "2025-12-15T00:00:00.000Z",
+    "weekEnd": "2025-12-21T23:59:59.999Z",
+    "totalMinutes": 1,
+    "dailyHours": [
+      "69403e876727512c3528e1a4"
+    ],
+    "year": 2025,
+    "weekNumber": 50,
+    "createdAt": "2025-12-15T16:59:51.429Z",
+    "updatedAt": "2025-12-15T16:59:51.429Z",
+    "__v": 0
+  },
+  {
+    "_id": "6941e7e73c5e92af4605edd2",
+    "email": "iaguilar@mazakcorp.com",
+    "weekStart": "2025-12-15T00:00:00.000Z",
+    "weekEnd": "2025-12-21T23:59:59.999Z",
+    "totalMinutes": 979,
+    "dailyHours": [
+      "6941e7e73c5e92af4605edcf",
+      "69448c273cb830704841c942"
+    ],
+    "year": 2025,
+    "weekNumber": 50,
+    "createdAt": "2025-12-16T23:14:47.364Z",
+    "updatedAt": "2025-12-18T23:20:07.179Z",
+    "__v": 1
+  },
+  {
+    "_id": "6945765991ef4de755d13863",
+    "email": "edelgado@mazakcorp.com",
+    "weekStart": "2025-12-15T00:00:00.000Z",
+    "weekEnd": "2025-12-21T23:59:59.999Z",
+    "totalMinutes": 302,
+    "dailyHours": [
+      "6945765891ef4de755d13860"
+    ],
+    "year": 2025,
+    "weekNumber": 50,
+    "createdAt": "2025-12-19T15:59:21.077Z",
+    "updatedAt": "2025-12-19T15:59:21.077Z",
+    "__v": 0
+  },
+  {
+    "_id": "69458289661b2b81fa8031b5",
+    "email": "mnery@mazakcorp.com",
+    "weekStart": "2025-12-15T00:00:00.000Z",
+    "weekEnd": "2025-12-21T23:59:59.999Z",
+    "totalMinutes": 1380,
+    "dailyHours": [
+      "69458289661b2b81fa8031b2",
+      "69458e9c862f007db81392e2"
+    ],
+    "year": 2025,
+    "weekNumber": 50,
+    "createdAt": "2025-12-19T16:51:21.286Z",
+    "updatedAt": "2025-12-19T17:42:52.913Z",
+    "__v": 1
+  },
+  {
+    "_id": "6949fb88d97b05ba849a0aa9",
+    "email": "iaguilar@mazakcorp.com",
+    "weekStart": "2025-12-22T00:00:00.000Z",
+    "weekEnd": "2025-12-28T23:59:59.999Z",
+    "totalMinutes": 600,
+    "dailyHours": [
+      "6949fb88d97b05ba849a0aa6"
+    ],
+    "year": 2025,
+    "weekNumber": 51,
+    "createdAt": "2025-12-23T02:16:40.930Z",
+    "updatedAt": "2025-12-23T02:16:40.930Z",
+    "__v": 0
+  }
+]

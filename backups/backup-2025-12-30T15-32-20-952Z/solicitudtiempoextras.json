@@ -1,0 +1,1985 @@
+[
+  {
+    "_id": "68bef9cf50161a152b494460",
+    "requesterEmail": "agarza@mazakcorp.com",
+    "employeeEmail": "mchapa@mazakcorp.com",
+    "date": "2025-09-10T00:00:00.000Z",
+    "hours": 5,
+    "justification": "se quedo mas tarde",
+    "status": "rechazado",
+    "createdAt": "2025-09-08T15:44:15.927Z",
+    "updatedAt": "2025-09-11T16:37:30.497Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68bf0a951ef270f013a250e5",
+    "requesterEmail": "agarza@mazakcorp.com",
+    "employeeEmail": "mserrano@mazakcorp.com",
+    "date": "2025-09-10T00:00:00.000Z",
+    "hours": 3,
+    "justification": "wdfaf",
+    "status": "aprobado",
+    "createdAt": "2025-09-08T16:55:49.708Z",
+    "updatedAt": "2025-09-11T16:37:46.042Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68c0909ad2e63cc262ef585a",
+    "requesterEmail": "galarcon@mazakcorp.com",
+    "employeeEmail": "jmedellin@mazakcorp.com",
+    "date": "2025-09-17T00:00:00.000Z",
+    "hours": 3,
+    "justification": "pppp",
+    "status": "rechazado",
+    "createdAt": "2025-09-09T20:39:54.144Z",
+    "updatedAt": "2025-09-11T16:37:51.557Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68c1a339288535520bedc52a",
+    "requesterEmail": "galarcon@mazakcorp.com",
+    "employeeEmail": "cviolante@mazakcorp.com",
+    "date": "2025-09-19T00:00:00.000Z",
+    "hours": 3,
+    "justification": "Test1 - ignorar este correo-",
+    "status": "aprobado",
+    "createdAt": "2025-09-10T16:11:37.963Z",
+    "updatedAt": "2025-09-11T16:37:17.112Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68c1a453037904fda933eb53",
+    "requesterEmail": "galarcon@mazakcorp.com",
+    "employeeEmail": "cviolante@mazakcorp.com",
+    "date": "2025-09-19T00:00:00.000Z",
+    "hours": 3,
+    "justification": "Test1 - ignorar este correo-",
+    "status": "aprobado",
+    "createdAt": "2025-09-10T16:16:19.534Z",
+    "updatedAt": "2025-09-11T16:24:40.805Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68c3033924108100e6e8590c",
+    "requesterEmail": "galarcon@mazakcorp.com",
+    "employeeEmail": "jrosales@mazakcorp.com",
+    "date": "2025-09-20T00:00:00.000Z",
+    "hours": 4,
+    "justification": "ttt",
+    "status": "aprobado",
+    "createdAt": "2025-09-11T17:13:29.875Z",
+    "updatedAt": "2025-09-11T17:14:35.461Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f01c766b7444a79b55d7d8",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "entreSemana": 3,
+    "finSemana": 6,
+    "festivo": 0,
+    "bonoViaje": 1,
+    "justification": "DDDD",
+    "status": "aprobado",
+    "createdAt": "2025-10-15T22:13:10.481Z",
+    "updatedAt": "2025-10-16T17:31:33.102Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f01c7c6b7444a79b55d7df",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "entreSemana": 3,
+    "finSemana": 6,
+    "festivo": 0,
+    "bonoViaje": 1,
+    "justification": "DDDD",
+    "status": "rechazado",
+    "createdAt": "2025-10-15T22:13:16.738Z",
+    "updatedAt": "2025-10-16T17:31:29.112Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f01c806b7444a79b55d7e8",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "entreSemana": 3,
+    "finSemana": 6,
+    "festivo": 0,
+    "bonoViaje": 1,
+    "justification": "DDDD",
+    "status": "rechazado",
+    "createdAt": "2025-10-15T22:13:20.050Z",
+    "updatedAt": "2025-10-16T17:31:26.023Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f01c806b7444a79b55d7ea",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "entreSemana": 3,
+    "finSemana": 6,
+    "festivo": 0,
+    "bonoViaje": 1,
+    "justification": "DDDD",
+    "status": "aprobado",
+    "createdAt": "2025-10-15T22:13:20.051Z",
+    "updatedAt": "2025-10-16T17:31:23.092Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f01c806b7444a79b55d7f4",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "entreSemana": 3,
+    "finSemana": 6,
+    "festivo": 0,
+    "bonoViaje": 1,
+    "justification": "DDDD",
+    "status": "aprobado",
+    "createdAt": "2025-10-15T22:13:20.357Z",
+    "updatedAt": "2025-10-16T17:31:18.858Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f01c806b7444a79b55d7fb",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "entreSemana": 3,
+    "finSemana": 6,
+    "festivo": 0,
+    "bonoViaje": 1,
+    "justification": "DDDD",
+    "status": "aprobado",
+    "createdAt": "2025-10-15T22:13:20.676Z",
+    "updatedAt": "2025-10-16T17:31:14.754Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f127d80dcbe1e77bdcbcaa",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "jmedellin@mazakcorp.com",
+    "startDate": "2025-10-13T00:00:00.000Z",
+    "endDate": "2025-10-24T00:00:00.000Z",
+    "horasEntreSemana": 1,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 1,
+    "bonoViajeFinSemana": 0,
+    "justification": "l;m;",
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-16T17:14:00.507Z",
+    "updatedAt": "2025-10-16T17:31:10.491Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f127e20dcbe1e77bdcbcb1",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "jmedellin@mazakcorp.com",
+    "startDate": "2025-10-13T00:00:00.000Z",
+    "endDate": "2025-10-24T00:00:00.000Z",
+    "horasEntreSemana": 1,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 1,
+    "bonoViajeFinSemana": 0,
+    "justification": "l;m;",
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-16T17:14:10.916Z",
+    "updatedAt": "2025-10-16T17:31:00.799Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f127e70dcbe1e77bdcbcb8",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "jmedellin@mazakcorp.com",
+    "startDate": "2025-10-13T00:00:00.000Z",
+    "endDate": "2025-10-24T00:00:00.000Z",
+    "horasEntreSemana": 1,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 1,
+    "bonoViajeFinSemana": 0,
+    "justification": "l;m;",
+    "reportePath": null,
+    "status": "aprobado",
+    "createdAt": "2025-10-16T17:14:15.688Z",
+    "updatedAt": "2025-10-16T17:30:54.212Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f12b5188dd8f88c5d41af7",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "ezapata@mazakcorp.com",
+    "startDate": "2025-10-10T00:00:00.000Z",
+    "endDate": "2025-10-16T00:00:00.000Z",
+    "horasEntreSemana": 8,
+    "horasFinSemana": 8,
+    "diasFestivos": 2,
+    "bonoEstanciaFinSemana": 1,
+    "bonoViajeFinSemana": 0,
+    "justification": "PRUEBA",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1760635729549-373776424.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-16T17:28:49.698Z",
+    "updatedAt": "2025-10-16T17:30:40.451Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f12eb33443cdc48a693a05",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "ealatorre@mazakcorp.com",
+    "startDate": "2025-10-24T00:00:00.000Z",
+    "endDate": "2025-11-08T00:00:00.000Z",
+    "horasEntreSemana": 1,
+    "horasFinSemana": 2,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 1,
+    "justification": "prueba",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1760636595707-481532649.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-16T17:43:15.853Z",
+    "updatedAt": "2025-10-27T20:40:02.386Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f1319b3443cdc48a693a15",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "jrosales@mazakcorp.com",
+    "startDate": "2025-10-06T00:00:00.000Z",
+    "endDate": "2025-10-16T00:00:00.000Z",
+    "horasEntreSemana": 5,
+    "horasFinSemana": 8,
+    "diasFestivos": 1,
+    "bonoEstanciaFinSemana": 1,
+    "bonoViajeFinSemana": 0,
+    "justification": "PRUEBA",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1760637339831-129033699.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-16T17:55:39.979Z",
+    "updatedAt": "2025-10-27T20:40:07.569Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f26dfe9cb6b7f9d7ccf75e",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "vmata@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-18T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-17T16:25:34.440Z",
+    "updatedAt": "2025-10-27T20:40:04.932Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f27cef29f17fb571105d64",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "vmata@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-18T00:00:00.000Z",
+    "endDate": "2025-11-08T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 4
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-17T17:29:19.370Z",
+    "updatedAt": "2025-10-27T20:40:11.794Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f2807329f17fb571105d8e",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-15T00:00:00.000Z",
+    "endDate": "2025-11-01T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-17T17:44:19.355Z",
+    "updatedAt": "2025-10-27T20:40:09.735Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7ad5a08859535474520da",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-21T15:57:14.411Z",
+    "updatedAt": "2025-10-27T20:40:16.382Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7adc408859535474520e3",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-23T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-21T15:59:00.924Z",
+    "updatedAt": "2025-10-27T20:40:14.045Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7af0349ed60a00e2e25c9",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-21T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-21T16:04:19.351Z",
+    "updatedAt": "2025-10-27T20:39:57.879Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7b0de49ed60a00e2e25e6",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Mazak",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-11-06T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-21T16:12:14.371Z",
+    "updatedAt": "2025-10-27T20:39:55.090Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7b23fdbf1331b36c9cfe6",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test correo",
+    "startDate": "2025-10-23T00:00:00.000Z",
+    "endDate": "2025-10-30T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": null,
+    "status": "rechazado",
+    "createdAt": "2025-10-21T16:18:07.115Z",
+    "updatedAt": "2025-10-27T20:39:52.505Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7c2e0eba530dfced5a441",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test correo",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761067744168-565823744.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-21T17:29:04.384Z",
+    "updatedAt": "2025-10-27T20:39:49.810Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7c2e7eba530dfced5a448",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test correo",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761067751539-789573042.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-21T17:29:11.674Z",
+    "updatedAt": "2025-10-27T20:39:47.119Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7c4742c8359e1f229ab17",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test correo",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-10-30T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761068148259-231478745.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-21T17:35:48.414Z",
+    "updatedAt": "2025-10-27T20:39:44.419Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7cb9a62873b0166a81ef7",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test correo",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-10-30T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761069978465-281533270.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-21T18:06:18.602Z",
+    "updatedAt": "2025-10-27T20:39:40.770Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68f7cdc96307eb9a932f27ff",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test correo",
+    "startDate": "2025-10-22T00:00:00.000Z",
+    "endDate": "2025-10-31T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761070537576-353146345.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-21T18:15:37.765Z",
+    "updatedAt": "2025-10-27T20:39:38.309Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68ffb773ae1e3e9238b998ea",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "cliente": "TEST",
+    "startDate": "2025-10-13T00:00:00.000Z",
+    "endDate": "2025-10-24T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": true,
+        "cantidad": 1
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761589107318-695812362.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-27T18:18:27.457Z",
+    "updatedAt": "2025-10-27T20:39:34.674Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68ffb7efae1e3e9238b998f9",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "cliente": "TEST",
+    "startDate": "2025-10-13T00:00:00.000Z",
+    "endDate": "2025-10-21T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761589231709-170530692.pdf",
+    "status": "rechazado",
+    "createdAt": "2025-10-27T18:20:31.854Z",
+    "updatedAt": "2025-10-27T20:39:29.879Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68ffd9474e43659a2b53657e",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test",
+    "startDate": "2025-10-29T00:00:00.000Z",
+    "endDate": "2025-11-07T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": true,
+    "trabajado": true,
+    "createdAt": "2025-10-27T20:42:47.692Z",
+    "updatedAt": "2025-10-27T20:47:05.872Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68ffe0a55f2672c38b914939",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "Testeo@mazakcorp.com",
+    "cliente": "TEST",
+    "startDate": "2025-10-13T00:00:00.000Z",
+    "endDate": "2025-10-24T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": true,
+        "cantidad": 1
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1761599653228-562162908.pdf",
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-10-27T21:14:13.368Z",
+    "updatedAt": "2025-10-27T21:22:36.955Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68ffe2c7992ae2c28cda4d54",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "test",
+    "startDate": "2025-10-17T00:00:00.000Z",
+    "endDate": "2025-11-28T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": true,
+    "trabajado": true,
+    "createdAt": "2025-10-27T21:23:19.751Z",
+    "updatedAt": "2025-10-27T21:25:10.792Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "68ffeb39db41ed49d562ced9",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Test Myrna",
+    "startDate": "2025-10-29T00:00:00.000Z",
+    "endDate": "2025-11-07T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": true,
+    "trabajado": true,
+    "createdAt": "2025-10-27T21:59:21.227Z",
+    "updatedAt": "2025-10-27T22:04:05.553Z",
+    "__v": 0,
+    "commentsAdmin": "okey"
+  },
+  {
+    "_id": "69012aaab95f276b7f371489",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Test 28",
+    "startDate": "2025-10-25T00:00:00.000Z",
+    "endDate": "2025-10-26T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": true,
+    "trabajado": true,
+    "createdAt": "2025-10-28T20:42:18.560Z",
+    "updatedAt": "2025-10-28T20:46:12.208Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "69039254206097f31f6b7dbb",
+    "requesterEmail": "coordinador@test.com",
+    "employeeEmail": "emp1@example.com",
+    "cliente": "Test Client",
+    "startDate": "2025-10-30T16:29:08.670Z",
+    "endDate": "2025-10-31T16:29:08.670Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 8,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "Test justification",
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-10-30T16:29:08.681Z",
+    "updatedAt": "2025-10-30T16:43:27.215Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "690395696366f1d8720c84d6",
+    "requesterEmail": "mcarrera@mazakcorp.com",
+    "employeeEmail": "vmata@mazakcorp.com",
+    "cliente": "Test Coordinador",
+    "startDate": "2025-10-31T00:00:00.000Z",
+    "endDate": "2025-11-08T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": true,
+    "trabajado": true,
+    "createdAt": "2025-10-30T16:42:17.125Z",
+    "updatedAt": "2025-10-30T17:02:14.776Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6903a4aacb22bac55f154a8f",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "vmata@mazakcorp.com",
+    "cliente": "Test 30",
+    "startDate": "2025-10-31T00:00:00.000Z",
+    "endDate": "2025-11-08T00:00:00.000Z",
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": true,
+        "cantidad": 2
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": true,
+    "trabajado": false,
+    "createdAt": "2025-10-30T17:47:22.934Z",
+    "updatedAt": "2025-12-04T17:16:41.172Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6908c859d1dd5318fa491ae4",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "vmata@mazakcorp.com",
+    "cliente": "Prueba TxT",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-11-12T00:00:00.000Z",
+      "2025-11-13T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": true,
+    "trabajado": true,
+    "createdAt": "2025-11-03T15:20:57.033Z",
+    "updatedAt": "2025-12-04T17:16:34.783Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "693083e49c1e6ca7d04ae9fa",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "lcerecedo@mazakcorp.com",
+    "cliente": "Cat",
+    "type": "valor_agregado",
+    "startDate": "2025-12-06T00:00:00.000Z",
+    "endDate": "2025-12-07T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-03T18:39:32.400Z",
+    "updatedAt": "2025-12-03T18:40:23.132Z",
+    "__v": 0,
+    "commentsAdmin": "okey"
+  },
+  {
+    "_id": "693085f99c1e6ca7d04aea15",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "hrodriguez@mazakcorp.com",
+    "cliente": "Cat",
+    "type": "valor_agregado",
+    "startDate": "2025-12-20T00:00:00.000Z",
+    "endDate": "2025-12-21T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-03T18:48:25.957Z",
+    "updatedAt": "2025-12-03T18:49:57.154Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "693087449c1e6ca7d04aea2c",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "bmoreno@mazakcorp.com",
+    "cliente": "ss",
+    "type": "valor_agregado",
+    "startDate": "2025-12-27T00:00:00.000Z",
+    "endDate": "2025-12-28T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-03T18:53:56.428Z",
+    "updatedAt": "2025-12-09T23:36:49.422Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "693087699c1e6ca7d04aea33",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "hzarate@mazakcorp.com",
+    "cliente": "ss",
+    "type": "valor_agregado",
+    "startDate": "2025-12-06T00:00:00.000Z",
+    "endDate": "2025-12-07T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-03T18:54:33.248Z",
+    "updatedAt": "2025-12-09T23:36:46.493Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6938b26b4cda467bd771b5ec",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Test 09",
+    "type": "valor_agregado",
+    "startDate": "2025-12-01T00:00:00.000Z",
+    "endDate": "2025-12-15T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-09T23:36:11.873Z",
+    "updatedAt": "2025-12-09T23:36:42.349Z",
+    "__v": 0,
+    "commentsAdmin": "SI SE CUMPLIO ESTO"
+  },
+  {
+    "_id": "6938b2fa4cda467bd771b60f",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Prueba TxT 09",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-11-14T00:00:00.000Z",
+      "2025-12-18T00:00:00.000Z",
+      "2025-12-26T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-09T23:38:34.369Z",
+    "updatedAt": "2025-12-09T23:38:47.460Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "69399a3526ad803ff55c8963",
+    "requesterEmail": "vmata@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "1012",
+    "type": "valor_agregado",
+    "startDate": "2025-12-22T00:00:00.000Z",
+    "endDate": "2025-12-26T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": true,
+        "cantidad": 2
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T16:05:09.779Z",
+    "updatedAt": "2025-12-10T18:03:09.154Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6939b54eea43fb457295b3b1",
+    "requesterEmail": "econ@mazakcorp.com",
+    "employeeEmail": "esin@mazakcorp.com",
+    "cliente": "Prueba",
+    "type": "valor_agregado",
+    "startDate": "2025-12-01T00:00:00.000Z",
+    "endDate": "2025-12-08T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1765389645966-705155501.pdf",
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T18:00:46.666Z",
+    "updatedAt": "2025-12-10T18:03:04.496Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6939b585ea43fb457295b3be",
+    "requesterEmail": "econ@mazakcorp.com",
+    "employeeEmail": "esin@mazakcorp.com",
+    "cliente": "PRUEBA 2",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-12-06T00:00:00.000Z",
+      "2025-12-07T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T18:01:41.096Z",
+    "updatedAt": "2025-12-10T18:02:59.870Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6939b586ea43fb457295b3c5",
+    "requesterEmail": "econ@mazakcorp.com",
+    "employeeEmail": "esin@mazakcorp.com",
+    "cliente": "PRUEBA 2",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-12-06T00:00:00.000Z",
+      "2025-12-07T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T18:01:42.990Z",
+    "updatedAt": "2025-12-10T18:02:54.457Z",
+    "__v": 0,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6939b588ea43fb457295b3cc",
+    "requesterEmail": "econ@mazakcorp.com",
+    "employeeEmail": "esin@mazakcorp.com",
+    "cliente": "PRUEBA 2",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-12-06T00:00:00.000Z",
+      "2025-12-07T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T18:01:44.941Z",
+    "updatedAt": "2025-12-10T18:02:43.380Z",
+    "__v": 0,
+    "commentsAdmin": "ahd"
+  },
+  {
+    "_id": "6939b589ea43fb457295b3d2",
+    "requesterEmail": "econ@mazakcorp.com",
+    "employeeEmail": "esin@mazakcorp.com",
+    "cliente": "PRUEBA 2",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-12-06T00:00:00.000Z",
+      "2025-12-07T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T18:01:45.134Z",
+    "updatedAt": "2025-12-10T18:02:31.457Z",
+    "__v": 0,
+    "commentsAdmin": "xyz\n"
+  },
+  {
+    "_id": "6939b589ea43fb457295b3da",
+    "requesterEmail": "econ@mazakcorp.com",
+    "employeeEmail": "esin@mazakcorp.com",
+    "cliente": "PRUEBA 2",
+    "type": "tiempo_por_tiempo",
+    "workedDates": [
+      "2025-12-06T00:00:00.000Z",
+      "2025-12-07T00:00:00.000Z"
+    ],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-10T18:01:45.392Z",
+    "updatedAt": "2025-12-10T18:02:08.421Z",
+    "__v": 0,
+    "commentsAdmin": "xyz\n"
+  },
+  {
+    "_id": "6940293bc50f77744579625c",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "1512",
+    "type": "valor_agregado",
+    "startDate": "2025-12-15T00:00:00.000Z",
+    "endDate": "2025-12-15T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-15T15:28:59.015Z",
+    "updatedAt": "2025-12-15T15:30:11.467Z",
+    "__v": 0,
+    "approvedAt": null,
+    "commentsAdmin": ""
+  },
+  {
+    "_id": "6940524021a8dd6467f0b052",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "1512",
+    "type": "valor_agregado",
+    "startDate": "2025-12-24T00:00:00.000Z",
+    "endDate": "2025-12-31T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-15T18:24:00.612Z",
+    "updatedAt": "2025-12-15T18:25:01.924Z",
+    "__v": 0,
+    "approvedAt": "2025-12-15T18:25:01.924Z",
+    "commentsAdmin": "si se cumplio"
+  },
+  {
+    "_id": "6940802d3d6684ef70d5c440",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "cviolante@mazakcorp.com",
+    "cliente": "prueba 15",
+    "type": "valor_agregado",
+    "startDate": "2025-12-23T00:00:00.000Z",
+    "endDate": "2026-01-01T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "aprobado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-15T21:39:57.874Z",
+    "updatedAt": "2025-12-15T21:40:54.250Z",
+    "__v": 0,
+    "approvedAt": "2025-12-15T21:40:54.249Z",
+    "commentsAdmin": "peldom"
+  },
+  {
+    "_id": "694199171824a1479955bfe7",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "aharos@mazakcorp.com",
+    "cliente": "Manual",
+    "type": "valor_agregado",
+    "startDate": "2025-12-14T00:00:00.000Z",
+    "endDate": "2025-12-27T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": true,
+        "cantidad": 1
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "pendiente",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-16T17:38:31.660Z",
+    "updatedAt": "2025-12-16T17:38:31.660Z",
+    "__v": 0
+  },
+  {
+    "_id": "69447197f8ae51c24dfe89a5",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "TEST *IGNORAR CORREO* ATTE: ANGEL GARZA",
+    "type": "valor_agregado",
+    "startDate": "2025-12-17T00:00:00.000Z",
+    "endDate": "2025-12-31T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "viajesFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": null,
+    "status": "rechazado",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-18T21:26:47.940Z",
+    "updatedAt": "2025-12-18T21:48:48.317Z",
+    "__v": 0,
+    "approvedAt": null,
+    "commentsAdmin": "Ignorar y no reportar este correo ATTE: ANGEL GARZA Y MYRNA NERY"
+  },
+  {
+    "_id": "6944792288646cc26e18021b",
+    "requesterEmail": "glopez@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "IGNORAR",
+    "type": "valor_agregado",
+    "startDate": "2025-12-17T00:00:00.000Z",
+    "endDate": "2025-12-19T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1766095138048-74435699.pdf",
+    "status": "pendiente",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-18T21:58:58.186Z",
+    "updatedAt": "2025-12-18T21:58:58.186Z",
+    "__v": 0
+  },
+  {
+    "_id": "6945945d862f007db813a101",
+    "requesterEmail": "mnery@mazakcorp.com",
+    "employeeEmail": "mcarrera@mazakcorp.com",
+    "cliente": "Prueba, favor de ignorar este correo atte ángel garza",
+    "type": "valor_agregado",
+    "startDate": "2025-12-08T00:00:00.000Z",
+    "endDate": "2025-12-12T00:00:00.000Z",
+    "workedDates": [],
+    "motivo": {
+      "trabajoFinSemana": {
+        "selected": false,
+        "cantidad": 0
+      },
+      "estadiaFinSemana": {
+        "selected": true,
+        "cantidad": 1
+      },
+      "viajesFinSemana": {
+        "selected": true,
+        "cantidad": 2
+      },
+      "diasFestivosLaborados": {
+        "selected": false,
+        "cantidad": 0
+      }
+    },
+    "horasEntreSemana": 0,
+    "horasFinSemana": 0,
+    "diasFestivos": 0,
+    "bonoEstanciaFinSemana": 0,
+    "bonoViajeFinSemana": 0,
+    "justification": "",
+    "reportePath": "/opt/render/project/src/uploads/reporte-1766167645001-85851510.pdf",
+    "status": "pendiente",
+    "enterado": false,
+    "trabajado": false,
+    "createdAt": "2025-12-19T18:07:25.448Z",
+    "updatedAt": "2025-12-19T18:07:25.448Z",
+    "__v": 0
+  }
+]

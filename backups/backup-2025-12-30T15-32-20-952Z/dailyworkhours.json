@@ -1,0 +1,167 @@
+[
+  {
+    "_id": "689f4f88327df5b0a37d8867",
+    "email": "mnery@mazakcorp.com",
+    "date": "2025-08-14T00:00:00.000Z",
+    "totalMinutes": 1044,
+    "sessions": [
+      "689e5ac3f203990462ed3e1b"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-08-15T15:17:28.493Z",
+    "updatedAt": "2025-08-15T15:17:28.493Z",
+    "__v": 0
+  },
+  {
+    "_id": "68dd6cd2918f07c960cd6394",
+    "email": "mnery@mazakcorp.com",
+    "date": "2025-10-01T00:00:00.000Z",
+    "totalMinutes": 0,
+    "sessions": [
+      "68dd6cd2918f07c960cd6386",
+      "68dd6cd2918f07c960cd6391",
+      "68dd6cd1918f07c960cd6382",
+      "68dd6cd1918f07c960cd6380"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-10-01T18:02:58.340Z",
+    "updatedAt": "2025-10-01T18:02:58.932Z",
+    "__v": 3
+  },
+  {
+    "_id": "68f01d666b7444a79b55d870",
+    "email": "mnery@mazakcorp.com",
+    "date": "2025-10-15T00:00:00.000Z",
+    "totalMinutes": 0,
+    "sessions": [
+      "68f01d666b7444a79b55d85d",
+      "68f01d666b7444a79b55d862",
+      "68f01d666b7444a79b55d862",
+      "68f01d666b7444a79b55d862",
+      "68f01d666b7444a79b55d855",
+      "68f01d676b7444a79b55d888"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-10-15T22:17:10.921Z",
+    "updatedAt": "2025-10-15T22:17:11.719Z",
+    "__v": 5
+  },
+  {
+    "_id": "68f13903f1c416d6b4423178",
+    "email": "agarza@mazakcorp.com",
+    "date": "2025-10-16T00:00:00.000Z",
+    "totalMinutes": 0,
+    "sessions": [
+      "68f138e8f1c416d6b442316f",
+      "68f13928f1c416d6b4423180"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-10-16T18:27:15.106Z",
+    "updatedAt": "2025-10-16T18:28:05.597Z",
+    "__v": 1
+  },
+  {
+    "_id": "68f2812b29f17fb571105daf",
+    "email": "lvillarreal@mazakcorp.com",
+    "date": "2025-10-17T00:00:00.000Z",
+    "totalMinutes": 0,
+    "sessions": [
+      "68f2811d29f17fb571105da8"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-10-17T17:47:23.477Z",
+    "updatedAt": "2025-10-17T17:47:23.477Z",
+    "__v": 0
+  },
+  {
+    "_id": "69403e876727512c3528e1a4",
+    "email": "agarza@mazakcorp.com",
+    "date": "2025-12-15T00:00:00.000Z",
+    "totalMinutes": 1,
+    "sessions": [
+      "69403e326727512c3528e18f"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-15T16:59:51.290Z",
+    "updatedAt": "2025-12-15T16:59:51.290Z",
+    "__v": 0
+  },
+  {
+    "_id": "6941e7e73c5e92af4605edcf",
+    "email": "iaguilar@mazakcorp.com",
+    "date": "2025-12-16T00:00:00.000Z",
+    "totalMinutes": 491,
+    "sessions": [
+      "694174cab6cc739c8f8ce760"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-16T23:14:47.217Z",
+    "updatedAt": "2025-12-16T23:14:47.217Z",
+    "__v": 0
+  },
+  {
+    "_id": "69448c273cb830704841c942",
+    "email": "iaguilar@mazakcorp.com",
+    "date": "2025-12-18T00:00:00.000Z",
+    "totalMinutes": 488,
+    "sessions": [
+      "6944198f56464c16ab0a4020"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-18T23:20:07.035Z",
+    "updatedAt": "2025-12-18T23:20:07.035Z",
+    "__v": 0
+  },
+  {
+    "_id": "6945765891ef4de755d13860",
+    "email": "edelgado@mazakcorp.com",
+    "date": "2025-12-18T00:00:00.000Z",
+    "totalMinutes": 302,
+    "sessions": [
+      "6945765891ef4de755d1385d"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-19T15:59:20.941Z",
+    "updatedAt": "2025-12-19T15:59:20.941Z",
+    "__v": 0
+  },
+  {
+    "_id": "69458289661b2b81fa8031b2",
+    "email": "mnery@mazakcorp.com",
+    "date": "2025-12-18T06:00:00.000Z",
+    "totalMinutes": 180,
+    "sessions": [
+      "69458288661b2b81fa8031af"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-19T16:51:21.144Z",
+    "updatedAt": "2025-12-19T16:51:21.144Z",
+    "__v": 0
+  },
+  {
+    "_id": "69458e9c862f007db81392e2",
+    "email": "mnery@mazakcorp.com",
+    "date": "2025-12-15T06:00:00.000Z",
+    "totalMinutes": 1200,
+    "sessions": [
+      "69458e9c862f007db81392df"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-19T17:42:52.774Z",
+    "updatedAt": "2025-12-19T17:42:52.774Z",
+    "__v": 0
+  },
+  {
+    "_id": "6949fb88d97b05ba849a0aa6",
+    "email": "iaguilar@mazakcorp.com",
+    "date": "2025-12-22T00:00:00.000Z",
+    "totalMinutes": 600,
+    "sessions": [
+      "6949683d543be9e5a8c690b6"
+    ],
+    "isComplete": true,
+    "createdAt": "2025-12-23T02:16:40.712Z",
+    "updatedAt": "2025-12-23T02:16:40.712Z",
+    "__v": 0
+  }
+]

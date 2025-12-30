@@ -4,7 +4,10 @@
   "description": "Check-in de empleados con validación por coordenadas",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "reset:db:dry": "node scripts/resetDatabase.js --dry-run",
+    "reset:db": "node scripts/resetDatabase.js --confirm",
+    "reset:db:full": "node scripts/resetDatabase.js --confirm --with-uploads --backup"
   },
   "keywords": [],
   "author": "Ángel Garza",
