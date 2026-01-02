@@ -111,7 +111,7 @@ Qué esperar tras el reset:
 - Los usuarios conservan su registro y quedan con:
   - `diasPendientesPrevios = 0`
   - `diasPendientesActuales =` días máximos según antigüedad actual
-  - `vigenciaActuales =` un año desde su aniversario vigente
+  - `vigenciaActuales =` un año 6 meses desde su aniversario vigente
 
 Notas de seguridad:
 - Ejecuta primero `npm run reset:db:dry` para verificar conteos.

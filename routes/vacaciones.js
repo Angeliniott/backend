@@ -231,6 +231,43 @@ function distribuirDiasSolicitados(periodos, usados, diasSolicitados) {
   return { diasPeriodoPrevio, diasPeriodoActual, vigenciaPrevio, vigenciaActual, restante };
 }
 
+// Distribuir créditos para agregar días: primero al periodo actual (vigente más reciente con días habilitados),
+// y el excedente al periodo previo (el inmediatamente anterior que aún está vigente).
+function distribuirCreditosActualPrevio(periodos, usados, cantidad) {
+  const hoy = new Date();
+  // Identificar índices de periodos vigentes (fin >= hoy)
+  const vigentes = periodos
+    .map((p, idx) => ({ idx, p }))
+    .filter(x => x.p.fin >= hoy);
+  if (vigentes.length === 0) {
+    return { diasPeriodoActual: 0, diasPeriodoPrevio: 0, vigenciaActual: null, vigenciaPrevio: null };
+  }
+  // Periodo actual: el más reciente con días habilitados al hoy (p.dias puede ser 0 si aún no habilitan)
+  // Usaremos el último de la lista de vigentes como "actual" por orden cronológico creciente en periodos.
+  const actual = vigentes[vigentes.length - 1];
+  // Periodo previo: el inmediatamente anterior dentro de vigentes, si existe.
+  const previo = vigentes.length >= 2 ? vigentes[vigentes.length - 2] : null;
+
+  // No limitamos por disponible; los créditos incrementan habilitados efectivos.
+  let restante = cantidad;
+  let actualToma = 0;
+  let previoToma = 0;
+  if (restante > 0) {
+    actualToma = restante;
+    restante -= actualToma;
+  }
+  if (restante > 0 && previo) {
+    previoToma = restante;
+    restante -= previoToma;
+  }
+  return {
+    diasPeriodoActual: actualToma,
+    diasPeriodoPrevio: previoToma,
+    vigenciaActual: actual.p.fin,
+    vigenciaPrevio: previo ? previo.p.fin : null
+  };
+}
+
 // ======================= RUTAS =======================
 
 // GET: resumen de vacaciones
@@ -245,16 +282,32 @@ router.get('/resumen', authMiddleware, async (req, res) => {
 
     const periodos = calcularDiasPorAniversario(user.fechaIngreso);
     const solicitudes = await SolicitudVacaciones.find({ email: user.email, estado: 'aprobado' });
+    const solicitudesDebito = solicitudes.filter(s => !s.ajusteTipo || s.ajusteTipo === 'descontar');
+    const solicitudesCredito = solicitudes.filter(s => s.ajusteTipo === 'agregar');
 
-    // Calcular usados por periodo usando la misma lógica de distribución para evitar doble conteo por periodos solapados
-    const usadosPorPeriodo = obtenerUsadosPorPeriodo(solicitudes, periodos);
+    // Calcular usados (débitos) por periodo
+    const usadosPorPeriodo = obtenerUsadosPorPeriodo(solicitudesDebito, periodos);
+    // Calcular créditos acumulados por periodo a partir de solicitudes de ajuste "agregar"
+    const creditosPorPeriodo = periodos.map(() => 0);
+    for (const s of solicitudesCredito) {
+      // Sumamos al periodo cuya vigencia coincida, respetando desglose guardado
+      if (s.vigenciaActual) {
+        const idx = periodos.findIndex(p => p.fin.getTime() === new Date(s.vigenciaActual).getTime());
+        if (idx >= 0) creditosPorPeriodo[idx] += (s.diasPeriodoActual || 0);
+      }
+      if (s.vigenciaPrevio) {
+        const idx2 = periodos.findIndex(p => p.fin.getTime() === new Date(s.vigenciaPrevio).getTime());
+        if (idx2 >= 0) creditosPorPeriodo[idx2] += (s.diasPeriodoPrevio || 0);
+      }
+    }
+
     const periodosResumen = periodos.map((p, idx) => ({
       inicioAniversario: p.inicio,
       finAniversario: p.inicio, // fin del año laboral; no usado en vigencia
       vigenciaHasta: p.fin,
-      habilitados: p.dias,
+      habilitados: p.dias + (creditosPorPeriodo[idx] || 0),
       usados: usadosPorPeriodo[idx] || 0,
-      disponibles: Math.max(0, p.dias - (usadosPorPeriodo[idx] || 0))
+      disponibles: Math.max(0, (p.dias + (creditosPorPeriodo[idx] || 0)) - (usadosPorPeriodo[idx] || 0))
     }));
     const disponiblesTotal = periodosResumen.reduce((sum, r) => sum + r.disponibles, 0);
 
@@ -614,6 +667,7 @@ router.post('/admin/descontar', authMiddleware, verifyAdmin, async (req, res) =>
       fechaFin: now,
       diasSolicitados: cantidad,
       motivo: motivo || 'Ajuste administrativo de días pendientes',
+      ajusteTipo: 'descontar',
       // Usar un supervisor permitido por el esquema (enum)
       supervisor: 'fsantiago@mazakcorp.com',
       estado: 'aprobado',
@@ -628,6 +682,54 @@ router.post('/admin/descontar', authMiddleware, verifyAdmin, async (req, res) =>
     res.status(201).json({ message: 'Días descontados', solicitud: nueva });
   } catch (err) {
     console.error('❌ Error en POST /admin/descontar:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// POST: admin agrega días al periodo actual y excedente al previo
+router.post('/admin/agregar', authMiddleware, verifyAdmin, async (req, res) => {
+  try {
+    const { email, cantidad, motivo } = req.body;
+    if (!email || !cantidad || cantidad <= 0) {
+      return res.status(400).json({ error: 'Email y cantidad > 0 son requeridos' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !user.fechaIngreso) {
+      return res.status(404).json({ error: 'Usuario no encontrado o sin fecha de ingreso' });
+    }
+
+    // Calcular periodos y usados actuales (para referencia en resumen)
+    const periodos = calcularDiasPorAniversario(user.fechaIngreso);
+    const aprobadasDebito = await SolicitudVacaciones.find({ email, estado: 'aprobado', $or: [{ ajusteTipo: { $exists: false } }, { ajusteTipo: 'descontar' }] });
+    const usados = obtenerUsadosPorPeriodo(aprobadasDebito, periodos);
+
+    // Distribuir créditos: actual primero, luego previo
+    const desglose = distribuirCreditosActualPrevio(periodos, usados, cantidad);
+
+    const now = new Date();
+    const nueva = new SolicitudVacaciones({
+      usuario: user._id,
+      email,
+      fechaIngreso: user.fechaIngreso,
+      fechaInicio: now,
+      fechaFin: now,
+      diasSolicitados: cantidad,
+      motivo: motivo || 'Ajuste administrativo de aumento de días',
+      supervisor: 'fsantiago@mazakcorp.com',
+      estado: 'aprobado',
+      ajusteTipo: 'agregar',
+      diasPeriodoPrevio: desglose.diasPeriodoPrevio,
+      diasPeriodoActual: desglose.diasPeriodoActual,
+      vigenciaPrevio: desglose.vigenciaPrevio,
+      vigenciaActual: desglose.vigenciaActual,
+      disponibles: periodos.reduce((sum, p, i) => sum + Math.max(0, p.dias - (usados[i] || 0)), 0)
+    });
+    await nueva.save();
+
+    res.status(201).json({ message: 'Días agregados', solicitud: nueva });
+  } catch (err) {
+    console.error('❌ Error en POST /admin/agregar:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
