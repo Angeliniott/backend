@@ -235,31 +235,38 @@ function distribuirDiasSolicitados(periodos, usados, diasSolicitados) {
 // y el excedente al periodo previo (el inmediatamente anterior que aún está vigente).
 function distribuirCreditosActualPrevio(periodos, usados, cantidad) {
   const hoy = new Date();
-  // Identificar índices de periodos vigentes (fin >= hoy)
+  // Activos: inicio <= hoy <= fin
+  const activos = periodos
+    .map((p, idx) => ({ idx, p }))
+    .filter(x => x.p.inicio <= hoy && x.p.fin >= hoy);
+  // Vigentes (incluye activos y futuros ya dentro de vigencia): fin >= hoy
   const vigentes = periodos
     .map((p, idx) => ({ idx, p }))
     .filter(x => x.p.fin >= hoy);
+
   if (vigentes.length === 0) {
     return { diasPeriodoActual: 0, diasPeriodoPrevio: 0, vigenciaActual: null, vigenciaPrevio: null };
   }
-  // Periodo actual: el más reciente con días habilitados al hoy (p.dias puede ser 0 si aún no habilitan)
-  // Usaremos el último de la lista de vigentes como "actual" por orden cronológico creciente en periodos.
-  const actual = vigentes[vigentes.length - 1];
-  // Periodo previo: el inmediatamente anterior dentro de vigentes, si existe.
-  const previo = vigentes.length >= 2 ? vigentes[vigentes.length - 2] : null;
 
-  // No limitamos por disponible; los créditos incrementan habilitados efectivos.
-  let restante = cantidad;
-  let actualToma = 0;
-  let previoToma = 0;
-  if (restante > 0) {
-    actualToma = restante;
-    restante -= actualToma;
+  // Actual: si hay activos, el de mayor inicio; si no, el más cercano futuro (mín inicio entre vigentes con inicio > hoy)
+  let actual;
+  if (activos.length > 0) {
+    actual = activos.reduce((a, b) => (a.p.inicio > b.p.inicio ? a : b));
+  } else {
+    const futuros = vigentes.filter(x => x.p.inicio > hoy);
+    actual = (futuros.length > 0)
+      ? futuros.reduce((a, b) => (a.p.inicio < b.p.inicio ? a : b))
+      : vigentes[vigentes.length - 1]; // fallback: último vigente
   }
-  if (restante > 0 && previo) {
-    previoToma = restante;
-    restante -= previoToma;
-  }
+
+  // Previo: el inmediatamente anterior a "actual" que siga vigente (fin >= hoy)
+  const candidatosPrevios = vigentes.filter(x => x.idx < actual.idx);
+  const previo = candidatosPrevios.length > 0 ? candidatosPrevios[candidatosPrevios.length - 1] : null;
+
+  // Créditos: por defecto todo al actual; si se define otra política de reparto, ajustar aquí
+  const actualToma = Math.max(0, cantidad);
+  const previoToma = 0;
+
   return {
     diasPeriodoActual: actualToma,
     diasPeriodoPrevio: previoToma,
